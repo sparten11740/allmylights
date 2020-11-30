@@ -6,6 +6,8 @@ using MQTTnet;
 using Newtonsoft.Json;
 using NJsonSchema;
 using NLog;
+using OpenRGB.NET;
+using Unmockable;
 
 enum ExitCode
 {
@@ -28,14 +30,16 @@ namespace AllMyLights
             ValidateConfig(fileName: config.Name, content);
 
             var configuration = JsonConvert.DeserializeObject<Configuration>(content);
+
             var mqttClient = new MqttFactory().CreateMqttClient();
+            var colorSubject = new ColorSubject(configuration, mqttClient);
+            var openRGBClient = new OpenRGBClient(
+                ip: configuration.OpenRgb?.Server ?? "127.0.0.1",
+                port: configuration.OpenRgb?.Port ?? 6742
+            ).Wrap();
 
-            new ColorSubject(configuration, mqttClient)
-                .Updates()
-                .Subscribe((it) => {
-                    Logger.Info($"Color changed to {it}");
-                });
-
+            var broker = new OpenRGBBroker(colorSubject, openRGBClient);
+            broker.Listen();
            
             ResetEvent.WaitOne(); 
         }

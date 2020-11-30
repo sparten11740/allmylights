@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
     <PackageReference Include="Moq" Version="4.15.2" />
+    <PackageReference Include="Unmockable.Intercept" Version="3.0.91" />
   </ItemGroup>
 
   <ItemGroup>

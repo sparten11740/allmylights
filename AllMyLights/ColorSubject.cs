@@ -16,7 +16,7 @@ using NLog;
 
 namespace AllMyLights
 {
-    public class ColorSubject
+    public class ColorSubject : IColorSubject
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -50,7 +50,8 @@ namespace AllMyLights
             MqttClient.UseApplicationMessageReceivedHandler(HandleMessage);
 
             await MqttClient.ConnectAsync(MqttClientOptions, CancellationToken.None);
-            await MqttClient.PublishAsync(new MqttApplicationMessage {
+            await MqttClient.PublishAsync(new MqttApplicationMessage
+            {
                 Topic = Configuration.Mqtt.Topics.Command
             }, CancellationToken.None);
 
@@ -85,7 +86,7 @@ namespace AllMyLights
             {
                 await MqttClient.ConnectAsync(MqttClientOptions, CancellationToken.None);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logger.Error($"Reconnecting failed. Connection couldn't be established: {e.Message}");
             }

@@ -5,7 +5,7 @@ using NLog;
 
 namespace AllMyLights
 {
-    public class ColorConverter
+    public static class ColorConverter
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -22,7 +22,11 @@ namespace AllMyLights
                 Logger.Debug($"{input} is no valid hex-code. Attempting to derive color by name.");
                 return Color.FromName(input);
             }
+        }
 
+        public static  OpenRGB.NET.Models.Color ToOpenRGBColor(this Color color)
+        {
+            return new OpenRGB.NET.Models.Color(color.R, color.G, color.B);
         }
 
         private static void FromHex(string hex, out byte a, out byte r, out byte g, out byte b)

@@ -35,7 +35,7 @@ namespace AllMyLights.Test
         {
             Config = new Configuration
             {
-                Mqtt = new Mqtt
+                Mqtt = new MqttConfiguration
                 {
                     Server = "wayne-foundation.com",
                     Port = 1863,
