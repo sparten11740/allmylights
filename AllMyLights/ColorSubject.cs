@@ -50,6 +50,10 @@ namespace AllMyLights
             MqttClient.UseApplicationMessageReceivedHandler(HandleMessage);
 
             await MqttClient.ConnectAsync(MqttClientOptions, CancellationToken.None);
+            await MqttClient.PublishAsync(new MqttApplicationMessage {
+                Topic = Configuration.Mqtt.Topics.Command
+            }, CancellationToken.None);
+
         }
 
         private void HandleMessage(MqttApplicationMessageReceivedEventArgs args)

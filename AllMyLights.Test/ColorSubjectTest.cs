@@ -80,6 +80,18 @@ namespace AllMyLights.Test
         }
 
         [Test]
+        public void Should_request_color_via_command_topic()
+        {
+            var args = new List<MqttApplicationMessage>();
+            MqttClientMock.Setup(it => it.PublishAsync(Capture.In(args), CancellationToken.None));
+
+            var subject = new ColorSubject(Config, MqttClientMock.Object);
+
+            MqttClientMock.Verify(it => it.PublishAsync(It.IsAny<MqttApplicationMessage>(), CancellationToken.None));
+            Assert.AreEqual(Config.Mqtt.Topics.Command, args.First().Topic);
+        }
+
+        [Test]
         public void Should_subscribe_to_provided_topic()
         {
             MqttClientMock.SetupAllProperties();
