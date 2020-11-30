@@ -1,0 +1,13 @@
+﻿{
+  "MQTT": {
+    "Server": "192.168.178.20",
+    "Port": 1883,
+    "Topics": {
+      "Command": "cmnd/sonoff-1144-dimmer-5/color",
+      "Result": {
+        "Path": "stat/sonoff-1144-dimmer-5/RESULT",
+        "ValuePath": "$.Color"
+      }
+    }
+  }
+}
