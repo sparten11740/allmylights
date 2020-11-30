@@ -12,11 +12,14 @@ using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using Newtonsoft.Json.Linq;
+using NLog;
 
 namespace AllMyLights
 {
     public class ColorSubject
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly ReplaySubject<Color> Subject = new ReplaySubject<Color>(1);
         private Configuration Configuration { get; }
         private IMqttClient MqttClient { get; }
@@ -27,53 +30,17 @@ namespace AllMyLights
             Configuration = configuration;
             MqttClient = mqttClient;
             var builder = new MqttClientOptionsBuilder()
-                .WithTcpServer(Configuration.MQTT.Server, Configuration.MQTT.Port);
+                .WithTcpServer(Configuration.Mqtt.Server, Configuration.Mqtt.Port);
 
 
-            if (Configuration.MQTT.Password != null && Configuration.MQTT.Username != null)
+            if (Configuration.Mqtt.Password != null && Configuration.Mqtt.Username != null)
             {
-                builder = builder.WithCredentials(Configuration.MQTT.Username, Configuration.MQTT.Password);
+                builder = builder.WithCredentials(Configuration.Mqtt.Username, Configuration.Mqtt.Password);
             }
 
             MqttClientOptions = builder.Build();
 
             Initialize();
-        }
-
-
-        private void HandleMessage(MqttApplicationMessageReceivedEventArgs args)
-        {
-            JObject o = JObject.Parse(Encoding.UTF8.GetString(args.ApplicationMessage.Payload));
-            var color = o.SelectToken(Configuration.MQTT.Topics.Result.ValuePath).ToString();
-
-            Subject.OnNext(ColorConverter.Decode(color));
-        }
-
-        private async Task HandleConnected(MqttClientConnectedEventArgs e)
-        {
-            Console.WriteLine($"Connection to mqtt server {Configuration.MQTT.Server} established");
-            Console.WriteLine($"Attempting to subscribe to {Configuration.MQTT.Topics.Result.Path}");
-
-            MqttTopicFilter topicFilter = new MqttTopicFilterBuilder().WithTopic(Configuration.MQTT.Topics.Result.Path).Build();
-            await MqttClient.SubscribeAsync(topicFilter);
-
-            Console.WriteLine($"Succesfully subscribed to {Configuration.MQTT.Topics.Result.Path}");
-        }
-
-        private async Task HandleDisconnected(MqttClientDisconnectedEventArgs args)
-        {
-            Console.WriteLine("Connection to mqtt server was lost. Reconnecting in 5s ...");
-            await Task.Delay(TimeSpan.FromSeconds(5));
-            Console.WriteLine($"Attemtping to reonnect to {Configuration.MQTT.Server}");
-
-            try
-            {
-                await MqttClient.ConnectAsync(MqttClientOptions, CancellationToken.None);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine($"Reconnecting failed. Connection couldn't be established: {e.Message}");
-            }
         }
 
         private async void Initialize()
@@ -83,6 +50,41 @@ namespace AllMyLights
             MqttClient.UseApplicationMessageReceivedHandler(HandleMessage);
 
             await MqttClient.ConnectAsync(MqttClientOptions, CancellationToken.None);
+        }
+
+        private void HandleMessage(MqttApplicationMessageReceivedEventArgs args)
+        {
+            JObject o = JObject.Parse(Encoding.UTF8.GetString(args.ApplicationMessage.Payload));
+            var color = o.SelectToken(Configuration.Mqtt.Topics.Result.ValuePath).ToString();
+
+            Subject.OnNext(ColorConverter.Decode(color));
+        }
+
+        private async Task HandleConnected(MqttClientConnectedEventArgs e)
+        {
+            Logger.Info($"Connection to mqtt server {Configuration.Mqtt.Server} established");
+            Logger.Info($"Attempting to subscribe to {Configuration.Mqtt.Topics.Result.Path}");
+
+            MqttTopicFilter topicFilter = new MqttTopicFilterBuilder().WithTopic(Configuration.Mqtt.Topics.Result.Path).Build();
+            await MqttClient.SubscribeAsync(topicFilter);
+
+            Logger.Info($"Succesfully subscribed to {Configuration.Mqtt.Topics.Result.Path}");
+        }
+
+        private async Task HandleDisconnected(MqttClientDisconnectedEventArgs args)
+        {
+            Logger.Info("Connection to mqtt server was lost. Reconnecting in 5s ...");
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            Logger.Info($"Attemtping to reonnect to {Configuration.Mqtt.Server}");
+
+            try
+            {
+                await MqttClient.ConnectAsync(MqttClientOptions, CancellationToken.None);
+            }
+            catch(Exception e)
+            {
+                Logger.Error($"Reconnecting failed. Connection couldn't be established: {e.Message}");
+            }
         }
 
         public IObservable<Color> Updates()

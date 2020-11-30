@@ -35,7 +35,7 @@ namespace AllMyLights.Test
         {
             Config = new Configuration
             {
-                MQTT = new MQTT
+                Mqtt = new Mqtt
                 {
                     Server = "wayne-foundation.com",
                     Port = 1863,
@@ -54,8 +54,8 @@ namespace AllMyLights.Test
             };
 
             MqttClientOptions = new MqttClientOptionsBuilder()
-                .WithTcpServer(Config.MQTT.Server, Config.MQTT.Port)
-                .WithCredentials(Config.MQTT.Username, Config.MQTT.Password)
+                .WithTcpServer(Config.Mqtt.Server, Config.Mqtt.Port)
+                .WithCredentials(Config.Mqtt.Username, Config.Mqtt.Password)
                 .Build();
 
             MqttClientTcpOptions = MqttClientOptions.ChannelOptions as MqttClientTcpOptions;
@@ -91,7 +91,7 @@ namespace AllMyLights.Test
             var filter = args.First().TopicFilters.First();
 
             MqttClientMock.Verify(it => it.SubscribeAsync(It.IsAny<MqttClientSubscribeOptions>(), CancellationToken.None));
-            Assert.AreEqual(Config.MQTT.Topics.Result.Path, filter.Topic);
+            Assert.AreEqual(Config.Mqtt.Topics.Result.Path, filter.Topic);
         }
 
         [Test]

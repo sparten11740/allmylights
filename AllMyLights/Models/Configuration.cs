@@ -5,11 +5,11 @@ namespace AllMyLights.Models
     public class Configuration
     {
         [Required]
-        public MQTT MQTT { get; set; }
+        public Mqtt Mqtt { get; set; }
     }
 
 
-    public class MQTT
+    public class Mqtt
     {
         [Required]
         public string Server { get; set; }

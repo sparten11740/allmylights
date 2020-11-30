@@ -5,6 +5,7 @@ using AllMyLights.Models;
 using MQTTnet;
 using Newtonsoft.Json;
 using NJsonSchema;
+using NLog;
 
 enum ExitCode
 {
@@ -15,13 +16,15 @@ namespace AllMyLights
 {
     class Program
     {
-        static readonly ManualResetEvent ResetEvent = new ManualResetEvent(false);
+        private static readonly ManualResetEvent ResetEvent = new ManualResetEvent(false);
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         static void Main(FileInfo config)
         {
             using StreamReader file = File.OpenText(config.FullName);
             var content = file.ReadToEnd();
 
+            ConfigureLogging();
             ValidateConfig(fileName: config.Name, content);
 
             var configuration = JsonConvert.DeserializeObject<Configuration>(content);
@@ -30,7 +33,7 @@ namespace AllMyLights
             new ColorSubject(configuration, mqttClient)
                 .Updates()
                 .Subscribe((it) => {
-                    Console.WriteLine(it.ToString());
+                    Logger.Info($"Color changed to {it}");
                 });
 
            
@@ -44,12 +47,21 @@ namespace AllMyLights
 
             if (errors.Count > 0)
             {
-                Console.WriteLine($"Validation issues encountered in config file {fileName}:");
+                Logger.Error($"Validation issues encountered in config file {fileName}:");
                 foreach (var error in errors)
-                    Console.WriteLine(error.Path + ": " + error.Kind);
+                    Logger.Error($"{error.Path}: {error.Kind}");
 
                 Environment.Exit((int)ExitCode.INVALID_CONFIG);
             }
+        }
+
+        private static void ConfigureLogging()
+        {
+            var config = new NLog.Config.LoggingConfiguration();
+            var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
+            config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
+            logconsole.Layout = "${date:format=yyyy-MM-dd HH\\:mm\\:ss} (${level:uppercase=true}): ${message}";
+            LogManager.Configuration = config;
         }
     }
 }

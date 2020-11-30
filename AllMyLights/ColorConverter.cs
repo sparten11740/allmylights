@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Drawing;
 using System.Globalization;
+using NLog;
 
 namespace AllMyLights
 {
     public class ColorConverter
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static Color Decode(string input)
         {
+            Logger.Debug($"Decoding color from ${input}");
             try
             {
                 FromHex(input, out var a, out var r, out var g, out var b);
@@ -16,6 +19,7 @@ namespace AllMyLights
             }
             catch
             {
+                Logger.Debug($"{input} is no valid hex-code. Attempting to derive color by name.");
                 return Color.FromName(input);
             }
 
