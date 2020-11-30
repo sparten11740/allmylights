@@ -21,18 +21,26 @@ namespace AllMyLights
         private static readonly ManualResetEvent ResetEvent = new ManualResetEvent(false);
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        static void Main(FileInfo config)
+        /// <summary>
+        /// AllMyLights is a tool to sync colors from a home automation bus to OpenRGB managed peripherals via MQTT
+        /// </summary>
+        /// <param name="config">Path to the config file that contains the MQTT & OpenRGB settings</param>
+        /// <param name="verbose">Include log statements for DEBUG and INFO log levels</param>
+        static void Main(FileInfo config, bool? verbose = false)
         {
+
             using StreamReader file = File.OpenText(config.FullName);
             var content = file.ReadToEnd();
 
-            ConfigureLogging();
+            ConfigureLogging(verbose);
             ValidateConfig(fileName: config.Name, content);
 
             var configuration = JsonConvert.DeserializeObject<Configuration>(content);
 
             var mqttClient = new MqttFactory().CreateMqttClient();
             var colorSubject = new ColorSubject(configuration, mqttClient);
+
+
             var openRGBClient = new OpenRGBClient(
                 ip: configuration.OpenRgb?.Server ?? "127.0.0.1",
                 port: configuration.OpenRgb?.Port ?? 6742
@@ -40,8 +48,8 @@ namespace AllMyLights
 
             var broker = new OpenRGBBroker(colorSubject, openRGBClient);
             broker.Listen();
-           
-            ResetEvent.WaitOne(); 
+
+            ResetEvent.WaitOne();
         }
 
         private static void ValidateConfig(string fileName, string content)
@@ -59,11 +67,11 @@ namespace AllMyLights
             }
         }
 
-        private static void ConfigureLogging()
+        private static void ConfigureLogging(bool? verbose)
         {
             var config = new NLog.Config.LoggingConfiguration();
             var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
-            config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
+            config.AddRule(verbose == true ? LogLevel.Debug : LogLevel.Warn, LogLevel.Fatal, logconsole);
             logconsole.Layout = "${date:format=yyyy-MM-dd HH\\:mm\\:ss} (${level:uppercase=true}): ${message}";
             LogManager.Configuration = config;
         }
