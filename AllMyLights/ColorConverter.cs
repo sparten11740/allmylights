@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Drawing;
 using System.Globalization;
 using NLog;
+using AllMyLights.Extensions;
 
 namespace AllMyLights
 {
@@ -9,25 +11,35 @@ namespace AllMyLights
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public static Color Decode(string input)
+        public static Color Decode(string input, string channelLayout = null)
         {
             Logger.Debug($"Decoding color from ${input}");
             try
             {
-                FromHex(input, out var a, out var r, out var g, out var b);
+                FromHex(channelLayout != null ? Rearrange(input, channelLayout) : input, out var a, out var r, out var g, out var b);
                 return Color.FromArgb(a, r, g, b);
             }
-            catch
+            catch(ArgumentException)
             {
                 Logger.Debug($"{input} is no valid hex-code. Attempting to derive color by name.");
                 return Color.FromName(input);
             }
         }
 
-        public static  OpenRGB.NET.Models.Color ToOpenRGBColor(this Color color)
+        private static string Rearrange(string input, string channelLayout)
         {
-            return new OpenRGB.NET.Models.Color(color.R, color.G, color.B);
+            var hex = input.StartsWith("#") ? input[1..] : input;
+            var channels = channelLayout
+                                .ToCharArray()
+                                .Select((channel, i) => (channel, i * 2))
+                                .Select((it) => (it.channel, hex.Substring(it.Item2, 2)))
+                                .ToDictionary(it => it.channel, it => it.Item2);
+
+            return $"{channels.GetOrDefault('R', "00")}{channels.GetOrDefault('G',"00")}{channels.GetOrDefault('B', "00")}{channels.GetOrDefault('A', "FF")}";
         }
+
+        public static  OpenRGB.NET.Models.Color ToOpenRGBColor(this Color color) => new OpenRGB.NET.Models.Color(color.R, color.G, color.B);
+
 
         private static void FromHex(string hex, out byte a, out byte r, out byte g, out byte b)
         {

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NJsonSchema.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace AllMyLights.Models
 {
@@ -47,5 +48,9 @@ namespace AllMyLights.Models
 
         [Required]
         public string ValuePath { get; set; }
+
+        public string ChannelLayout { get; set; }
     }
 }
+
+

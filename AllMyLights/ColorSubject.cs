@@ -59,10 +59,13 @@ namespace AllMyLights
 
         private void HandleMessage(MqttApplicationMessageReceivedEventArgs args)
         {
-            JObject o = JObject.Parse(Encoding.UTF8.GetString(args.ApplicationMessage.Payload));
+            var payload = Encoding.UTF8.GetString(args.ApplicationMessage.Payload);
+            Logger.Debug($"Received payload {payload}");
+
+            JObject o = JObject.Parse(payload);
             var color = o.SelectToken(Configuration.Mqtt.Topics.Result.ValuePath).ToString();
 
-            Subject.OnNext(ColorConverter.Decode(color));
+            Subject.OnNext(ColorConverter.Decode(color, Configuration.Mqtt.Topics.Result.ChannelLayout));
         }
 
         private async Task HandleConnected(MqttClientConnectedEventArgs e)

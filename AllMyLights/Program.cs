@@ -55,6 +55,8 @@ namespace AllMyLights
         private static void ValidateConfig(string fileName, string content)
         {
             JsonSchema schema = JsonSchema.FromType<Configuration>();
+       
+
             var errors = schema.Validate(content);
 
             if (errors.Count > 0)
