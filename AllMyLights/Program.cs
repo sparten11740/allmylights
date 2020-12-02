@@ -27,7 +27,7 @@ namespace AllMyLights
         /// AllMyLights is a tool to sync colors from a home automation bus to OpenRGB managed peripherals via MQTT
         /// </summary>
         /// <param name="config">Path to the config file that contains the MQTT and OpenRGB settings</param>
-        /// <param name="logLevel">Change the log level to either debug, info, or warn.</param>
+        /// <param name="logLevel">Change the log level to either debug, info, warn, error, or off.</param>
         static void Main(FileInfo config, string logLevel = "warn")
         {
 
@@ -71,7 +71,7 @@ namespace AllMyLights
             }
         }
 
-        private static readonly string[] LogLevels = new string[] { "debug", "info", "warn" };
+        private static readonly string[] LogLevels = new string[] { "debug", "info", "warn", "error", "none" };
         private static void ConfigureLogging(string logLevel)
         {
             if (!LogLevels.Contains(logLevel))
@@ -84,6 +84,8 @@ namespace AllMyLights
             {
                 "info" => LogLevel.Info,
                 "debug" => LogLevel.Debug,
+                "error" => LogLevel.Error,
+                "off" => LogLevel.Off,
                 _ => LogLevel.Warn
             };
 

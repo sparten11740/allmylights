@@ -118,7 +118,7 @@ You can run me as simple as follows, only the path to a valid config file is req
 .\AllMyLights.exe --config allmylightsrc.json
 ```
 
-You can also change the log level to one of the following: `info`, `debug`, `warn` (default), `none`.
+You can also change the log level to one of the following: `info`, `debug`, `warn` (default), `error`, `off`.
 
 ```powershell
 .\AllMyLights.exe --config allmylightsrc.json --log-level debug
