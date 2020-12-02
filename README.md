@@ -135,3 +135,7 @@ Create a shortcut to your `AllMyLights.exe`, open its properties and change the 
 Move the shortcut to `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup`
 
 Make also sure that your OpenRGB server is run on startup as described in the [OpenRGB Section](#openrgb)
+
+
+## Attribution
+"[RGB Icon](https://icon-icons.com/icon/rgb/23694)" by [Elegantthemes](http://www.elegantthemes.com/) licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
