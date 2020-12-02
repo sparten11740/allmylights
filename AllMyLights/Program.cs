@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using AllMyLights.Models;
 using MQTTnet;
 using Newtonsoft.Json;
 using NJsonSchema;
 using NLog;
-using OpenRGB.NET;
-using Unmockable;
+using NLog.Conditions;
+using NLog.Targets;
 
 enum ExitCode
 {
@@ -43,13 +43,11 @@ namespace AllMyLights
             var colorSubject = new ColorSubject(configuration, mqttClient);
 
 
-            var openRGBClient = new OpenRGBClient(
-                ip: configuration.OpenRgb?.Server ?? "127.0.0.1",
-                port: configuration.OpenRgb?.Port ?? 6742
-            ).Wrap();
-
-            var broker = new OpenRGBBroker(colorSubject, openRGBClient);
-            broker.Listen();
+            OpenRGBClientFactory.GetInstance(configuration).Subscribe((openRgbClient) =>
+            {
+                var broker = new OpenRGBBroker(colorSubject, openRgbClient);
+                broker.Listen();
+            });
 
             ResetEvent.WaitOne();
         }
@@ -90,7 +88,12 @@ namespace AllMyLights
             };
 
             var config = new NLog.Config.LoggingConfiguration();
-            var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
+            var logconsole = new ColoredConsoleTarget("logconsole");
+            logconsole.RowHighlightingRules.Add(new ConsoleRowHighlightingRule(
+                condition: ConditionParser.ParseExpression("(level == LogLevel.Error)"),
+                foregroundColor: ConsoleOutputColor.White,
+                backgroundColor: ConsoleOutputColor.DarkRed
+            ));
             config.AddRule(minLevel, LogLevel.Fatal, logconsole);
             logconsole.Layout = "${date:format=yyyy-MM-dd HH\\:mm\\:ss} (${level:uppercase=true}): ${message}";
             LogManager.Configuration = config;
