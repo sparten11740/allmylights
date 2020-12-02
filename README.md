@@ -129,7 +129,7 @@ You can also change the log level to one of the following: `info`, `debug`, `war
 Create a shortcut to your `AllMyLights.exe`, open its properties and change the target to something along the lines:
 
 ```
-"D:\Program Files\AllMyLights\AllMyLights.exe" --config allmylightsrc.json
+"D:\Program Files\AllMyLights\AllMyLights.exe" --config allmylightsrc.json --minimized true
 ```
 
 Move the shortcut to `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup`

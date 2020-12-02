@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Drawing;
 using System.Linq;
 using System.Threading;
 using AllMyLights.Models;
@@ -10,8 +9,10 @@ using NJsonSchema;
 using NLog;
 using NLog.Conditions;
 using NLog.Targets;
-using System.Windows.Forms;
-using System.Runtime.InteropServices;
+
+#if Windows
+using AllMyLights.Platforms.Windows;
+#endif
 
 enum ExitCode
 {
@@ -23,6 +24,7 @@ namespace AllMyLights
 {
     class Program
     {
+        private static readonly ManualResetEvent ResetEvent = new ManualResetEvent(false);
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private static ColorSubject ColorSubject;
@@ -32,7 +34,8 @@ namespace AllMyLights
         /// </summary>
         /// <param name="config">Path to the config file that contains the MQTT and OpenRGB settings</param>
         /// <param name="logLevel">Change the log level to either debug, info, warn, error, or off.</param>
-        static void Main(FileInfo config, string logLevel = "warn")
+        /// <param name="minimized">Minimize to tray after startup</param>
+        static void Main(FileInfo config, string logLevel = "warn", bool minimized = false)
         {
             using StreamReader file = File.OpenText(config.FullName);
             var content = file.ReadToEnd();
@@ -52,65 +55,14 @@ namespace AllMyLights
                 broker.Listen();
             });
 
-            CreateTrayIcon();
-            SetConsoleWindowVisibility(false);
-            
+#if Windows
+            var trayIcon = TrayIcon.GetInstance();
+            ConsoleWindow.Show(!minimized);
             Application.Run();
-
-            TrayIcon.Visible = false;
-        }
-
-
-        private static NotifyIcon TrayIcon;
-        private static readonly ToolStripLabel TrayColorLabel = new ToolStripLabel();
-        static void CreateTrayIcon()
-        {
-
-            var menu = new ContextMenuStrip();
-            var exitButton = new ToolStripButton("Exit");
-
-            menu.Items.Add(TrayColorLabel);
-            menu.Items.Add(exitButton);
-
-            TrayIcon = new NotifyIcon()
-            {
-                Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath),
-                Text = "AllMyLights",
-                ContextMenuStrip = menu,
-                Visible = true
-            };
-
-            bool Visible = false;
-
-            TrayIcon.MouseDoubleClick += (sender, e) =>
-            {
-                Visible = !Visible;
-                SetConsoleWindowVisibility(Visible);
-            };
-
-            ColorSubject.Updates().Subscribe((color) =>
-            {
-                TrayColorLabel.Text = color.ToString();
-            });
-
-            exitButton.Click += (sender, e) => {
-                Environment.Exit(0);
-            };
-        }
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-        [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        public static void SetConsoleWindowVisibility(bool visible)
-        {
-            IntPtr hWnd = FindWindow(null, Console.Title);
-
-            if (hWnd != IntPtr.Zero)
-            {
-                if (visible) ShowWindow(hWnd, 1);          
-                else ShowWindow(hWnd, 0);             
-            }
+            trayIcon.Show(false);
+#else
+            ResetEvent.WaitOne();
+#endif
         }
 
         private static void ValidateConfig(string fileName, string content)
@@ -149,14 +101,16 @@ namespace AllMyLights
             };
 
             var config = new NLog.Config.LoggingConfiguration();
+
             var logconsole = new ColoredConsoleTarget("logconsole");
             logconsole.RowHighlightingRules.Add(new ConsoleRowHighlightingRule(
                 condition: ConditionParser.ParseExpression("(level == LogLevel.Error)"),
                 foregroundColor: ConsoleOutputColor.White,
                 backgroundColor: ConsoleOutputColor.DarkRed
             ));
-            config.AddRule(minLevel, LogLevel.Fatal, logconsole);
             logconsole.Layout = "${date:format=yyyy-MM-dd HH\\:mm\\:ss} (${level:uppercase=true}): ${message}";
+            config.AddRule(minLevel, LogLevel.Fatal, logconsole);
+
             LogManager.Configuration = config;
         }
     }
