@@ -26,7 +26,7 @@ namespace AllMyLights
         /// <summary>
         /// AllMyLights is a tool to sync colors from a home automation bus to OpenRGB managed peripherals via MQTT
         /// </summary>
-        /// <param name="config">Path to the config file that contains the MQTT & OpenRGB settings</param>
+        /// <param name="config">Path to the config file that contains the MQTT and OpenRGB settings</param>
         /// <param name="logLevel">Change the log level to either debug, info, or warn.</param>
         static void Main(FileInfo config, string logLevel = "warn")
         {
