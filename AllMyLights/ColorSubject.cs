@@ -60,7 +60,9 @@ namespace AllMyLights
         private void HandleMessage(MqttApplicationMessageReceivedEventArgs args)
         {
             var payload = Encoding.UTF8.GetString(args.ApplicationMessage.Payload);
+
             Logger.Debug($"Received payload {payload}");
+            Logger.Debug($"Extracting color with JsonPath expression {Configuration.Mqtt.Topics.Result.ValuePath}");
 
             JObject o = JObject.Parse(payload);
             var color = o.SelectToken(Configuration.Mqtt.Topics.Result.ValuePath).ToString();

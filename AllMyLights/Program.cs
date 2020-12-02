@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
 using System.Threading;
 using AllMyLights.Models;
@@ -11,7 +12,8 @@ using Unmockable;
 
 enum ExitCode
 {
-    INVALID_CONFIG = -1
+    INVALID_CONFIG = -1,
+    INVALID_ARGUMENT = -2,
 }
 
 namespace AllMyLights
@@ -25,14 +27,14 @@ namespace AllMyLights
         /// AllMyLights is a tool to sync colors from a home automation bus to OpenRGB managed peripherals via MQTT
         /// </summary>
         /// <param name="config">Path to the config file that contains the MQTT & OpenRGB settings</param>
-        /// <param name="verbose">Include log statements for DEBUG and INFO log levels</param>
-        static void Main(FileInfo config, bool? verbose = false)
+        /// <param name="logLevel">Change the log level to either debug, info, or warn.</param>
+        static void Main(FileInfo config, string logLevel = "warn")
         {
 
             using StreamReader file = File.OpenText(config.FullName);
             var content = file.ReadToEnd();
 
-            ConfigureLogging(verbose);
+            ConfigureLogging(logLevel);
             ValidateConfig(fileName: config.Name, content);
 
             var configuration = JsonConvert.DeserializeObject<Configuration>(content);
@@ -55,7 +57,7 @@ namespace AllMyLights
         private static void ValidateConfig(string fileName, string content)
         {
             JsonSchema schema = JsonSchema.FromType<Configuration>();
-       
+
 
             var errors = schema.Validate(content);
 
@@ -69,11 +71,25 @@ namespace AllMyLights
             }
         }
 
-        private static void ConfigureLogging(bool? verbose)
+        private static readonly string[] LogLevels = new string[] { "debug", "info", "warn" };
+        private static void ConfigureLogging(string logLevel)
         {
+            if (!LogLevels.Contains(logLevel))
+            {
+                Logger.Error($"Log level can only be one of the following: {string.Join(',', LogLevels)}");
+                Environment.Exit((int)ExitCode.INVALID_ARGUMENT);
+            }
+
+            var minLevel = logLevel switch
+            {
+                "info" => LogLevel.Info,
+                "debug" => LogLevel.Debug,
+                _ => LogLevel.Warn
+            };
+
             var config = new NLog.Config.LoggingConfiguration();
             var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
-            config.AddRule(verbose == true ? LogLevel.Debug : LogLevel.Warn, LogLevel.Fatal, logconsole);
+            config.AddRule(minLevel, LogLevel.Fatal, logconsole);
             logconsole.Layout = "${date:format=yyyy-MM-dd HH\\:mm\\:ss} (${level:uppercase=true}): ${message}";
             LogManager.Configuration = config;
         }
