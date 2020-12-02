@@ -12,8 +12,8 @@ using Unmockable;
 
 enum ExitCode
 {
-    INVALID_CONFIG = -1,
-    INVALID_ARGUMENT = -2,
+    InvalidConfig = -1,
+    InvalidArgument = -2,
 }
 
 namespace AllMyLights
@@ -67,7 +67,7 @@ namespace AllMyLights
                 foreach (var error in errors)
                     Logger.Error($"{error.Path}: {error.Kind}");
 
-                Environment.Exit((int)ExitCode.INVALID_CONFIG);
+                Environment.Exit((int)ExitCode.InvalidConfig);
             }
         }
 
@@ -77,7 +77,7 @@ namespace AllMyLights
             if (!LogLevels.Contains(logLevel))
             {
                 Logger.Error($"Log level can only be one of the following: {string.Join(',', LogLevels)}");
-                Environment.Exit((int)ExitCode.INVALID_ARGUMENT);
+                Environment.Exit((int)ExitCode.InvalidArgument);
             }
 
             var minLevel = logLevel switch
