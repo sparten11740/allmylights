@@ -10,7 +10,6 @@ namespace AllMyLights.Test
 {
     public class OpenRGBSynchronizationTest : ReactiveTest
     {
-        Configuration Config;
         Mock<IColorSubject> ColorSubjectMock = new Mock<IColorSubject>();
 
         [Test]

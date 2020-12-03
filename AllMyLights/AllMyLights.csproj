@@ -9,6 +9,10 @@
     <PropertyGroup Condition="'$(IsWindows)'=='true'">
         <DefineConstants>Windows</DefineConstants>
     </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+      <DocumentationFile></DocumentationFile>
+      <NoWarn>1701;1702;NU5105;1591;1572;1571;1573;1587;1570</NoWarn>
+    </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="MinVer" Version="2.3.1">
             <PrivateAssets>all</PrivateAssets>

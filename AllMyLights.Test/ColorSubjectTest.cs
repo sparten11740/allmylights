@@ -135,7 +135,7 @@ namespace AllMyLights.Test
         }
 
         [Test]
-        public async Task Should_consume_message_and_emit_color()
+        public void Should_consume_message_and_emit_color()
         {
             var black = "#000000";
             Color expectedColor = Color.FromArgb(255, 0, 0, 0);

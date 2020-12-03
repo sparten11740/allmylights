@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace AllMyLights.Test
@@ -18,7 +17,7 @@ namespace AllMyLights.Test
         }
 
         [Test]
-        public async Task Should_decode_from_short_hex_code()
+        public void Should_decode_from_short_hex_code()
         {
             var color = ColorConverter.Decode("#fff");
 
@@ -28,7 +27,7 @@ namespace AllMyLights.Test
         }
 
         [Test]
-        public async Task Should_decode_from_rgba_hex_code()
+        public void Should_decode_from_rgba_hex_code()
         {
             var color = ColorConverter.Decode("#000000ff");
 
@@ -39,7 +38,7 @@ namespace AllMyLights.Test
         }
 
         [Test]
-        public async Task Should_decode_from_color_name()
+        public void Should_decode_from_color_name()
         {
             var color = ColorConverter.Decode("red");
 
