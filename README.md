@@ -1,21 +1,20 @@
 ﻿# AllMyLights
 
-![.NET Core (win-x64)](https://github.com/sparten11740/allmylights/workflows/.NET%20Core%20(win-x64)/badge.svg)z
+![.NET Core (win-x64)](https://github.com/sparten11740/allmylights/workflows/.NET%20Core%20(win-x64)/badge.svg)
 
-- [AllMyLights](#allmylights)
-  - [What am I?](#what-am-i)
-  - [Prerequisites](#prerequisites)
-    - [OpenRGB](#openrgb)
-    - [MQTT Server](#mqtt-server)
-      - [OpenHAB Integration](#openhab-integration)
-  - [Installation](#installation)
-    - [Using the binaries](#using-the-binaries)
-    - [Building the project yourself](#building-the-project-yourself)
-  - [Configuration](#configuration)
-  - [Run me](#run-me)
-  - [Autostart](#autostart)
-    - [Windows](#windows)
-  - [Attribution](#attribution)
+- [What am I?](#what-am-i)
+- [Prerequisites](#prerequisites)
+  - [OpenRGB](#openrgb)
+  - [MQTT Server](#mqtt-server)
+    - [OpenHAB Integration](#openhab-integration)
+- [Installation](#installation)
+  - [Using the binaries](#using-the-binaries)
+  - [Building the project yourself](#building-the-project-yourself)
+- [Configuration](#configuration)
+- [Run me](#run-me)
+- [Autostart](#autostart)
+  - [Windows](#windows)
+- [Attribution](#attribution)
 
 ## What am I?
 I am a little command-line utility that is meant to synchronize your lighting across a home automation bus (HAB) and proprietary RGB peripherals of a computer. I serve as a broker that consumes colors via MQTT and passes them on to an OpenRGB instance on your target machine. 
@@ -69,7 +68,7 @@ end
 Download my binaries for your target platform in the [releases section](https://github.com/sparten11740/allmylights/releases) (stable) or from the uploaded artifacts of the [most recent workflow runs](https://github.com/sparten11740/allmylights/actions) (bleeding edge). Place them in your desired target location. You can also clone this repository and build the project yourself.
 
 ### Building the project yourself
-> In order to build the binaries for Windows, you have to use a Windows machine. This is because of a framework dependency on Microsoft.WindowsDesktop.App that is only available on Windows. However, MacOS and Linux binaries can be built and published from any host system.
+> In order to build the binaries for Windows, you have to use a Windows machine. This is because of a framework dependency on `Microsoft.WindowsDesktop.App` that is only available on Windows. However, MacOS and Linux binaries can be built and published from any host system.
  
 First you need to install the [Visual Studio Community Edition 2019](https://visualstudio.microsoft.com/vs/) on your machine.
 
