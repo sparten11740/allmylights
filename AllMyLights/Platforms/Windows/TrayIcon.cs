@@ -10,9 +10,9 @@ namespace AllMyLights.Platforms.Windows
     {
         private static TrayIcon Instance;
 
-        private static NotifyIcon NotifyIcon;
-        private static ColorSubject ColorSubject;
-        private static readonly ToolStripLabel TrayColorLabel = new ToolStripLabel();
+        private NotifyIcon NotifyIcon;
+        private ColorSubject ColorSubject;
+        private readonly ToolStripLabel TrayColorLabel = new ToolStripLabel();
 
         private bool Minimized;
 
