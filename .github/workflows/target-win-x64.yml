@@ -27,7 +27,7 @@ jobs:
     - name: Archive
       shell: bash
       run: |
-        cp allmylightsrc.json AllMyLights\bin\Release\netcoreapp3.1\win-x64\publish\allmylightsrc.json
+        cp AllMyLights/allmylightsrc.json ./AllMyLights/bin/Release/netcoreapp3.1/win-x64/publish/allmylightsrc.json
         7z a -tzip "target-win-x64.zip" "./AllMyLights/bin/Release/netcoreapp3.1/win-x64/publish/*"
     - name: Upload artifact
       uses: actions/upload-artifact@v2.2.1
