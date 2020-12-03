@@ -13,6 +13,7 @@
   - [Run me](#run-me)
   - [Autostart](#autostart)
     - [Windows](#windows)
+  - [Attribution](#attribution)
 
 ## What am I?
 I am a little command-line utility that is meant to synchronize your lighting across a home automation bus (HAB) and proprietary RGB peripherals of a computer. I serve as a broker that consumes colors via MQTT and passes them on to an OpenRGB instance on your target machine. 
@@ -63,10 +64,12 @@ end
 
 ##  Installation
 ### Using the binaries 
-Download my latest binaries for your target platform in the releases section of this repository and place them in your desired target location. You can also clone this repository and build the project yourself.
+Download my binaries for your target platform in the [releases section](https://github.com/sparten11740/allmylights/releases) (stable) or from the uploaded artifacts of the [most recent workflow runs](https://github.com/sparten11740/allmylights/actions) (bleeding edge). Place them in your desired target location. You can also clone this repository and build the project yourself.
 
 ### Building the project yourself
-First you need to install the Visual [Studio Community Edition 2019](https://visualstudio.microsoft.com/vs/) on your machine.
+> :grey_exclamation: In order to build the binaries for Windows, you have to use a Windows machine. This is because of a framework dependency on Microsoft.WindowsDesktop.App that is only available on Windows. However, MacOS and Linux binaries can be built and published from any host system.
+ 
+First you need to install the [Visual Studio Community Edition 2019](https://visualstudio.microsoft.com/vs/) on your machine.
 
 Make sure `dotnet` is available in your path and run the following command from the project root to build a standalone `.exe` (Windows):
 
