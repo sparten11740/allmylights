@@ -12,12 +12,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.301
     - name: Install dependencies
       run: dotnet restore
+    - name: Restore tools
+      run: dotnet tool restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
@@ -28,9 +32,13 @@ jobs:
       shell: bash
       run: |
         cp AllMyLights/allmylightsrc.json ./AllMyLights/bin/Release/netcoreapp3.1/win-x64/publish/allmylightsrc.json
-        7z a -tzip "target-win-x64.zip" "./AllMyLights/bin/Release/netcoreapp3.1/win-x64/publish/*"
+
+        VERSION=$(dotnet minver -t v -v e)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+        7z a -tzip "win-x64-$VERSION.zip" "./AllMyLights/bin/Release/netcoreapp3.1/win-x64/publish/*"
     - name: Upload artifact
       uses: actions/upload-artifact@v2.2.1
       with:
-        name: target-win-x64
-        path: target-win-x64.zip
+        name: win-x64-${{ env.VERSION }}
+        path: win-x64-${{ env.VERSION }}.zip
