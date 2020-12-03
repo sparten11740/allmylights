@@ -12,6 +12,7 @@ using NLog.Targets;
 
 #if Windows
 using AllMyLights.Platforms.Windows;
+using System.Windows.Forms;
 #endif
 
 enum ExitCode
@@ -56,7 +57,7 @@ namespace AllMyLights
             });
 
 #if Windows
-            var trayIcon = TrayIcon.GetInstance();
+            var trayIcon = TrayIcon.GetInstance(ColorSubject, minimized);
             ConsoleWindow.Show(!minimized);
             Application.Run();
             trayIcon.Show(false);

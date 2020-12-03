@@ -21,6 +21,8 @@ namespace AllMyLights.Platforms.Windows
             ColorSubject = colorSubject;
             Minimized = minimized;
             Instance = this;
+
+            Init();
         }
 
         private void ShowMinimizeHint()
@@ -50,7 +52,7 @@ namespace AllMyLights.Platforms.Windows
             };
 
             bool showConsole = !Minimized;
-            TrayIcon.MouseDoubleClick += (sender, e) =>
+            NotifyIcon.DoubleClick += (sender, e) =>
             {
                 showConsole = !showConsole;
                 ConsoleWindow.Show(showConsole);
@@ -72,7 +74,7 @@ namespace AllMyLights.Platforms.Windows
             }
         }
 
-        public static TrayIcon GetInstance(ColorSubject colorSubject) => new TrayIcon(colorSubject);
+        public static TrayIcon GetInstance(ColorSubject colorSubject, bool minimized) => Instance == null ? new TrayIcon(colorSubject, minimized) : Instance;
 
         public void Show(bool show)
         {
