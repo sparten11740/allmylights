@@ -17,7 +17,7 @@
 ## What am I?
 I am a little command-line utility that is meant to synchronize your lighting across a home automation bus (HAB) and proprietary RGB peripherals of a computer. I serve as a broker that consumes colors via MQTT and passes them on to an OpenRGB instance on your target machine. 
 
-In other words, I let your Razer Mouse, Gigabyte Aorus RTX 2080TI, MSI Tomahawk X570 Wifi, Corsair H150i RGB Pro, or whatever other device is supported by OpenRGB, shine in the same bright light as the ambient lighting in your appartment.
+In other words, I let your Razer devices, Gigabyte graphics card, MSI MysticLight powered mainboard, Corsair Hydro liquid cooler, or whatever other device is supported by OpenRGB, shine in the same bright light as the ambient lighting in your appartment.
 
 ## Prerequisites
 ### OpenRGB
