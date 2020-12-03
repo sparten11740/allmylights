@@ -65,9 +65,12 @@ namespace AllMyLights
             Logger.Debug($"Extracting color with JsonPath expression {Configuration.Mqtt.Topics.Result.ValuePath}");
 
             JObject o = JObject.Parse(payload);
-            var color = o.SelectToken(Configuration.Mqtt.Topics.Result.ValuePath).ToString();
+            var color = o.SelectToken(Configuration.Mqtt.Topics.Result.ValuePath);
 
-            Subject.OnNext(ColorConverter.Decode(color, Configuration.Mqtt.Topics.Result.ChannelLayout));
+            if (color != null)
+            {
+                Subject.OnNext(ColorConverter.Decode(color.ToString(), Configuration.Mqtt.Topics.Result.ChannelLayout));
+            }
         }
 
         private async Task HandleConnected(MqttClientConnectedEventArgs e)
