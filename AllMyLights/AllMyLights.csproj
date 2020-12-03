@@ -41,7 +41,7 @@
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="allmylightsrc.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>

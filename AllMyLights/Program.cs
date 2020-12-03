@@ -9,6 +9,7 @@ using NJsonSchema;
 using NLog;
 using NLog.Conditions;
 using NLog.Targets;
+using Unmockable;
 
 #if Windows
 using AllMyLights.Platforms.Windows;
@@ -49,12 +50,14 @@ namespace AllMyLights
             var mqttClient = new MqttFactory().CreateMqttClient();
             ColorSubject = new ColorSubject(configuration, mqttClient);
 
+            var openRgbClient = new OpenRGB.NET.OpenRGBClient(
+                ip: configuration.OpenRgb?.Server ?? "127.0.0.1",
+                port: configuration.OpenRgb?.Port ?? 6742,
+                autoconnect: false
+            ).Wrap();
 
-            OpenRGBClientFactory.GetInstance(configuration).Subscribe((openRgbClient) =>
-            {
-                var broker = new OpenRGBBroker(ColorSubject, openRgbClient);
-                broker.Listen();
-            });
+            var broker = new OpenRGBBroker(ColorSubject, new OpenRGBClient(openRgbClient));
+            broker.Listen();
 
 #if Windows
             var trayIcon = TrayIcon.GetInstance(ColorSubject, minimized);
