@@ -1,0 +1,54 @@
+name: .NET Core build | unix
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Restore tools
+      run: dotnet tool restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --no-restore --logger:"console;verbosity=normal"
+    - name: Publish Linux (ARM)
+      run: dotnet publish AllMyLights/AllMyLights.csproj --runtime linux-arm --configuration Release -p:PublishSingleFile=true -p:UseAppHost=true --self-contained false
+    - name: Publish Linux (x64)
+      run: dotnet publish AllMyLights/AllMyLights.csproj --runtime linux-x64 --configuration Release -p:PublishSingleFile=true -p:UseAppHost=true --self-contained false
+    - name: Archive
+      shell: bash
+      run: |
+        cp AllMyLights/allmylightsrc.json ./AllMyLights/bin/Release/netcoreapp3.1/linux-arm/publish/allmylightsrc.json
+        cp AllMyLights/allmylightsrc.json ./AllMyLights/bin/Release/netcoreapp3.1/linux-x64/publish/allmylightsrc.json
+
+        VERSION=$(dotnet minver -t v -v e)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+        7z a -tzip "linux-arm-$VERSION.zip" "./AllMyLights/bin/Release/netcoreapp3.1/linux-arm/publish/*"
+        7z a -tzip "linux-x64-$VERSION.zip" "./AllMyLights/bin/Release/netcoreapp3.1/linux-x64/publish/*"
+    - name: Upload Linux (ARM) artifact
+      uses: actions/upload-artifact@v2.2.1
+      with:
+        name: linux-arm-${{ env.VERSION }}
+        path: linux-arm-${{ env.VERSION }}.zip
+    - name: Upload Linux (x64) artifact
+      uses: actions/upload-artifact@v2.2.1
+      with:
+        name: linux-x64-${{ env.VERSION }}
+        path: linux-x64-${{ env.VERSION }}.zip
+    

@@ -1,4 +1,4 @@
-name: .NET Core (win-x64)
+name: .NET Core build | windows
 
 on:
   push:
