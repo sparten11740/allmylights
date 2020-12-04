@@ -1,6 +1,6 @@
 ﻿# AllMyLights
 
-![.NET Core (win-x64)](https://github.com/sparten11740/allmylights/workflows/.NET%20Core%20(win-x64)/badge.svg)
+![.NET Core build | windows](https://github.com/sparten11740/allmylights/workflows/.NET%20Core%20build%20%7C%20windows/badge.svg) ![.NET Core build | unix](https://github.com/sparten11740/allmylights/workflows/.NET%20Core%20build%20%7C%20unix/badge.svg)
 
 - [What am I?](#what-am-i)
 - [Prerequisites](#prerequisites)
