@@ -12,8 +12,11 @@
   - [Building the project yourself](#building-the-project-yourself)
 - [Configuration](#configuration)
 - [Run me](#run-me)
-- [Autostart](#autostart)
   - [Windows](#windows)
+  - [Linux](#linux)
+- [Autostart](#autostart)
+  - [Windows](#windows-1)
+  - [Linux](#linux-1)
 - [Attribution](#attribution)
 
 ## What am I?
