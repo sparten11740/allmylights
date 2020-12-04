@@ -5,6 +5,6 @@ namespace AllMyLights
 {
     public interface IColorSubject
     {
-        IObservable<Color> Updates();
+        IObservable<Color> Get();
     }
 }

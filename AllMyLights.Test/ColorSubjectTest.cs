@@ -154,7 +154,7 @@ namespace AllMyLights.Test
             });
 
             var actual = scheduler.Start(
-              () => subject.Updates(),
+              () => subject.Get(),
               created: 0,
               subscribed: 10,
               disposed: 100

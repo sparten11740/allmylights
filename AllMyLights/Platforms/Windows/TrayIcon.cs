@@ -63,7 +63,7 @@ namespace AllMyLights.Platforms.Windows
                 Environment.Exit(0);
             };
 
-            ColorSubject.Updates().Subscribe((color) =>
+            ColorSubject.Get().Subscribe((color) =>
             {
                 TrayColorLabel.Text = color.ToString();
             });

@@ -100,7 +100,7 @@ namespace AllMyLights
             }
         }
 
-        public IObservable<Color> Updates()
+        public IObservable<Color> Get()
         {
             return Subject.AsObservable();
         }

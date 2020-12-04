@@ -36,13 +36,18 @@ namespace AllMyLights
         /// </summary>
         /// <param name="config">Path to the config file that contains the MQTT and OpenRGB settings</param>
         /// <param name="logLevel">Change the log level to either debug, info, warn, error, or off.</param>
+        /// <param name="logFile">If provided, log output will additionally be captured in the provided file.</param>
         /// <param name="minimized">Minimize to tray after startup</param>
-        static void Main(FileInfo config, string logLevel = "warn", bool minimized = false)
+        static void Main(
+            FileInfo config,
+            string logLevel = "warn",
+            string logFile = null,
+            bool minimized = false)
         {
             using StreamReader file = File.OpenText(config.FullName);
             var content = file.ReadToEnd();
 
-            ConfigureLogging(logLevel);
+            ConfigureLogging(logLevel, logFile);
             ValidateConfig(fileName: config.Name, content);
 
             var configuration = JsonConvert.DeserializeObject<Configuration>(content);
@@ -87,7 +92,7 @@ namespace AllMyLights
         }
 
         private static readonly string[] LogLevels = new string[] { "debug", "info", "warn", "error", "none" };
-        private static void ConfigureLogging(string logLevel)
+        private static void ConfigureLogging(string logLevel, string logFile)
         {
             if (!LogLevels.Contains(logLevel))
             {
@@ -106,14 +111,28 @@ namespace AllMyLights
 
             var config = new NLog.Config.LoggingConfiguration();
 
-            var logconsole = new ColoredConsoleTarget("logconsole");
+            var logconsole = new ColoredConsoleTarget("logconsole")
+            {
+                Layout = "${date:format=yyyy-MM-dd HH\\:mm\\:ss} (${level:uppercase=true}): ${message}"
+            };
+
             logconsole.RowHighlightingRules.Add(new ConsoleRowHighlightingRule(
                 condition: ConditionParser.ParseExpression("(level == LogLevel.Error)"),
                 foregroundColor: ConsoleOutputColor.White,
                 backgroundColor: ConsoleOutputColor.DarkRed
             ));
-            logconsole.Layout = "${date:format=yyyy-MM-dd HH\\:mm\\:ss} (${level:uppercase=true}): ${message}";
             config.AddRule(minLevel, LogLevel.Fatal, logconsole);
+
+            if(logFile != null)
+            {
+                var logfile = new FileTarget("logfile")
+                {
+                    FileName = logFile,
+                    Layout = "${date:format=yyyy-MM-dd HH\\:mm\\:ss} (${level:uppercase=true}): ${message}"
+                };
+
+                config.AddRule(minLevel, LogLevel.Fatal, logfile);
+            }
 
             LogManager.Configuration = config;
         }

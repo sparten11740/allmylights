@@ -20,7 +20,7 @@ namespace AllMyLights
         public void Listen()
         {
             ColorSubject
-                .Updates()
+                .Get()
                 .Subscribe(OpenRGBClient.UpdateAll);
         }
     }

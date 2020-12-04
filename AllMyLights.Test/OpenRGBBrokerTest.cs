@@ -19,7 +19,7 @@ namespace AllMyLights.Test
             var targetColor = System.Drawing.Color.FromName("red");
             
             var scheduler = new TestScheduler();
-            ColorSubjectMock.Setup(it => it.Updates()).Returns(() =>
+            ColorSubjectMock.Setup(it => it.Get()).Returns(() =>
             {
                 return scheduler.CreateHotObservable(
                         OnNext(150, targetColor)
