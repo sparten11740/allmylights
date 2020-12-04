@@ -119,8 +119,6 @@ I read the required server ip addresses, ports, topics etc. from a configuration
 For further information on how to extract a value from JSON using `JsonPath` expressions, please refer to [this documentation](https://support.smartbear.com/alertsite/docs/monitors/api/endpoint/jsonpath.html). Supported are hex strings such as the following `#f2d`, `#ed20ff`, `#2020ffed` and color names where the name can be any [known color](https://docs.microsoft.com/en-us/dotnet/api/system.drawing.knowncolor?view=net-5.0).
 
 ## Run me
-
-
 ### Windows
 Before you start, download and install the .NET core runtime [here](https://dotnet.microsoft.com/download). 
 
@@ -144,6 +142,17 @@ You can run me as simple as follows, only the path to a valid config file is req
 ```sh
 ./AllMyLights --config allmylightsrc.json
 ```
+
+
+
+### Command Line Arguments
+
+| Argument                    | Description 
+| --------------------------- |-------------
+| **&#x2011;&#x2011;config**  | Path to the config file that contains the MQTT and OpenRGB settings
+| &#x2011;&#x2011;log-level   | Change the log level to either debug, info, warn, error, or off.      
+| &#x2011;&#x2011;log-file    | If provided, log output will additionally be captured in the provided file.    
+| &#x2011;&#x2011;minimized   | Minimize to tray after startup (Windows only)   
 
 ## Autostart
 ### Windows
