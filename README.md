@@ -1,6 +1,6 @@
 ﻿# AllMyLights
 
-![.NET Core build | windows](https://github.com/sparten11740/allmylights/workflows/.NET%20Core%20build%20%7C%20windows/badge.svg) ![.NET Core build | unix](https://github.com/sparten11740/allmylights/workflows/.NET%20Core%20build%20%7C%20unix/badge.svg)
+![test](https://github.com/sparten11740/allmylights/workflows/test/badge.svg) ![build | windows](https://github.com/sparten11740/allmylights/workflows/build%20%7C%20windows/badge.svg) ![build | unix](https://github.com/sparten11740/allmylights/workflows/build%20%7C%20unix/badge.svg)
 
 - [What am I?](#what-am-i)
 - [Prerequisites](#prerequisites)
@@ -116,6 +116,11 @@ I read the required server ip addresses, ports, topics etc. from a configuration
 For further information on how to extract a value from JSON using `JsonPath` expressions, please refer to [this documentation](https://support.smartbear.com/alertsite/docs/monitors/api/endpoint/jsonpath.html). Supported are hex strings such as the following `#f2d`, `#ed20ff`, `#2020ffed` and color names where the name can be any [known color](https://docs.microsoft.com/en-us/dotnet/api/system.drawing.knowncolor?view=net-5.0).
 
 ## Run me
+
+
+### Windows
+Before you start, download and install the .NET core runtime [here](https://dotnet.microsoft.com/download). 
+
 You can run me as simple as follows, only the path to a valid config file is required:
 
 ```powershell
@@ -126,6 +131,15 @@ You can also change the log level to one of the following: `info`, `debug`, `war
 
 ```powershell
 .\AllMyLights.exe --config allmylightsrc.json --log-level debug
+```
+
+### Linux
+As a prerequisite follow [Microsoft's instructions](https://docs.microsoft.com/en-us/dotnet/core/install/linux) to install the .NET Core runtime or alternatively build the project yourself with the `--self-contained` flag set to `true`. The latter results in a framework independant binary.
+
+You can run me as simple as follows, only the path to a valid config file is required:
+
+```sh
+./AllMyLights --config allmylightsrc.json
 ```
 
 ## Autostart
@@ -140,6 +154,33 @@ Move the shortcut to `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup`
 
 Make also sure that your OpenRGB server is run on startup as described in the [OpenRGB Section](#openrgb)
 
+### Linux
+The following instructions work for Raspbian or any other distribution that uses systemd. 
+
+Copy the binary for your platform and the `allmylightsrc.json` to a target directory (f.i. `$HOME/allmylights`) on your machine. Create a service definition using `sudo vi /etc/systemd/system/allmylights.service` and copy the following configuration:
+
+```ini
+[Unit]
+Description=AllMyLights service to sync colors via MQTT to an OpenRGB instance
+
+[Service]
+WorkingDirectory=/home/pi/allmylights
+ExecStart=/home/pi/allmylights/AllMyLights --config allmylightsrc.json --log-level info
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=allmylights
+User=pi
+Environment=DOTNET_ROOT=/home/pi/dotnet-arm32
+
+[Install]
+WantedBy=multi-user.target
+```
+Customize the `WorkingDirectory` and `ExecStart` to use the folder created in the previous step if required. Also note the `DOTNET_ROOT` environment variable. For framework dependant binaries, you have to change the path to the directory where your .NET Core runtime resides.
+
+Start the service with `sudo service allmylights start` and check that everything is running smoothly with `sudo service allmylights status`. Afterwards use the following command ` sudo systemctl enable allmylights` to ensure that the service is started after booting.
+
+Make also sure that the OpenRGB server on the machine you want to control is run on startup as described in the [OpenRGB Section](#openrgb)
 
 ## Attribution
 "[RGB Icon](https://icon-icons.com/icon/rgb/23694)" by [Elegantthemes](http://www.elegantthemes.com/) licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
