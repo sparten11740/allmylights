@@ -3,6 +3,8 @@ name: .NET Core build | windows
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'README.md'
   pull_request:
     branches: [ main ]
 
