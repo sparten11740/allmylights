@@ -188,9 +188,9 @@ Environment=DOTNET_ROOT=/home/pi/dotnet-arm32
 [Install]
 WantedBy=multi-user.target
 ```
-Customize the `WorkingDirectory` and `ExecStart` to use the folder created in the previous step if required. Also note the `DOTNET_ROOT` environment variable. For framework dependant binaries, you have to change the path to the directory where your .NET Core runtime resides.
+Customize the `WorkingDirectory` and `ExecStart` to use the folder created in the previous step if required. Change the value of `User` to the user you want the service to be run as. Also note the `DOTNET_ROOT` environment variable. For framework dependant binaries, you have to change the path to the directory where your .NET Core runtime resides.
 
-Start the service with `sudo service allmylights start` and check that everything is running smoothly with `sudo service allmylights status`. Afterwards use the following command ` sudo systemctl enable allmylights` to ensure that the service is started after booting.
+Start the service with `sudo service allmylights start` and check that everything is running smoothly using `sudo service allmylights status`. Afterwards use `sudo systemctl enable allmylights` to make systemd automatically start your service during boot up.
 
 Make also sure that the OpenRGB server on the machine you want to control is run on startup as described in the [OpenRGB Section](#openrgb)
 
