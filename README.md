@@ -1,4 +1,5 @@
-﻿# AllMyLights
+﻿#  AllMyLights 
+
 
 ![test](https://github.com/sparten11740/allmylights/workflows/test/badge.svg) ![build | windows](https://github.com/sparten11740/allmylights/workflows/build%20%7C%20windows/badge.svg) ![build | unix](https://github.com/sparten11740/allmylights/workflows/build%20%7C%20unix/badge.svg)
 
@@ -97,7 +98,26 @@ I read the required server ip addresses, ports, topics etc. from a configuration
   // ip address & port of machine that runs openrgb
   "OpenRgb": {
     "Server": "127.0.0.1", 
-    "Port": 6742
+    "Port": 6742,
+    // if you want to override certain OpenRGB controlled devices you can do so here
+    "Overrides": {
+      // ignore an entire device
+      "Razer Copperhead": {
+        "Ignore": true,
+      },
+      "MSI Mystic Light MS_7C84": {
+        "Zones": {
+          // configure what color is passed to what channel of a zone
+          "JRGB2": {
+            "ChannelLayout": "GRB"
+          },
+          // ignore a single zone of a device
+          "JRAINBOW1": {
+            "Ignore": true
+          }
+        }
+      }
+    }
   },
   "Mqtt": {
     "Server": "192.168.178.20",

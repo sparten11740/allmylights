@@ -1,9 +1,12 @@
-﻿using System.Drawing;
+﻿using OpenRGB.NET.Models;
+using System.Collections.Generic;
+using System.Reactive;
 
 namespace AllMyLights
 {
     public interface IOpenRGBClient
     {
-        void UpdateAll(Color color);
+        Unit UpdateAll(System.Drawing.Color color);
+        IEnumerable<Device> GetDevices();
     }
 }

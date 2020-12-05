@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using NUnit.Framework;
 
 namespace AllMyLights.Test
@@ -78,6 +79,21 @@ namespace AllMyLights.Test
             Assert.AreEqual(0x33, Convert.ToInt32(color.G));
             Assert.AreEqual(0x77, Convert.ToInt32(color.B));
             Assert.AreEqual(0xff, Convert.ToInt32(color.A));
+        }
+
+        [TestCase("RBG", 11, 33, 22)]
+        [TestCase("BRG", 33, 11, 22)]
+        [TestCase("BGR", 33, 22, 11)]
+        [TestCase("GBR", 22, 33, 11)]
+        [TestCase("GRB", 22, 11, 33)]
+        public void Should_rearrange_channel_layout_to_RBG(string layout, int red, int green, int blue)
+        {
+            var color = Color.FromArgb(11, 22, 33);
+            var rearranged = color.Rearrange(layout);
+
+            Assert.AreEqual(red, Convert.ToInt32(rearranged.R));
+            Assert.AreEqual(green, Convert.ToInt32(rearranged.G));
+            Assert.AreEqual(blue, Convert.ToInt32(rearranged.B)); ;
         }
     }
 }

@@ -38,11 +38,14 @@ namespace AllMyLights
         /// <param name="logLevel">Change the log level to either debug, info, warn, error, or off.</param>
         /// <param name="logFile">If provided, log output will additionally be captured in the provided file.</param>
         /// <param name="minimized">Minimize to tray after startup</param>
+        /// <param name="listDevices">List all available OpenRGB devices and their zones. Returns right away</param>
         static void Main(
             FileInfo config,
             string logLevel = "warn",
             string logFile = null,
-            bool minimized = false)
+            bool minimized = false,
+            bool listDevices = false
+        )
         {
             using StreamReader file = File.OpenText(config.FullName);
             var content = file.ReadToEnd();
@@ -52,16 +55,24 @@ namespace AllMyLights
 
             var configuration = JsonConvert.DeserializeObject<Configuration>(content);
 
-            var mqttClient = new MqttFactory().CreateMqttClient();
-            ColorSubject = new ColorSubject(configuration, mqttClient);
-
-            var openRgbClient = new OpenRGB.NET.OpenRGBClient(
+            var openRgbClient = new OpenRGBClient(new OpenRGB.NET.OpenRGBClient(
                 ip: configuration.OpenRgb?.Server ?? "127.0.0.1",
                 port: configuration.OpenRgb?.Port ?? 6742,
                 autoconnect: false
-            ).Wrap();
+            ).Wrap(), configuration);
 
-            var broker = new OpenRGBBroker(ColorSubject, new OpenRGBClient(openRgbClient));
+            if (listDevices)
+            {
+                Console.Write(JsonConvert.SerializeObject(openRgbClient.GetDevices(), Formatting.Indented));
+                Environment.Exit(0);
+            }
+
+            var mqttClient = new MqttFactory().CreateMqttClient();
+            ColorSubject = new ColorSubject(configuration, mqttClient);
+
+            
+
+            var broker = new OpenRGBBroker(ColorSubject, openRgbClient);
             broker.Listen();
 
 #if Windows
@@ -73,6 +84,8 @@ namespace AllMyLights
             ResetEvent.WaitOne();
 #endif
         }
+
+
 
         private static void ValidateConfig(string fileName, string content)
         {

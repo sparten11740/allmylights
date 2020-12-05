@@ -21,7 +21,9 @@ namespace AllMyLights
         {
             ColorSubject
                 .Get()
-                .Subscribe(OpenRGBClient.UpdateAll);
+                .Subscribe((color) => {
+                    OpenRGBClient.UpdateAll(color);
+                });
         }
     }
 }

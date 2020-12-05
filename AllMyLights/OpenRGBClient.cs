@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Net.Sockets;
+using System.Reactive;
 using System.Reflection;
+using AllMyLights.Models;
 using NLog;
+using OpenRGB.NET.Models;
 using Unmockable;
 
 namespace AllMyLights
@@ -12,14 +16,16 @@ namespace AllMyLights
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private IUnmockable<OpenRGB.NET.OpenRGBClient> Client { get; }
+        private Configuration Configuration { get; }
 
-        public OpenRGBClient(IUnmockable<OpenRGB.NET.OpenRGBClient> openRGBClient)
+        public OpenRGBClient(IUnmockable<OpenRGB.NET.OpenRGBClient> openRGBClient, Configuration configuration)
         {
             Client = openRGBClient;
+            Configuration = configuration;
         }
 
 
-        public void UpdateAll(Color color) => RequestCatching(() =>
+        public Unit UpdateAll(System.Drawing.Color color) => RequestCatching(() =>
         {
             Logger.Info($"Changing color to {color}");
 
@@ -27,17 +33,44 @@ namespace AllMyLights
             var devices = Client.Execute(it => it.GetAllControllerData());
             Logger.Info($"Found {count} devices to update");
 
-            for (int i = 0; i < devices.Length; i++)
+            for (int id = 0; id < devices.Length; id++)
             {
-                var leds = Enumerable.Range(0, devices[i].Colors.Length)
-                    .Select(_ => color.ToOpenRGBColor())
+                Device device = devices[id];
+                var config = Configuration.OpenRgb.Overrides?.GetValueOrDefault(device.Name);
+                var ignore = config?.Ignore;
+                if (ignore == true) break;
+
+                var layout = config?.ChannelLayout;
+                var deviceColor = (layout != null ? color.Rearrange(layout) : color).ToOpenRGBColor();
+
+                if(config?.Zones != null)
+                {
+                    for (int zoneId = 0; zoneId < device.Zones.Length; zoneId++)
+                    {
+                        var zone = device.Zones[zoneId];
+                        var zoneConfig = config.Zones.GetValueOrDefault(zone.Name);
+                        var zoneLayout = zoneConfig?.ChannelLayout;
+                        var zoneColor = (zoneLayout != null ? color.Rearrange(zoneLayout).ToOpenRGBColor() : deviceColor);
+
+                        Client.Execute((it) => it.UpdateZone(id, zoneId, Enumerable.Range(0, (int)zone.LedCount).Select(_ => zoneColor).ToArray()));
+                    };
+                    continue;
+                }
+
+                var leds = device.Colors
+                    .Select(_ => deviceColor)
                     .ToArray();
 
-                Client.Execute((it) => it.UpdateLeds(i, leds));
+                Client.Execute((it) => it.UpdateLeds(id, leds));
             }
+            return Unit.Default;
         });
 
-        private void RequestCatching(Action request)
+        public IEnumerable<Device> GetDevices() => RequestCatching(() => {
+            return Client.Execute(it => it.GetAllControllerData());
+        });
+
+        private T RequestCatching<T>(Func<T> request)
         {
             try
             {
@@ -46,16 +79,16 @@ namespace AllMyLights
                     Client.Execute(it => it.Connect());
                 }
 
-                request();
+                return request();
             }
             catch (Exception e)
             {
                 Logger.Error($"Disconnected from OpenRGB ({e.Message})");
-                Reconnect(() => RequestCatching(request));
+                return Reconnect(() => RequestCatching(request));
             }
         }
 
-        private void Reconnect(Action onSuccess)
+        private T Reconnect<T>(Func<T> onSuccess)
         {
             // we have to be a little nasty here, since the client library does not expose any means of reconnecting
             var clientType = typeof(OpenRGB.NET.OpenRGBClient);
@@ -66,12 +99,14 @@ namespace AllMyLights
             {
                 Client.Execute((it) => socketField.SetValue(it, new Socket(SocketType.Stream, ProtocolType.Tcp))); 
                 Client.Execute((it) => it.Connect());
-                onSuccess();
+                return onSuccess();
             }
             catch (Exception e)
             {
                 Logger.Error($"Connection to OpenRGB failed: {e.Message}");
             }
+
+            return default;
         }
     }
 }

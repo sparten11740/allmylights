@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Globalization;
 using NLog;
 using AllMyLights.Extensions;
+using System.Collections.Generic;
 
 namespace AllMyLights
 {
@@ -16,17 +17,17 @@ namespace AllMyLights
             Logger.Debug($"Decoding color from ${input}");
             try
             {
-                FromHex(channelLayout != null ? Rearrange(input, channelLayout) : input, out var a, out var r, out var g, out var b);
+                FromHex(channelLayout != null ? ApplyLayout(input, channelLayout) : input, out var a, out var r, out var g, out var b);
                 return Color.FromArgb(a, r, g, b);
             }
-            catch(ArgumentException)
+            catch (ArgumentException)
             {
                 Logger.Debug($"{input} is no valid hex-code. Attempting to derive color by name.");
                 return Color.FromName(input);
             }
         }
 
-        private static string Rearrange(string input, string channelLayout)
+        private static string ApplyLayout(string input, string channelLayout)
         {
             var hex = input.StartsWith("#") ? input[1..] : input;
             var channels = channelLayout
@@ -35,7 +36,25 @@ namespace AllMyLights
                                 .Select((it) => (it.channel, hex.Substring(it.Item2, 2)))
                                 .ToDictionary(it => it.channel, it => it.Item2);
 
-            return $"{channels.GetOrDefault('R', "00")}{channels.GetOrDefault('G',"00")}{channels.GetOrDefault('B', "00")}{channels.GetOrDefault('A', "FF")}";
+            return $"{channels.GetOrDefault('R', "00")}{channels.GetOrDefault('G', "00")}{channels.GetOrDefault('B', "00")}{channels.GetOrDefault('A', "FF")}";
+        }
+
+        public static int GetChannel(this Color color, char channel) => channel switch
+        {
+            'R' => color.R,
+            'G' => color.G,
+            'B' => color.B,
+            'A' => color.A,
+            _ => default(int)
+        };
+
+        public static Color Rearrange(this Color color, string layout)
+        {
+            var channels = layout
+                .ToCharArray()
+                .Select((channel) => color.GetChannel(channel));
+
+            return Color.FromArgb(channels.Count() == 4 ? channels.ElementAt(3) : 255, channels.ElementAtOrDefault(0), channels.ElementAtOrDefault(1), channels.ElementAtOrDefault(2));
         }
 
         public static  OpenRGB.NET.Models.Color ToOpenRGBColor(this Color color) => new OpenRGB.NET.Models.Color(color.R, color.G, color.B);
