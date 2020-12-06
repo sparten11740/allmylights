@@ -25,6 +25,8 @@ I am a little command-line utility that is meant to synchronize your lighting ac
 
 In other words, I let your Razer devices, Gigabyte graphics card, MSI MysticLight powered mainboard, Corsair Hydro liquid cooler, or whatever other device is supported by OpenRGB, shine in the same bright light as the ambient lighting in your appartment.
 
+[View demo on YouTube](https://www.youtube.com/watch?v=1Y9CBZFACro&ab_channel=JanWendland)
+
 ## Prerequisites
 ### OpenRGB
 On the system that has the RGB peripherals you want to synchronize with your HAB, you have to setup OpenRGB.
