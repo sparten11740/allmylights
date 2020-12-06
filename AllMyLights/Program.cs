@@ -2,14 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
+using AllMyLights.Connectors.Sources;
 using AllMyLights.Models;
-using MQTTnet;
 using Newtonsoft.Json;
 using NJsonSchema;
 using NLog;
 using NLog.Conditions;
 using NLog.Targets;
-using Unmockable;
 
 #if Windows
 using AllMyLights.Platforms.Windows;
@@ -28,8 +27,6 @@ namespace AllMyLights
     {
         private static readonly ManualResetEvent ResetEvent = new ManualResetEvent(false);
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        private static ColorSubject ColorSubject;
 
         /// <summary>
         /// AllMyLights is a tool to sync colors from a home automation bus to OpenRGB managed peripherals via MQTT
@@ -51,36 +48,31 @@ namespace AllMyLights
             var content = file.ReadToEnd();
 
             ConfigureLogging(logLevel, logFile);
-            ValidateConfig(fileName: config.Name, content);
+            ValidateConfig(config.Name, content);
 
             var configuration = JsonConvert.DeserializeObject<Configuration>(content);
-
-            var openRgbClient = new OpenRGBClient(new OpenRGB.NET.OpenRGBClient(
-                ip: configuration.OpenRgb?.Server ?? "127.0.0.1",
-                port: configuration.OpenRgb?.Port ?? 6742,
-                autoconnect: false
-            ).Wrap(), configuration);
+            var factory = new ConnectorFactory(configuration);
+            var sources = factory.GetSources();
+            var sinks = factory.GetSinks();
 
             if (listDevices)
             {
-                Console.Write(JsonConvert.SerializeObject(openRgbClient.GetDevices(), Formatting.Indented));
+                Console.Write(JsonConvert.SerializeObject(sinks.SelectMany((it) => it.GetConsumers()), Formatting.Indented));
                 Environment.Exit(0);
             }
 
-            var mqttClient = new MqttFactory().CreateMqttClient();
-            ColorSubject = new ColorSubject(configuration, mqttClient);
-
-            
-
-            var broker = new OpenRGBBroker(ColorSubject, openRgbClient);
-            broker.Listen();
+            var broker = new Broker().RegisterSources(sources).RegisterSinks(sinks);
 
 #if Windows
-            var trayIcon = TrayIcon.GetInstance(ColorSubject, minimized);
+            var trayIcon = TrayIcon.GetInstance(minimized);
+            broker.RegisterSinks(trayIcon);
             ConsoleWindow.Show(!minimized);
+
+            broker.Listen();
             Application.Run();
             trayIcon.Show(false);
 #else
+            broker.Listen();
             ResetEvent.WaitOne();
 #endif
         }

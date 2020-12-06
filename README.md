@@ -95,43 +95,49 @@ I read the required server ip addresses, ports, topics etc. from a configuration
 // allmylightsrc.json
 
 {
-  // ip address & port of machine that runs openrgb
-  "OpenRgb": {
-    "Server": "127.0.0.1", 
-    "Port": 6742,
-    // if you want to override certain OpenRGB controlled devices you can do so here
-    "Overrides": {
-      // ignore an entire device
-      "Razer Copperhead": {
-        "Ignore": true,
-      },
-      "MSI Mystic Light MS_7C84": {
-        "Zones": {
-          // configure what color is passed to what channel of a zone
-          "JRGB2": {
-            "ChannelLayout": "GRB"
-          },
-          // ignore a single zone of a device
-          "JRAINBOW1": {
-            "Ignore": true
+  "Sources": {
+    "Mqtt": [{
+        "Server": "192.168.1.20",
+        "Port": 1883,
+        "Topics": {
+          // optional command topic that is used to request the current color on startup
+          "Command": "cmnd/sonoff-1144-dimmer-5/color",
+          "Result": {
+            // topic to grab the color from
+            "Path": "stat/sonoff-1144-dimmer-5/RESULT",
+            // JsonPath expression pointing to the property that holds the color value
+            "ValuePath": "$.Color"
           }
         }
-      }
-    }
+    }]
   },
-  "Mqtt": {
-    "Server": "192.168.178.20",
-    "Port": 1883,
-    "Topics": {
-      // optional command topic that is used to request the current color on startup
-      "Command": "cmnd/sonoff-1144-dimmer-5/color",
-      "Result": {
-        // topic to grab the color from
-        "Path": "stat/sonoff-1144-dimmer-5/RESULT",
-        // JsonPath expression pointing to the property that holds the color value
-        "ValuePath": "$.Color"
-      }
-    }
+  
+  // ip address & port of machine that runs openrgb
+  "Sinks": {
+    // configure one or more target OpenRGB instances
+    "OpenRgb": [{
+        "Server": "127.0.0.1", 
+        "Port": 6742,
+        // if you want to override certain OpenRGB controlled devices you can do so here
+        "Overrides": {
+          // ignore an entire device
+          "Razer Copperhead": {
+            "Ignore": true,
+          },
+          "MSI Mystic Light MS_7C84": {
+            "Zones": {
+              // configure what color is passed to what channel of a zone
+              "JRGB2": {
+                "ChannelLayout": "GRB"
+              },
+              // ignore a single zone of a device
+              "JRAINBOW1": {
+                "Ignore": true
+              }
+            }
+          }
+        }
+    }]
   }
 }
 ```
@@ -167,12 +173,12 @@ You can run me as simple as follows, only the path to a valid config file is req
 
 ### Command Line Arguments
 
-| Argument                    | Description 
-| --------------------------- |-------------
-| **&#x2011;&#x2011;config**  | Path to the config file that contains the MQTT and OpenRGB settings
-| &#x2011;&#x2011;log-level   | Change the log level to either debug, info, warn, error, or off.      
-| &#x2011;&#x2011;log-file    | If provided, log output will additionally be captured in the provided file.    
-| &#x2011;&#x2011;minimized   | Minimize to tray after startup (Windows only)   
+| Argument                   | Description                                                                 |
+| -------------------------- | --------------------------------------------------------------------------- |
+| **&#x2011;&#x2011;config** | Path to the config file that contains the MQTT and OpenRGB settings         |
+| &#x2011;&#x2011;log-level  | Change the log level to either debug, info, warn, error, or off.            |
+| &#x2011;&#x2011;log-file   | If provided, log output will additionally be captured in the provided file. |
+| &#x2011;&#x2011;minimized  | Minimize to tray after startup (Windows only)                               |
 
 ## Autostart
 ### Windows
