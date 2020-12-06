@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using AllMyLights.Models;
 using Moq;
 using MQTTnet;
@@ -18,12 +17,14 @@ using System.Linq;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Subscribing;
 using MQTTnet.Client.Disconnecting;
+using AllMyLights.Connectors.Sources;
+using AllMyLights.Models.Mqtt;
 
 namespace AllMyLights.Test
 {
-    public class ColorSubjectTest : ReactiveTest
+    public class MqttSourceTest : ReactiveTest
     {
-        Configuration Config;
+        MqttSourceParams Options;
 
         public IMqttClientOptions MqttClientOptions { get; private set; }
         public MqttClientTcpOptions MqttClientTcpOptions { get; private set; }
@@ -33,29 +34,26 @@ namespace AllMyLights.Test
         [SetUp]
         public void Setup()
         {
-            Config = new Configuration
+            Options = new MqttSourceParams
             {
-                Mqtt = new MqttConfiguration
+                Server = "wayne-foundation.com",
+                Port = 1863,
+                Password = "bruce-admires-robin",
+                Username = "bwayne",
+                Topics = new Topics
                 {
-                    Server = "wayne-foundation.com",
-                    Port = 1863,
-                    Password = "bruce-admires-robin",
-                    Username = "bwayne",
-                    Topics = new Topics
+                    Command = "cmnd/tasmota-dimmer/color",
+                    Result = new Topic
                     {
-                        Command = "cmnd/tasmota-dimmer/color",
-                        Result = new Topic
-                        {
-                            Path = "stat/sonoff-1144-dimmer-5/RESULT",
-                            ValuePath = "$.Color"
-                        }
+                        Path = "stat/sonoff-1144-dimmer-5/RESULT",
+                        ValuePath = "$.Color"
                     }
                 }
             };
 
             MqttClientOptions = new MqttClientOptionsBuilder()
-                .WithTcpServer(Config.Mqtt.Server, Config.Mqtt.Port)
-                .WithCredentials(Config.Mqtt.Username, Config.Mqtt.Password)
+                .WithTcpServer(Options.Server, Options.Port)
+                .WithCredentials(Options.Username, Options.Password)
                 .Build();
 
             MqttClientTcpOptions = MqttClientOptions.ChannelOptions as MqttClientTcpOptions;
@@ -67,7 +65,7 @@ namespace AllMyLights.Test
             var args = new List<MqttClientOptions>();
             MqttClientMock.Setup(m => m.ConnectAsync(Capture.In(args), CancellationToken.None));
 
-            var subject = new ColorSubject(Config, MqttClientMock.Object);
+            var subject = new MqttSource(Options, MqttClientMock.Object);
             var actualOptions = args.First();
             MqttClientTcpOptions actualChannelOptions = actualOptions.ChannelOptions as MqttClientTcpOptions;
 
@@ -85,17 +83,17 @@ namespace AllMyLights.Test
             var args = new List<MqttApplicationMessage>();
             MqttClientMock.Setup(it => it.PublishAsync(Capture.In(args), CancellationToken.None));
 
-            var subject = new ColorSubject(Config, MqttClientMock.Object);
+            var subject = new MqttSource(Options, MqttClientMock.Object);
 
             MqttClientMock.Verify(it => it.PublishAsync(It.IsAny<MqttApplicationMessage>(), CancellationToken.None));
-            Assert.AreEqual(Config.Mqtt.Topics.Command, args.First().Topic);
+            Assert.AreEqual(Options.Topics.Command, args.First().Topic);
         }
 
         [Test]
         public void Should_subscribe_to_provided_topic()
         {
             MqttClientMock.SetupAllProperties();
-            var subject = new ColorSubject(Config, MqttClientMock.Object);
+            var subject = new MqttSource(Options, MqttClientMock.Object);
 
             var args = new List<MqttClientSubscribeOptions>();
             MqttClientMock.Setup(it => it.SubscribeAsync(Capture.In(args), CancellationToken.None));
@@ -103,7 +101,7 @@ namespace AllMyLights.Test
             var filter = args.First().TopicFilters.First();
 
             MqttClientMock.Verify(it => it.SubscribeAsync(It.IsAny<MqttClientSubscribeOptions>(), CancellationToken.None));
-            Assert.AreEqual(Config.Mqtt.Topics.Result.Path, filter.Topic);
+            Assert.AreEqual(Options.Topics.Result.Path, filter.Topic);
         }
 
         [Test]
@@ -114,7 +112,7 @@ namespace AllMyLights.Test
             var args = new List<MqttClientOptions>();
             MqttClientMock.Setup(it => it.ConnectAsync(Capture.In(args), CancellationToken.None));
 
-            var subject = new ColorSubject(Config, MqttClientMock.Object);
+            var subject = new MqttSource(Options, MqttClientMock.Object);
             MqttClientMock.Object.DisconnectedHandler.HandleDisconnectedAsync(new MqttClientDisconnectedEventArgs(
                 true,
                 new Exception("Networ error"),
@@ -146,7 +144,7 @@ namespace AllMyLights.Test
 
             MqttClientMock.SetupAllProperties();
 
-            var subject = new ColorSubject(Config, MqttClientMock.Object);
+            var subject = new MqttSource(Options, MqttClientMock.Object);
 
             scheduler.Schedule(TimeSpan.FromTicks(20), () =>
             {

@@ -4,7 +4,7 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <ApplicationIcon>app.ico</ApplicationIcon>
-        <IsWindows Condition="$(RuntimeIdentifier.StartsWith('win'))">true</IsWindows>
+        <IsWindows Condition="$(RuntimeIdentifier.StartsWith('win')) Or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true' And $(RuntimeIdentifier.Length) == '0' )">true</IsWindows>
     </PropertyGroup>
     <PropertyGroup Condition="'$(IsWindows)'=='true'">
         <DefineConstants>Windows</DefineConstants>

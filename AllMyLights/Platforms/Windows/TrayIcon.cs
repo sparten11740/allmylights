@@ -2,27 +2,39 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
-
+using AllMyLights.Connectors.Sinks;
+using AllMyLights.Models;
 
 namespace AllMyLights.Platforms.Windows
 {
-    public class TrayIcon
+    public class TrayIcon : ISink
     {
         private static TrayIcon Instance;
 
         private NotifyIcon NotifyIcon;
-        private ColorSubject ColorSubject;
+
+        private readonly ContextMenuStrip Menu = new ContextMenuStrip();
         private readonly ToolStripLabel TrayColorLabel = new ToolStripLabel();
 
-        private bool Minimized;
+        private bool Minimized { get; }
 
-        private TrayIcon(ColorSubject colorSubject, bool minimized)
+        private TrayIcon(bool minimized)
         {
-            ColorSubject = colorSubject;
             Minimized = minimized;
             Instance = this;
 
             Init();
+        }
+
+        public void Consume(Color color)
+        {
+            if (Menu.InvokeRequired)
+            {
+                Menu.Invoke((MethodInvoker)delegate () { TrayColorLabel.Text = color.ToString(); });
+                return;
+            }
+
+            TrayColorLabel.Text = color.ToString();
         }
 
         private void ShowMinimizeHint()
@@ -37,17 +49,16 @@ namespace AllMyLights.Platforms.Windows
 
         private void Init()
         {
-            var menu = new ContextMenuStrip();
             var exitButton = new ToolStripButton("Exit");
 
-            menu.Items.Add(TrayColorLabel);
-            menu.Items.Add(exitButton);
+            Menu.Items.Add(TrayColorLabel);
+            Menu.Items.Add(exitButton);
 
             NotifyIcon = new NotifyIcon()
             {
                 Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath),
                 Text = "AllMyLights",
-                ContextMenuStrip = menu,
+                ContextMenuStrip = Menu,
                 Visible = true
             };
 
@@ -63,18 +74,13 @@ namespace AllMyLights.Platforms.Windows
                 Environment.Exit(0);
             };
 
-            ColorSubject.Get().Subscribe((color) =>
-            {
-                TrayColorLabel.Text = color.ToString();
-            });
-
             if (!Minimized)
             {
                 ShowMinimizeHint();
             }
         }
 
-        public static TrayIcon GetInstance(ColorSubject colorSubject, bool minimized) => Instance == null ? new TrayIcon(colorSubject, minimized) : Instance;
+        public static TrayIcon GetInstance(bool minimized) => Instance == null ? new TrayIcon(minimized) : Instance;
 
         public void Show(bool show)
         {

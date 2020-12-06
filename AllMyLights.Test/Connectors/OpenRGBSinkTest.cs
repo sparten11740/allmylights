@@ -1,31 +1,30 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
+using AllMyLights.Connectors.Sinks;
 using AllMyLights.Models;
+using AllMyLights.Models.OpenRGB;
 using NUnit.Framework;
 using OpenRGB.NET.Models;
 using Unmockable;
 
 namespace AllMyLights.Test
 {
-    public class OpenRGBClientTest
+    public class OpenRGBSinkTest
     {
-        Configuration Config = new Configuration
-            {
-                OpenRgb = new OpenRGBConfiguration()
-                {
-                    Overrides = new Dictionary<string, DeviceOverride>()
+        OpenRGBSinkParams Options = new OpenRGBSinkParams()
+        {
+            Overrides = new Dictionary<string, DeviceOverride>()
                     {
                         { "MSI X570 Tomahawk", new DeviceOverride() {  ChannelLayout = "RBG"} },
                         { "MSI B450 Gaming Pro", new DeviceOverride() {  Ignore = true } },
-                        { "MSI X570 Unify", new DeviceOverride() {  
+                        { "MSI X570 Unify", new DeviceOverride() {
                             Zones = new Dictionary<string, ZoneOverride>
                             {
                                 { "JRGB2",  new ZoneOverride() { ChannelLayout = "RBG" } }
                             }
                         } },
                     }
-                }
-            };
+        };
 
         [Test]
         public void Should_update_devices_with_color()
@@ -58,8 +57,8 @@ namespace AllMyLights.Test
                 ));
 
 
-            var client = new OpenRGBClient(openRGBClientMock, Config);
-            client.UpdateAll(targetColor);
+            var client = new OpenRGBSink(Options, openRGBClientMock);
+            client.Consume(targetColor);
 
             openRGBClientMock.Verify();
         }
@@ -89,8 +88,8 @@ namespace AllMyLights.Test
                 ));
 
 
-            var client = new OpenRGBClient(openRGBClientMock, Config);
-            client.UpdateAll(targetColor);
+            var client = new OpenRGBSink(Options, openRGBClientMock);
+            client.Consume(targetColor);
 
             openRGBClientMock.Verify();
         }
@@ -113,8 +112,8 @@ namespace AllMyLights.Test
                 .Returns(new Device[] { gamingPro });
 
 
-            var client = new OpenRGBClient(openRGBClientMock, Config);
-            client.UpdateAll(targetColor);
+            var client = new OpenRGBSink(Options, openRGBClientMock);
+            client.Consume(targetColor);
 
             openRGBClientMock.Verify();
         }
@@ -156,8 +155,8 @@ namespace AllMyLights.Test
                 ));
 
 
-            var client = new OpenRGBClient(openRGBClientMock, Config);
-            client.UpdateAll(targetColor);
+            var client = new OpenRGBSink(Options, openRGBClientMock);
+            client.Consume(targetColor);
 
             openRGBClientMock.Verify();
         }
