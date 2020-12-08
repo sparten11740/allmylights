@@ -4,7 +4,6 @@ namespace AllMyLights.Models.Mqtt
 {
     public class Topics
     {
-        [Required]
         public string Command { get; set; }
 
         [Required]

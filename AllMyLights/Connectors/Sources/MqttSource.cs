@@ -51,11 +51,15 @@ namespace AllMyLights.Connectors.Sources
             MqttClient.UseApplicationMessageReceivedHandler(HandleMessage);
 
             await MqttClient.ConnectAsync(MqttClientOptions, CancellationToken.None);
-            await MqttClient.PublishAsync(new MqttApplicationMessage
-            {
-                Topic = Options.Topics.Command
-            }, CancellationToken.None);
 
+
+            if(Options.Topics.Command != null)
+            {
+                await MqttClient.PublishAsync(new MqttApplicationMessage
+                {
+                    Topic = Options.Topics.Command
+                }, CancellationToken.None);
+            }
         }
 
         private void HandleMessage(MqttApplicationMessageReceivedEventArgs args)
