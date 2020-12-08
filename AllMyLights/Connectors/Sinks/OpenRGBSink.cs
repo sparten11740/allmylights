@@ -1,26 +1,25 @@
-﻿using AllMyLights.Models;
-using AllMyLights.Models.OpenRGB;
-using NLog;
-using OpenRGB.NET.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reactive;
 using System.Reflection;
-using Unmockable;
+using AllMyLights.Models.OpenRGB;
+using NLog;
+using OpenRGB.NET;
+using OpenRGB.NET.Models;
 
 namespace AllMyLights.Connectors.Sinks
 {
     public class OpenRGBSink: ISink
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private IUnmockable<OpenRGB.NET.OpenRGBClient> Client { get; }
+        private IOpenRGBClient Client { get; }
         private OpenRGBSinkParams Options { get; }
 
         public OpenRGBSink(
             OpenRGBSinkParams options,
-            IUnmockable<OpenRGB.NET.OpenRGBClient> client)
+            IOpenRGBClient client)
         {
             Client = client;
             Options = options;
@@ -32,15 +31,15 @@ namespace AllMyLights.Connectors.Sinks
         }
 
         public IEnumerable<object> GetConsumers() => RequestCatching(() => {
-            return Client.Execute(it => it.GetAllControllerData());
+            return Client.GetAllControllerData();
         });
 
         private Unit UpdateAll(System.Drawing.Color color) => RequestCatching(() =>
         {
             Logger.Info($"Changing color to {color}");
 
-            var count = Client.Execute(it => it.GetControllerCount());
-            var devices = Client.Execute(it => it.GetAllControllerData());
+            var count = Client.GetControllerCount();
+            var devices = Client.GetAllControllerData();
             Logger.Info($"Found {count} devices to update");
 
             for (int id = 0; id < devices.Length; id++)
@@ -62,7 +61,7 @@ namespace AllMyLights.Connectors.Sinks
                         var zoneLayout = zoneConfig?.ChannelLayout;
                         var zoneColor = (zoneLayout != null ? color.Rearrange(zoneLayout).ToOpenRGBColor() : deviceColor);
 
-                        Client.Execute((it) => it.UpdateZone(id, zoneId, Enumerable.Range(0, (int)zone.LedCount).Select(_ => zoneColor).ToArray()));
+                        Client.UpdateZone(id, zoneId, Enumerable.Range(0, (int)zone.LedCount).Select(_ => zoneColor).ToArray());
                     };
                     continue;
                 }
@@ -71,7 +70,7 @@ namespace AllMyLights.Connectors.Sinks
                     .Select(_ => deviceColor)
                     .ToArray();
 
-                Client.Execute((it) => it.UpdateLeds(id, leds));
+                Client.UpdateLeds(id, leds);
             }
             return Unit.Default;
         });
@@ -80,9 +79,9 @@ namespace AllMyLights.Connectors.Sinks
         {
             try
             {
-                if (!Client.Execute(it => it.Connected))
+                if (!Client.Connected)
                 {
-                    Client.Execute(it => it.Connect());
+                    Client.Connect();
                 }
 
                 return request();
@@ -97,14 +96,13 @@ namespace AllMyLights.Connectors.Sinks
         private T Reconnect<T>(Func<T> onSuccess)
         {
             // we have to be a little nasty here, since the client library does not expose any means of reconnecting
-            var clientType = typeof(OpenRGB.NET.OpenRGBClient);
+            var clientType = typeof(OpenRGBClient);
             var socketField = clientType.GetField("_socket", BindingFlags.NonPublic | BindingFlags.Instance);
-            var socket = Client.Execute((it) => socketField.GetValue(it) as Socket);
 
             try
             {
-                Client.Execute((it) => socketField.SetValue(it, new Socket(SocketType.Stream, ProtocolType.Tcp)));
-                Client.Execute((it) => it.Connect());
+                socketField.SetValue(Client, new Socket(SocketType.Stream, ProtocolType.Tcp));
+                Client.Connect();
                 return onSuccess();
             }
             catch (Exception e)

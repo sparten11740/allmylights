@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using System.Net.Sockets;
 using AllMyLights.Connectors.Sinks;
-using AllMyLights.Models;
 using AllMyLights.Models.OpenRGB;
+using Moq;
 using NUnit.Framework;
+using OpenRGB.NET;
 using OpenRGB.NET.Models;
-using Unmockable;
 
 namespace AllMyLights.Test
 {
@@ -40,24 +39,21 @@ namespace AllMyLights.Test
             razerMouse.SetColors(new Color(), new Color());
             corsairH150i.SetColors(new Color());
 
-            var openRGBClientMock = Interceptor.For<OpenRGB.NET.OpenRGBClient>()
-                .Setup(it => it.Connected)
-                .Returns(true)
-                .Setup(it => it.GetControllerCount())
-                .Returns(2)
-                .Setup(it => it.GetAllControllerData())
-                .Returns(new Device[] { razerMouse, corsairH150i })
-                .Setup(it => it.UpdateLeds(
+            var openRGBClientMock = new Mock<IOpenRGBClient>();
+            openRGBClientMock.Setup(it => it.Connected).Returns(true).Verifiable();
+            openRGBClientMock.Setup(it => it.GetControllerCount()).Returns(2).Verifiable();
+            openRGBClientMock.Setup(it => it.GetAllControllerData()).Returns(new Device[] { razerMouse, corsairH150i }).Verifiable();
+            openRGBClientMock.Setup(it => it.UpdateLeds(
                     0,
-                    Arg.Where<Color[]>(them => them.ContainsExactly(expectedColor, expectedColor))
-                ))
-                .Setup(it => it.UpdateLeds(
+                    It.Is<Color[]>(them => them.ContainsExactly(expectedColor, expectedColor))
+                )).Verifiable();
+            openRGBClientMock.Setup(it => it.UpdateLeds(
                     1,
-                    Arg.Where<Color[]>(them => them.ContainsExactly(expectedColor))
-                ));
+                    It.Is<Color[]>(them => them.ContainsExactly(expectedColor))
+                )).Verifiable();
 
 
-            var client = new OpenRGBSink(Options, openRGBClientMock);
+            var client = new OpenRGBSink(Options, openRGBClientMock.Object);
             client.Consume(targetColor);
 
             openRGBClientMock.Verify();
@@ -75,20 +71,18 @@ namespace AllMyLights.Test
             tomahawk.SetName("MSI X570 Tomahawk");
             tomahawk.SetColors(new Color());
 
-            var openRGBClientMock = Interceptor.For<OpenRGB.NET.OpenRGBClient>()
-                .Setup(it => it.Connected)
-                .Returns(true)
-                .Setup(it => it.GetControllerCount())
-                .Returns(2)
-                .Setup(it => it.GetAllControllerData())
-                .Returns(new Device[] { tomahawk })
-                .Setup(it => it.UpdateLeds(
+
+            var openRGBClientMock = new Mock<IOpenRGBClient>();
+            openRGBClientMock.Setup(it => it.Connected).Returns(true).Verifiable();
+            openRGBClientMock.Setup(it => it.GetControllerCount()).Returns(2).Verifiable();
+            openRGBClientMock.Setup(it => it.GetAllControllerData()).Returns(new Device[] { tomahawk }).Verifiable();
+            openRGBClientMock.Setup(it => it.UpdateLeds(
                     0,
-                    Arg.Where<Color[]>(them => them.ContainsExactly(expectedColor))
-                ));
+                    It.Is<Color[]>(them => them.ContainsExactly(expectedColor))
+                )).Verifiable();
 
 
-            var client = new OpenRGBSink(Options, openRGBClientMock);
+            var client = new OpenRGBSink(Options, openRGBClientMock.Object);
             client.Consume(targetColor);
 
             openRGBClientMock.Verify();
@@ -103,16 +97,13 @@ namespace AllMyLights.Test
             var gamingPro = new Device();
             gamingPro.SetName("MSI B450 Gaming Pro").SetColors(new Color());
 
-            var openRGBClientMock = Interceptor.For<OpenRGB.NET.OpenRGBClient>()
-                .Setup(it => it.Connected)
-                .Returns(true)
-                .Setup(it => it.GetControllerCount())
-                .Returns(2)
-                .Setup(it => it.GetAllControllerData())
-                .Returns(new Device[] { gamingPro });
+            var openRGBClientMock = new Mock<IOpenRGBClient>();
+            openRGBClientMock.Setup(it => it.Connected).Returns(true).Verifiable();
+            openRGBClientMock.Setup(it => it.GetControllerCount()).Returns(2).Verifiable();
+            openRGBClientMock.Setup(it => it.GetAllControllerData()).Returns(new Device[] { gamingPro }).Verifiable();
 
 
-            var client = new OpenRGBSink(Options, openRGBClientMock);
+            var client = new OpenRGBSink(Options, openRGBClientMock.Object);
             client.Consume(targetColor);
 
             openRGBClientMock.Verify();
@@ -136,26 +127,23 @@ namespace AllMyLights.Test
                     new Zone().Set(name: "not overridden", ledCount: 1)
                 );
 
-            var openRGBClientMock = Interceptor.For<OpenRGB.NET.OpenRGBClient>()
-                .Setup(it => it.Connected)
-                .Returns(true)
-                .Setup(it => it.GetControllerCount())
-                .Returns(1)
-                .Setup(it => it.GetAllControllerData())
-                .Returns(new Device[] { unify })
-                .Setup(it => it.UpdateZone(
+            var openRGBClientMock = new Mock<IOpenRGBClient>();
+            openRGBClientMock.Setup(it => it.Connected).Returns(true).Verifiable();
+            openRGBClientMock.Setup(it => it.GetControllerCount()).Returns(1).Verifiable();
+            openRGBClientMock.Setup(it => it.GetAllControllerData()).Returns(new Device[] { unify }).Verifiable();
+            openRGBClientMock.Setup(it => it.UpdateZone(
                     0,
                     0,
-                    Arg.Where<Color[]>(them => them.ContainsExactly(overriddenColor, overriddenColor))
-                ))
-                .Setup(it => it.UpdateZone(
+                    It.Is<Color[]>(them => them.ContainsExactly(overriddenColor, overriddenColor))
+                ));
+            openRGBClientMock.Setup(it => it.UpdateZone(
                     0,
                     1,
-                    Arg.Where<Color[]>(them => them.ContainsExactly(color))
-                ));
+                    It.Is<Color[]>(them => them.ContainsExactly(color))
+                )).Verifiable();
 
 
-            var client = new OpenRGBSink(Options, openRGBClientMock);
+            var client = new OpenRGBSink(Options, openRGBClientMock.Object);
             client.Consume(targetColor);
 
             openRGBClientMock.Verify();
