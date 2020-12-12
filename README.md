@@ -113,7 +113,7 @@ I read the required server ip addresses, ports, topics etc. from a configuration
         "Type": "JsonPath",
         "Expression": "$.Color"
       },
-      // decodes Color from string value (required type f.i. for the OpenRGB source)
+      // decodes Color from string value (required type f.i. for the OpenRGB sink)
       { "Type": "Color" }
     ]
   }],
@@ -157,7 +157,26 @@ Available source, sink, and transformations types as of this version are:
 | Transformation | `JsonPath`, `Color`        |
 
 
-For further information on how to extract a value from JSON using `JsonPath` expressions, please refer to [this documentation](https://support.smartbear.com/alertsite/docs/monitors/api/endpoint/jsonpath.html). Supported are hex strings such as the following `#f2d`, `#ed20ff`, `#2020ffed` and color names where the name can be any [known color](https://docs.microsoft.com/en-us/dotnet/api/system.drawing.knowncolor?view=net-5.0).
+### JsonPath Transformation
+This transformation can be used for extracting values from a json string.
+
+```json
+  { "Type": "JsonPath", "Expression": "$.data[0].color" }
+```
+
+For further information on how to extract a value from JSON using `JsonPath` expressions, please refer to [this documentation](https://support.smartbear.com/alertsite/docs/monitors/api/endpoint/jsonpath.html). 
+
+
+### Color Transformation
+This transformation is used to deal with the type conversion from an input string to a Color type that can be consumed by a sink that expects such.
+
+```json
+  { "Type": "Color", "ChannelLayout": "RGBA" }
+```
+
+Supported values are hex strings such as the following `#f2d`, `#ed20ff`, `#2020ffed` and color names where the name can be any [known color](https://docs.microsoft.com/en-us/dotnet/api/system.drawing.knowncolor?view=net-5.0).
+
+It also supports the optional property `ChannelLayout` to deal with cases where the channels of a color in the hex string are mixed up for some reason such as f.i. when the first hex number does not correspond with red but with green. Possible values are any string of up to 4 characters containing `R`, `G`, `B`, or `A` for alpha. Also `_` can be used to ignore values, for instance if you had an RGBA hex string, you could use the channel layout `RGB_` to ignore the alpha value (will default to `Oxff`);
 
 ## Run me
 ### Windows
