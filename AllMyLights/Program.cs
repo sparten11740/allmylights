@@ -2,24 +2,20 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
+using AllMyLights.Connectors.Sinks;
 using AllMyLights.Connectors.Sources;
+using AllMyLights.Json;
 using AllMyLights.Models;
 using Newtonsoft.Json;
-using NJsonSchema;
+using NJsonSchema.Generation;
 using NLog;
 using NLog.Conditions;
 using NLog.Targets;
 
 #if Windows
-using AllMyLights.Platforms.Windows;
 using System.Windows.Forms;
+using AllMyLights.Platforms.Windows;
 #endif
-
-enum ExitCode
-{
-    InvalidConfig = -1,
-    InvalidArgument = -2,
-}
 
 namespace AllMyLights
 {
@@ -36,19 +32,27 @@ namespace AllMyLights
         /// <param name="logFile">If provided, log output will additionally be captured in the provided file.</param>
         /// <param name="minimized">Minimize to tray after startup</param>
         /// <param name="listDevices">List all available OpenRGB devices and their zones. Returns right away</param>
+        /// <param name="failOnUnknownProperty">Fails if an unknown property is encountered in the provided config file. Can be disabled.</param>
         static void Main(
             FileInfo config,
             string logLevel = "warn",
             string logFile = null,
             bool minimized = false,
-            bool listDevices = false
+            bool listDevices = false,
+            bool failOnUnknownProperty = true
         )
         {
             using StreamReader file = File.OpenText(config.FullName);
             var content = file.ReadToEnd();
 
             ConfigureLogging(logLevel, logFile);
-            ValidateConfig(config.Name, content);
+
+            new ConfigurationValidator(new JsonSchemaGeneratorSettings
+            {
+                AllowReferencesWithProperties = true,
+                FlattenInheritanceHierarchy = true,
+                AlwaysAllowAdditionalObjectProperties = !failOnUnknownProperty
+            }).Validate(content);
 
             var configuration = JsonConvert.DeserializeObject<Configuration>(content);
             var factory = new ConnectorFactory(configuration);
@@ -57,7 +61,7 @@ namespace AllMyLights
 
             if (listDevices)
             {
-                Console.Write(JsonConvert.SerializeObject(sinks.SelectMany((it) => it.GetConsumers()), Formatting.Indented));
+                ListDevices(sinks);
                 Environment.Exit(0);
             }
 
@@ -77,22 +81,20 @@ namespace AllMyLights
 #endif
         }
 
-
-
-        private static void ValidateConfig(string fileName, string content)
+        private static void ListDevices(ISink[] sinks)
         {
-            JsonSchema schema = JsonSchema.FromType<Configuration>();
-
-
-            var errors = schema.Validate(content);
-
-            if (errors.Count > 0)
+            foreach (ISink sink in sinks)
             {
-                Logger.Error($"Validation issues encountered in config file {fileName}:");
-                foreach (var error in errors)
-                    Logger.Error($"{error.Path}: {error.Kind}");
-
-                Environment.Exit((int)ExitCode.InvalidConfig);
+                var devices = sink.GetConsumers();
+                if (devices.Count() > 0)
+                {
+                    Console.WriteLine(sink);
+                    Console.WriteLine(JsonConvert.SerializeObject(devices, Formatting.Indented));
+                }
+                else
+                {
+                    Console.WriteLine($"{sink} does not expose any device information.");
+                }
             }
         }
 
@@ -128,7 +130,7 @@ namespace AllMyLights
             ));
             config.AddRule(minLevel, LogLevel.Fatal, logconsole);
 
-            if(logFile != null)
+            if (logFile != null)
             {
                 var logfile = new FileTarget("logfile")
                 {

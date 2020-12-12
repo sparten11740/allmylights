@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace AllMyLights.Connectors.Sinks
 {
     public interface ISink
     {
-        void Consume(Color color);
+        void Consume(object value);
         IEnumerable<object> GetConsumers() => new List<object>();
     }
 }

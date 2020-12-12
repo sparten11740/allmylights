@@ -25,4 +25,8 @@
   <ItemGroup>
     <ProjectReference Include="..\AllMyLights\AllMyLights.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+    <Folder Include="Transformations\" />
+  </ItemGroup>
 </Project>

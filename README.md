@@ -97,52 +97,65 @@ I read the required server ip addresses, ports, topics etc. from a configuration
 // allmylightsrc.json
 
 {
-  "Sources": {
-    "Mqtt": [{
-        "Server": "192.168.1.20",
-        "Port": 1883,
-        "Topics": {
-          // optional command topic that is used to request the current color on startup
-          "Command": "cmnd/sonoff-1144-dimmer-5/color",
-          "Result": {
-            // topic to grab the color from
-            "Path": "stat/sonoff-1144-dimmer-5/RESULT",
-            // JsonPath expression pointing to the property that holds the color value
-            "ValuePath": "$.Color"
-          }
-        }
-    }]
-  },
+  "Sources":  [{
+    "Type" : "Mqtt",
+    "Server": "192.168.1.20",
+    "Port": 1883,
+    "Topics": {
+      // optional command topic that is used to request the current color on startup
+      "Command": "cmnd/sonoff-1144-dimmer-5/color",
+      "Result": "stat/sonoff-1144-dimmer-5/RESULT"
+    },
+    // transformations are applied in order on any received message 
+    "Transformations": [
+      // JsonPath expression transformation to extract the value that holds the color 
+      {
+        "Type": "JsonPath",
+        "Expression": "$.Color"
+      },
+      // decodes Color from string value (required type f.i. for the OpenRGB source)
+      { "Type": "Color" }
+    ]
+  }],
   
   // ip address & port of machine that runs openrgb
-  "Sinks": {
+  "Sinks": [{
     // configure one or more target OpenRGB instances
-    "OpenRgb": [{
-        "Server": "127.0.0.1", 
-        "Port": 6742,
-        // if you want to override certain OpenRGB controlled devices you can do so here
-        "Overrides": {
-          // ignore an entire device
-          "Razer Copperhead": {
-            "Ignore": true,
+    "Type": "OpenRGB",
+    "Server": "127.0.0.1", 
+    "Port": 6742,
+    // if you want to override certain OpenRGB controlled devices you can do so here
+    "Overrides": {
+      // ignore an entire device
+      "Razer Copperhead": {
+        "Ignore": true,
+      },
+      "MSI Mystic Light MS_7C84": {
+        "Zones": {
+          // configure what color is passed to what channel of a zone
+          "JRGB2": {
+            "ChannelLayout": "GRB"
           },
-          "MSI Mystic Light MS_7C84": {
-            "Zones": {
-              // configure what color is passed to what channel of a zone
-              "JRGB2": {
-                "ChannelLayout": "GRB"
-              },
-              // ignore a single zone of a device
-              "JRAINBOW1": {
-                "Ignore": true
-              }
-            }
+          // ignore a single zone of a device
+          "JRAINBOW1": {
+            "Ignore": true
           }
         }
-    }]
-  }
+      }
+    },
+    // transformations can also be applied before a sink consumes a value
+    "Transformations" : []
+  }]
 }
 ```
+Available source, sink, and transformations types as of this version are:
+
+| Type           | Options                    |
+| ---------------| -------------------------- |
+| Source         | `Mqtt`                     |
+| Sink           | `OpenRGB`                  | 
+| Transformation | `JsonPath`, `Color`        |
+
 
 For further information on how to extract a value from JSON using `JsonPath` expressions, please refer to [this documentation](https://support.smartbear.com/alertsite/docs/monitors/api/endpoint/jsonpath.html). Supported are hex strings such as the following `#f2d`, `#ed20ff`, `#2020ffed` and color names where the name can be any [known color](https://docs.microsoft.com/en-us/dotnet/api/system.drawing.knowncolor?view=net-5.0).
 

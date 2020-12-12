@@ -3,7 +3,6 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using AllMyLights.Connectors.Sinks;
-using AllMyLights.Models;
 
 namespace AllMyLights.Platforms.Windows
 {
@@ -26,15 +25,15 @@ namespace AllMyLights.Platforms.Windows
             Init();
         }
 
-        public void Consume(Color color)
+        public void Consume(object message)
         {
             if (Menu.InvokeRequired)
             {
-                Menu.Invoke((MethodInvoker)delegate () { TrayColorLabel.Text = color.ToString(); });
+                Menu.Invoke((MethodInvoker)delegate () { TrayColorLabel.Text = message.ToString(); });
                 return;
             }
 
-            TrayColorLabel.Text = color.ToString();
+            TrayColorLabel.Text = message.ToString();
         }
 
         private void ShowMinimizeHint()

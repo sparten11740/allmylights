@@ -1,34 +1,38 @@
 ﻿{
-  "Sinks": {
-    "OpenRgb": [
-      {
-        "Server": "127.0.0.1",
-        "Port": 6742,
-        "Overrides": {
-          "MSI Mystic Light MS_7C84": {
-            "Zones": {
-              "JRGB2": {
-                "ChannelLayout": "GRB"
-              }
+  "Sinks": [
+    {
+      "Type": "OpenRGB",
+      "Server": "127.0.0.1",
+      "Port": 6742,
+      "Overrides": {
+        "MSI Mystic Light MS_7C84": {
+          "Zones": {
+            "JRGB2": {
+              "ChannelLayout": "GRB"
             }
           }
         }
       }
-    ]
-  },
-  "Sources": {
-    "Mqtt": [
-      {
-        "Server": "192.168.178.20",
-        "Port": 1883,
-        "Topics": {
-          "Command": "cmnd/sonoff-1144-dimmer-5/color",
-          "Result": {
-            "Path": "stat/sonoff-1144-dimmer-5/RESULT",
-            "ValuePath": "$.Color"
-          }
+    }
+  ],
+  "Sources": [
+    {
+      "Type": "Mqtt",
+      "Server": "192.168.178.20",
+      "Port": 1883,
+      "Topics": {
+        "Command": "cmnd/sonoff-1144-dimmer-5/color",
+        "Result": "stat/sonoff-1144-dimmer-5/RESULT"
+      },
+      "Transformations": [
+        {
+          "Type": "JsonPath",
+          "Expression": "$.Color"
+        },
+        {
+          "Type": "Color"
         }
-      }
-    ]
-  }
+      ]
+    }
+  ]
 }

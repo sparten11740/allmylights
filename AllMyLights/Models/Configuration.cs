@@ -1,12 +1,11 @@
-﻿using NJsonSchema.Annotations;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
 
 namespace AllMyLights.Models
 {
     public class Configuration
     {
-        public Sources Sources { get; set; }
-        public Sinks Sinks { get; set; }
+        public IEnumerable<SourceOptions> Sources { get; set; }
+        public IEnumerable<SinkOptions> Sinks { get; set; }
     }
 }
 

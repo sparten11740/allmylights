@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Reactive;
 using System.Reflection;
+using AllMyLights.Common;
 using AllMyLights.Models.OpenRGB;
 using NLog;
 using OpenRGB.NET;
@@ -11,31 +12,40 @@ using OpenRGB.NET.Models;
 
 namespace AllMyLights.Connectors.Sinks
 {
-    public class OpenRGBSink: ISink
+    public class OpenRGBSink: Sink
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private IOpenRGBClient Client { get; }
-        private OpenRGBSinkParams Options { get; }
+        private OpenRGBSinkOptions Options { get; }
 
         public OpenRGBSink(
-            OpenRGBSinkParams options,
-            IOpenRGBClient client)
+            OpenRGBSinkOptions options,
+            IOpenRGBClient client): base(options)
         {
             Client = client;
             Options = options;
+            Next.Subscribe((color) =>
+            {
+                switch (color)
+                {
+                    case Ref<System.Drawing.Color> it:
+                        UpdateAll(it);
+                        break;
+                    default:
+                        Logger.Error($"Sink {nameof(OpenRGBSink)} received type {color.GetType()} it cannot handle. Please provide a {typeof(System.Drawing.Color)}");
+                        break;
+                }
+
+            });
         }
 
-        public void Consume(System.Drawing.Color color)
-        {
-            UpdateAll(color);
-        }
-
-        public IEnumerable<object> GetConsumers() => RequestCatching(() => {
+        public override IEnumerable<object> GetConsumers() => RequestCatching(() => {
             return Client.GetAllControllerData();
         });
 
-        private Unit UpdateAll(System.Drawing.Color color) => RequestCatching(() =>
+        private Unit UpdateAll(Ref<System.Drawing.Color> colorRef) => RequestCatching(() =>
         {
+            var color = colorRef.Value;
             Logger.Info($"Changing color to {color}");
 
             var count = Client.GetControllerCount();
@@ -112,5 +122,7 @@ namespace AllMyLights.Connectors.Sinks
 
             return default;
         }
+
+        public override string ToString() =>$"OpenRGBSink({Options.Server}:{Options.Port})";
     }
 }

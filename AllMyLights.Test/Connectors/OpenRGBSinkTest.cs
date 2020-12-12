@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AllMyLights.Common;
 using AllMyLights.Connectors.Sinks;
 using AllMyLights.Models.OpenRGB;
 using Moq;
@@ -10,7 +11,7 @@ namespace AllMyLights.Test
 {
     public class OpenRGBSinkTest
     {
-        OpenRGBSinkParams Options = new OpenRGBSinkParams()
+        OpenRGBSinkOptions Options = new OpenRGBSinkOptions()
         {
             Overrides = new Dictionary<string, DeviceOverride>()
                     {
@@ -54,7 +55,7 @@ namespace AllMyLights.Test
 
 
             var client = new OpenRGBSink(Options, openRGBClientMock.Object);
-            client.Consume(targetColor);
+            client.Consume(new Ref<System.Drawing.Color>(targetColor));
 
             openRGBClientMock.Verify();
         }
@@ -83,7 +84,7 @@ namespace AllMyLights.Test
 
 
             var client = new OpenRGBSink(Options, openRGBClientMock.Object);
-            client.Consume(targetColor);
+            client.Consume(new Ref<System.Drawing.Color>(targetColor));
 
             openRGBClientMock.Verify();
         }
@@ -104,7 +105,7 @@ namespace AllMyLights.Test
 
 
             var client = new OpenRGBSink(Options, openRGBClientMock.Object);
-            client.Consume(targetColor);
+            client.Consume(new Ref<System.Drawing.Color>(targetColor));
 
             openRGBClientMock.Verify();
         }
@@ -144,7 +145,7 @@ namespace AllMyLights.Test
 
 
             var client = new OpenRGBSink(Options, openRGBClientMock.Object);
-            client.Consume(targetColor);
+            client.Consume(new Ref<System.Drawing.Color>(targetColor));
 
             openRGBClientMock.Verify();
         }

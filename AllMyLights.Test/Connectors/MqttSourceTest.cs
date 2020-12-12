@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using System.Threading;
-using AllMyLights.Models;
 using Moq;
 using MQTTnet;
 using MQTTnet.Client;
@@ -19,12 +18,14 @@ using MQTTnet.Client.Subscribing;
 using MQTTnet.Client.Disconnecting;
 using AllMyLights.Connectors.Sources;
 using AllMyLights.Models.Mqtt;
+using AllMyLights.Models.Transformations;
+using AllMyLights.Common;
 
 namespace AllMyLights.Test
 {
-    public class MqttSourceTest : ReactiveTest
+    public class MqttSourceTest: ReactiveTest
     {
-        MqttSourceParams Options;
+        MqttSourceOptions Options;
 
         public IMqttClientOptions MqttClientOptions { get; private set; }
         public MqttClientTcpOptions MqttClientTcpOptions { get; private set; }
@@ -34,7 +35,7 @@ namespace AllMyLights.Test
         [SetUp]
         public void Setup()
         {
-            Options = new MqttSourceParams
+            Options = new MqttSourceOptions
             {
                 Server = "wayne-foundation.com",
                 Port = 1863,
@@ -43,11 +44,7 @@ namespace AllMyLights.Test
                 Topics = new Topics
                 {
                     Command = "cmnd/tasmota-dimmer/color",
-                    Result = new Topic
-                    {
-                        Path = "stat/sonoff-1144-dimmer-5/RESULT",
-                        ValuePath = "$.Color"
-                    }
+                    Result = "stat/sonoff-1144-dimmer-5/RESULT",
                 }
             };
 
@@ -78,7 +75,7 @@ namespace AllMyLights.Test
         }
 
         [Test]
-        public void Should_request_color_via_command_topic()
+        public void Should_request_value_via_command_topic()
         {
             var args = new List<MqttApplicationMessage>();
             MqttClientMock.Setup(it => it.PublishAsync(Capture.In(args), CancellationToken.None));
@@ -101,7 +98,7 @@ namespace AllMyLights.Test
             var filter = args.First().TopicFilters.First();
 
             MqttClientMock.Verify(it => it.SubscribeAsync(It.IsAny<MqttClientSubscribeOptions>(), CancellationToken.None));
-            Assert.AreEqual(Options.Topics.Result.Path, filter.Topic);
+            Assert.AreEqual(Options.Topics.Result, filter.Topic);
         }
 
         [Test]
@@ -133,12 +130,12 @@ namespace AllMyLights.Test
         }
 
         [Test]
-        public void Should_consume_message_and_emit_color()
+        public void Should_consume_message_and_emit_payload()
         {
             var black = "#000000";
-            Color expectedColor = Color.FromArgb(255, 0, 0, 0);
 
-            var message = new MqttApplicationMessage { Payload = Encoding.UTF8.GetBytes($"{{ \"Color\": \"{black}\" }}") };
+            string payload = $"{{ \"Color\": \"{black}\" }}";
+            var message = new MqttApplicationMessage { Payload = Encoding.UTF8.GetBytes(payload) };
             var eventArgs = new MqttApplicationMessageReceivedEventArgs("", message);
             var scheduler = new TestScheduler();
 
@@ -158,8 +155,49 @@ namespace AllMyLights.Test
               disposed: 100
             );
 
-            var expected = new Recorded<Notification<Color>>[] {
-                OnNext(20, expectedColor)
+            var expected = new Recorded<Notification<object>>[] {
+                OnNext(20, (object)payload)
+            };
+
+            ReactiveAssert.AreElementsEqual(expected, actual.Messages);
+        }
+
+
+        [Test]
+        public void Should_consume_message_and_apply_transformations()
+        {
+            var red = "#ff0000";
+            Color expectedColor = Color.FromArgb(255, 0, 255, 0);
+
+            string payload = $"{{ \"Color\": \"{red}\" }}";
+            var message = new MqttApplicationMessage { Payload = Encoding.UTF8.GetBytes(payload) };
+            var eventArgs = new MqttApplicationMessageReceivedEventArgs("", message);
+            var scheduler = new TestScheduler();
+
+            MqttClientMock.SetupAllProperties();
+
+            Options.Transformations = new List<TransformationOptions>()
+            {
+                new JsonPathTransformationOptions() { Expression = "$.Color" },
+                new ColorTransformationOptions() { ChannelLayout = "GRB" },
+            }.ToArray();
+
+            var subject = new MqttSource(Options, MqttClientMock.Object);
+
+            scheduler.Schedule(TimeSpan.FromTicks(20), () =>
+            {
+                MqttClientMock.Object.ApplicationMessageReceivedHandler.HandleApplicationMessageReceivedAsync(eventArgs);
+            });
+
+            var actual = scheduler.Start(
+              () => subject.Get(),
+              created: 0,
+              subscribed: 10,
+              disposed: 100
+            );
+
+            var expected = new Recorded<Notification<object>>[] {
+                OnNext(20, (object)new Ref<Color>(expectedColor))
             };
 
             ReactiveAssert.AreElementsEqual(expected, actual.Messages);

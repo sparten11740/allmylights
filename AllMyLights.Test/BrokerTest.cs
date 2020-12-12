@@ -1,12 +1,8 @@
 using AllMyLights.Connectors.Sinks;
 using AllMyLights.Connectors.Sources;
-using AllMyLights.Models;
 using Microsoft.Reactive.Testing;
 using Moq;
 using NUnit.Framework;
-using OpenRGB.NET;
-using OpenRGB.NET.Models;
-using Unmockable;
 
 namespace AllMyLights.Test
 {
@@ -21,9 +17,9 @@ namespace AllMyLights.Test
         [Test]
         public void Should_invoke_sinks_with_colors_emitted_from_sources()
         {
-            var red = System.Drawing.Color.FromName("red");
-            var black = System.Drawing.Color.FromName("black");
-            var green = System.Drawing.Color.FromName("green");
+            var red = System.Drawing.Color.FromName("red") as object;
+            var black = System.Drawing.Color.FromName("black") as object;
+            var green = System.Drawing.Color.FromName("green") as object;
 
             var broker = new Broker()
                 .RegisterSources(MqttSource.Object, SSESource.Object)

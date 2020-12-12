@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using NJsonSchema.Annotations;
 
 namespace AllMyLights.Models.Mqtt
 {
-    public class MqttSourceParams
+    public class MqttSourceOptions: SourceOptions
     {
         [Required]
         public string Server { get; set; }

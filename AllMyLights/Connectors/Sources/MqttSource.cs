@@ -1,33 +1,35 @@
-﻿using AllMyLights.Models;
+﻿using System;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using AllMyLights.Models.Mqtt;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
-using Newtonsoft.Json.Linq;
 using NLog;
-using System;
-using System.Drawing;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace AllMyLights.Connectors.Sources
 {
-    public class MqttSource : ISource
+    public class MqttSource : Source
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly ReplaySubject<Color> Subject = new ReplaySubject<Color>(1);
+        private readonly ReplaySubject<string> Subject = new ReplaySubject<string>(1);
         private IMqttClient MqttClient { get; }
         private IMqttClientOptions MqttClientOptions { get; }
-        private MqttSourceParams Options { get; }
+        private MqttSourceOptions Options { get; }
 
-        public MqttSource(MqttSourceParams options, IMqttClient mqttClient)
+        protected override IObservable<object> Value { get; }
+
+
+        public MqttSource(MqttSourceOptions options, IMqttClient mqttClient): base(options)
         {
+            Value = Subject.AsObservable();
+
             Options = options;
             MqttClient = mqttClient;
             var builder = new MqttClientOptionsBuilder()
@@ -40,6 +42,7 @@ namespace AllMyLights.Connectors.Sources
             }
 
             MqttClientOptions = builder.Build();
+
 
             Initialize();
         }
@@ -67,26 +70,18 @@ namespace AllMyLights.Connectors.Sources
             var payload = Encoding.UTF8.GetString(args.ApplicationMessage.Payload);
 
             Logger.Debug($"Received payload {payload}");
-            Logger.Debug($"Extracting color with JsonPath expression {Options.Topics.Result.ValuePath}");
-
-            JObject o = JObject.Parse(payload);
-            var color = o.SelectToken(Options.Topics.Result.ValuePath);
-
-            if (color != null)
-            {
-                Subject.OnNext(ColorConverter.Decode(color.ToString(), Options.Topics.Result.ChannelLayout));
-            }
+            Subject.OnNext(payload);
         }
 
         private async Task HandleConnected(MqttClientConnectedEventArgs e)
         {
             Logger.Info($"Connection to mqtt server {Options.Server} established");
-            Logger.Info($"Attempting to subscribe to {Options.Topics.Result.Path}");
+            Logger.Info($"Attempting to subscribe to {Options.Topics.Result}");
 
-            MqttTopicFilter topicFilter = new MqttTopicFilterBuilder().WithTopic(Options.Topics.Result.Path).Build();
+            MqttTopicFilter topicFilter = new MqttTopicFilterBuilder().WithTopic(Options.Topics.Result).Build();
             await MqttClient.SubscribeAsync(topicFilter);
 
-            Logger.Info($"Succesfully subscribed to {Options.Topics.Result.Path}");
+            Logger.Info($"Succesfully subscribed to {Options.Topics.Result}");
         }
 
         private async Task HandleDisconnected(MqttClientDisconnectedEventArgs args)
@@ -105,9 +100,6 @@ namespace AllMyLights.Connectors.Sources
             }
         }
 
-        public IObservable<Color> Get()
-        {
-            return Subject.AsObservable();
-        }
+        public override string ToString() => $"{nameof(MqttSource)}({Options.Server}:{Options.Port})";
     }
 }

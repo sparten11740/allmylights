@@ -7,7 +7,7 @@ namespace AllMyLights.Models.Mqtt
         public string Command { get; set; }
 
         [Required]
-        public Topic Result { get; set; }
+        public string Result { get; set; }
     }
 }
 
