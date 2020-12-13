@@ -9,6 +9,5 @@ namespace AllMyLights.Models
     [KnownType(typeof(OpenRGBSinkOptions))]
     public abstract class SinkOptions : ConnectorOptions
     {
-        public string Foo { get; set; }
     }
 }

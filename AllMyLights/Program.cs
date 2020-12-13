@@ -7,6 +7,7 @@ using AllMyLights.Connectors.Sources;
 using AllMyLights.Json;
 using AllMyLights.Models;
 using Newtonsoft.Json;
+using NJsonSchema;
 using NJsonSchema.Generation;
 using NLog;
 using NLog.Conditions;
@@ -28,13 +29,15 @@ namespace AllMyLights
         /// AllMyLights is a tool to sync colors from a home automation bus to OpenRGB managed peripherals via MQTT
         /// </summary>
         /// <param name="config">Path to the config file that contains the MQTT and OpenRGB settings</param>
+        /// <param name="exportConfigSchemaTo">Writes the config file as Open API v3 schema to the provided filepath and exits afterwards.</param>
         /// <param name="logLevel">Change the log level to either debug, info, warn, error, or off.</param>
         /// <param name="logFile">If provided, log output will additionally be captured in the provided file.</param>
         /// <param name="minimized">Minimize to tray after startup</param>
-        /// <param name="listDevices">List all available OpenRGB devices and their zones. Returns right away</param>
+        /// <param name="listDevices">List device information of devices connected to a sink if available</param>
         /// <param name="failOnUnknownProperty">Fails if an unknown property is encountered in the provided config file. Can be disabled.</param>
         static void Main(
             FileInfo config,
+            FileInfo exportConfigSchemaTo = null,
             string logLevel = "warn",
             string logFile = null,
             bool minimized = false,
@@ -42,6 +45,12 @@ namespace AllMyLights
             bool failOnUnknownProperty = true
         )
         {
+            if (exportConfigSchemaTo != null)
+            {
+                ExportSchema(exportConfigSchemaTo);
+                Environment.Exit(0);
+            }
+
             using StreamReader file = File.OpenText(config.FullName);
             var content = file.ReadToEnd();
 
@@ -79,6 +88,23 @@ namespace AllMyLights
             broker.Listen();
             ResetEvent.WaitOne();
 #endif
+        }
+
+        private static void ExportSchema(FileInfo target)
+        {
+            JsonSchemaGeneratorSettings settings = new JsonSchemaGeneratorSettings(){
+                    AllowReferencesWithProperties = true,
+                    FlattenInheritanceHierarchy = true,
+                    SchemaType = SchemaType.OpenApi3
+            };
+            settings.SchemaProcessors.Add(new InheritanceSchemaProcessor());
+
+            var schema = JsonSchema.FromType<Configuration>(settings);
+
+            File.WriteAllText(
+                target.FullName,
+                schema.ToJson()
+            );
         }
 
         private static void ListDevices(ISink[] sinks)

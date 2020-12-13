@@ -14,7 +14,6 @@ namespace AllMyLights.Json
 
     public partial class ConfigurationValidator
     {
-        
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -35,7 +34,6 @@ namespace AllMyLights.Json
         public void Validate(string config)
         {
             var rootSchema = JsonSchema.FromType<Configuration>();
-
             var o = JObject.Parse(config);
 
             JArray sources = o.SelectToken($"$.{nameof(Configuration.Sources)}") as JArray;

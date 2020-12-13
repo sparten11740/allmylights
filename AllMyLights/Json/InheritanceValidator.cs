@@ -17,7 +17,8 @@ namespace AllMyLights.Json
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private const string Dicriminator = "Type";
-        private Dictionary<string, JsonSchema> Schemas = new Dictionary<string, JsonSchema>();
+
+        private readonly Dictionary<string, JsonSchema> Schemas = new Dictionary<string, JsonSchema>();
         private JArray Objects { get; set; }
         private string Path { set; get; }
         private ICollection<Func<JObject, int, bool>> ChildValidators { get; set; } = new List<Func<JObject, int, bool>>();
@@ -44,6 +45,7 @@ namespace AllMyLights.Json
 
                 return new InheritanceValidator<TProp>(children as JArray, Settings)
                     .WithPath($"{Path}[{index}].{property}")
+                    .OnError(SignalError)
                     .Validate();
             });
             return this;
@@ -89,10 +91,20 @@ namespace AllMyLights.Json
 
 
                 isValid = ChildValidators.Select(validate => validate(obj, 0)).Aggregate(true, (a, b) => a && b) && isValid;
+                string discriminatorValue = obj.SelectToken($"$.{Dicriminator}")?.ToString();
+
+                if (discriminatorValue == null)
+                {
+                    SignalError(new SchemaValidationError(
+                         path: $"{Path}[{i}]",
+                         message: $"Required property {Dicriminator} is missing."
+                    ));
+                    continue;
+                }
 
                 try
                 {
-                    var schema = Schemas[obj.SelectToken($"$.{Dicriminator}").ToString()];
+                    var schema = Schemas[discriminatorValue];
                     var errors = schema.Validate(obj);
                     isValid = isValid && errors.Count() == 0;
 
@@ -104,7 +116,7 @@ namespace AllMyLights.Json
                          path: $"{Path}[{i}].{Dicriminator}",
                          message: $"Property {Dicriminator} can only be one of the following {string.Join(", ", Schemas.Keys)}"
 
-                     ));
+                    ));
                     continue;
                 }
             }

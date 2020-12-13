@@ -12,9 +12,12 @@
   - [Using the binaries](#using-the-binaries)
   - [Building the project yourself](#building-the-project-yourself)
 - [Configuration](#configuration)
+  - [JsonPath Transformation](#jsonpath-transformation)
+  - [Color Transformation](#color-transformation)
 - [Run me](#run-me)
   - [Windows](#windows)
   - [Linux](#linux)
+  - [Command Line Arguments](#command-line-arguments)
 - [Autostart](#autostart)
   - [Windows](#windows-1)
   - [Linux](#linux-1)
@@ -207,12 +210,15 @@ You can run me as simple as follows, only the path to a valid config file is req
 
 ### Command Line Arguments
 
-| Argument                   | Description                                                                 |
-| -------------------------- | --------------------------------------------------------------------------- |
-| **&#x2011;&#x2011;config** | Path to the config file that contains the MQTT and OpenRGB settings         |
-| &#x2011;&#x2011;log-level  | Change the log level to either debug, info, warn, error, or off.            |
-| &#x2011;&#x2011;log-file   | If provided, log output will additionally be captured in the provided file. |
-| &#x2011;&#x2011;minimized  | Minimize to tray after startup (Windows only)                               |
+| Argument                                 | Description                                                                 |
+| -----------------------------------------| --------------------------------------------------------------------------- |
+| **&#x2011;&#x2011;config**               | Path to the config file that contains the sink & source settings            |
+| &#x2011;&#x2011;fail-on-unknown-property | Fails if an unknown property is encountered in the provided config file     |
+| &#x2011;&#x2011;export-config-schema-to  | Writes the configuration schema (Open API v3) to the provided filepath.     |
+| &#x2011;&#x2011;log-level                | Change the log level to either debug, info, warn, error, or off.            |
+| &#x2011;&#x2011;log-file                 | If provided, log output will additionally be captured in the provided file. |
+| &#x2011;&#x2011;minimized                | Minimize to tray after startup (Windows only)                               |
+| &#x2011;&#x2011;list-devices             | List device information of devices connected to a sink if available         |
 
 ## Autostart
 ### Windows
