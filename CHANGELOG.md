@@ -1,3 +1,12 @@
+## [0.4.0] - TBD
+
+### General
+- Add command-line flag to export a schema representation of the configuration file (OpenAPI 3 format).
+- Introduce verbose logging for all transformations (log level debug)
+
+### Transformations
+- Add `Mapping` transformation to map matching input strings to output value. Supports regular expressions.
+
 ## [0.3.0] - 12/12/2020
 ### General
 - In preparation for future changes, this release aims to achieve a clear separation between transport and transformation logic
@@ -15,5 +24,6 @@
 - Add option to override the channel layout of a device
 - Add option to override the channel layout of a zone
 
+[0.4.0]: https://github.com/sparten11740/allmylights/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/sparten11740/allmylights/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/sparten11740/allmylights/compare/v0.1.0...v0.2.0

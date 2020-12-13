@@ -108,7 +108,7 @@ namespace AllMyLights.Json
                     var errors = schema.Validate(obj);
                     isValid = isValid && errors.Count() == 0;
 
-                    SignalErrors(errors, Path);
+                    SignalErrors(errors, $"{Path}[{i}]");
                 }
                 catch (KeyNotFoundException)
                 {

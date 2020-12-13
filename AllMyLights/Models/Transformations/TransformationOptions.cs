@@ -7,7 +7,11 @@ namespace AllMyLights.Models.Transformations
 {
     [JsonSchemaFlatten]
     [JsonConverter(typeof(InheritanceConverter), "Type", nameof(TransformationOptions))]
-    [KnownType(typeof(ColorTransformationOptions)), KnownType(typeof(JsonPathTransformationOptions))]
+    [
+        KnownType(typeof(ColorTransformationOptions)),
+        KnownType(typeof(JsonPathTransformationOptions)),
+        KnownType(typeof(MappingTransformationOptions))
+    ]
     public class TransformationOptions
     {
         public string Type { get; set; }

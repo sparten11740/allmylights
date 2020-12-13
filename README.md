@@ -12,8 +12,10 @@
   - [Using the binaries](#using-the-binaries)
   - [Building the project yourself](#building-the-project-yourself)
 - [Configuration](#configuration)
-  - [JsonPath Transformation](#jsonpath-transformation)
-  - [Color Transformation](#color-transformation)
+  - [Transformations](#transformations)
+    - [JsonPath](#jsonpath)
+    - [Color](#color)
+    - [Mapping](#mapping)
 - [Run me](#run-me)
   - [Windows](#windows)
   - [Linux](#linux)
@@ -159,8 +161,8 @@ Available source, sink, and transformations types as of this version are:
 | Sink           | `OpenRGB`                  | 
 | Transformation | `JsonPath`, `Color`        |
 
-
-### JsonPath Transformation
+### Transformations
+#### JsonPath
 This transformation can be used for extracting values from a json string.
 
 ```json
@@ -170,7 +172,7 @@ This transformation can be used for extracting values from a json string.
 For further information on how to extract a value from JSON using `JsonPath` expressions, please refer to [this documentation](https://support.smartbear.com/alertsite/docs/monitors/api/endpoint/jsonpath.html). 
 
 
-### Color Transformation
+#### Color
 This transformation is used to deal with the type conversion from an input string to a Color type that can be consumed by a sink that expects such.
 
 ```json
@@ -179,7 +181,29 @@ This transformation is used to deal with the type conversion from an input strin
 
 Supported values are hex strings such as the following `#f2d`, `#ed20ff`, `#2020ffed` and color names where the name can be any [known color](https://docs.microsoft.com/en-us/dotnet/api/system.drawing.knowncolor?view=net-5.0).
 
-It also supports the optional property `ChannelLayout` to deal with cases where the channels of a color in the hex string are mixed up for some reason such as f.i. when the first hex number does not correspond with red but with green. Possible values are any string of up to 4 characters containing `R`, `G`, `B`, or `A` for alpha. Also `_` can be used to ignore values, for instance if you had an RGBA hex string, you could use the channel layout `RGB_` to ignore the alpha value (will default to `Oxff`);
+It also supports the optional property `ChannelLayout` to deal with cases where the channels of a color in the hex string are mixed up for some reason such as f.i. when the first hex number does not correspond with red but with green. Possible values are any string of up to 4 characters containing `R`, `G`, `B`, or `A` for alpha. Also `_` can be used to ignore values, for instance if you had an RGBA hex string, you could use the channel layout `RGB_` to ignore the alpha value which then will default to `Oxff` (255). The default for ignored color channels is `0x00` (0);
+
+#### Mapping
+This transformation is used to map an input value to an output value. It can be provided a number of mappings where the first matching one is used to map the input value. Per default `FailOnMiss` is false so that input values that are not matched by any mapping are simply passed through.
+
+The `From` property of a mapping expects a regular expression. Please make sure that you escape any control characters if your goal is a simple string match.
+
+```json
+  {
+    "Type": "Mapping",
+    "FailOnMiss":  false,
+    "Mappings": [
+      {
+        "From": "#?FFFFFF.+",
+        "To": "#ff0000"
+      },
+      {
+        "From": "Bruce",
+        "To": "Wayne"
+      }
+    ]
+  }
+```
 
 ## Run me
 ### Windows

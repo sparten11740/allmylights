@@ -2,7 +2,7 @@
   "Sinks": [
     {
       "Type": "OpenRGB",
-      "Server": "127.0.0.1",
+      "Server": "192.168.178.120",
       "Port": 6742,
       "Overrides": {
         "MSI Mystic Light MS_7C84": {
@@ -28,6 +28,16 @@
         {
           "Type": "JsonPath",
           "Expression": "$.Color"
+        },
+        {
+          "Type": "Mapping",
+          "FailOnMiss":  false,
+          "Mappings": [
+            {
+              "From": "#?FFFFFF.+",
+              "To": "#ff0000"
+            }
+          ]
         },
         {
           "Type": "Color"

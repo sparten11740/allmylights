@@ -14,7 +14,6 @@ namespace AllMyLights
 
         public static Color Decode(string input, string channelLayout = null)
         {
-            Logger.Debug($"Decoding color from ${input}");
             try
             {
                 FromHex(channelLayout != null ? ApplyLayout(input, channelLayout) : input, out var a, out var r, out var g, out var b);

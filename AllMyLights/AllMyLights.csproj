@@ -10,6 +10,8 @@
         <DefineConstants>Windows</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+      <OutputPath>bin\Debug\netcoreapp3.1</OutputPath>
+      <OutputPath>bin\Debug\netcoreapp3.1</OutputPath>
       <DocumentationFile></DocumentationFile>
       <NoWarn>1701;1702;NU5105;1591;1572;1571;1573;1587;1570</NoWarn>
       <LangVersion>latestmajor</LangVersion>
