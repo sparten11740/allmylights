@@ -12,6 +12,7 @@ using NJsonSchema.Generation;
 using NLog;
 using NLog.Conditions;
 using NLog.Targets;
+using AllMyLights.Platforms;
 
 #if Windows
 using System.Windows.Forms;
@@ -35,6 +36,7 @@ namespace AllMyLights
         /// <param name="minimized">Minimize to tray after startup</param>
         /// <param name="listDevices">List device information of devices connected to a sink if available</param>
         /// <param name="failOnUnknownProperty">Fails if an unknown property is encountered in the provided config file. Can be disabled.</param>
+        /// <param name="enableAutostart">Setup autostart for logged in user with current folder as working directory</param>
         static void Main(
             FileInfo config,
             FileInfo exportConfigSchemaTo = null,
@@ -42,19 +44,40 @@ namespace AllMyLights
             string logFile = null,
             bool minimized = false,
             bool listDevices = false,
-            bool failOnUnknownProperty = true
+            bool failOnUnknownProperty = true,
+            bool enableAutostart = false
         )
         {
+            ConfigureLogging(logLevel, logFile);
+
             if (exportConfigSchemaTo != null)
             {
                 ExportSchema(exportConfigSchemaTo);
                 Environment.Exit(0);
             }
 
+            if (enableAutostart)
+            {
+                AutostartEntry
+                    .GetPlatformInstance()
+                    .Create(config?.FullName, logLevel);
+                Environment.Exit(0);
+            }
+
+            if (config == null)
+            {
+                Logger.Error($"Required parameter --{nameof(config)} not provided");
+                Environment.Exit((int)ExitCode.MissingArgument);
+            }
+
+            if (!File.Exists(config.FullName))
+            {
+                Logger.Error($"File {config.FullName} does not exist.");
+                Environment.Exit((int)ExitCode.InvalidArgument);
+            }
+
             using StreamReader file = File.OpenText(config.FullName);
             var content = file.ReadToEnd();
-
-            ConfigureLogging(logLevel, logFile);
 
             new ConfigurationValidator(new JsonSchemaGeneratorSettings
             {
@@ -92,10 +115,11 @@ namespace AllMyLights
 
         private static void ExportSchema(FileInfo target)
         {
-            JsonSchemaGeneratorSettings settings = new JsonSchemaGeneratorSettings(){
-                    AllowReferencesWithProperties = true,
-                    FlattenInheritanceHierarchy = true,
-                    SchemaType = SchemaType.OpenApi3
+            JsonSchemaGeneratorSettings settings = new JsonSchemaGeneratorSettings()
+            {
+                AllowReferencesWithProperties = true,
+                FlattenInheritanceHierarchy = true,
+                SchemaType = SchemaType.OpenApi3
             };
             settings.SchemaProcessors.Add(new InheritanceSchemaProcessor());
 

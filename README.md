@@ -23,6 +23,8 @@
 - [Autostart](#autostart)
   - [Windows](#windows-1)
   - [Linux](#linux-1)
+    - [Automated setup](#automated-setup)
+    - [Manual Instructions](#manual-instructions)
 - [Attribution](#attribution)
 
 ## What am I?
@@ -155,11 +157,11 @@ I read the required server ip addresses, ports, topics etc. from a configuration
 ```
 Available source, sink, and transformations types as of this version are:
 
-| Type           | Options                    |
-| ---------------| -------------------------- |
-| Source         | `Mqtt`                     |
-| Sink           | `OpenRGB`                  | 
-| Transformation | `JsonPath`, `Color`        |
+| Type           | Options                        |
+| ---------------| ------------------------------ |
+| Source         | `Mqtt`                         |
+| Sink           | `OpenRGB`                      | 
+| Transformation | `JsonPath`, `Color`, `Mapping` |
 
 ### Transformations
 #### JsonPath
@@ -243,6 +245,7 @@ You can run me as simple as follows, only the path to a valid config file is req
 | &#x2011;&#x2011;log-file                 | If provided, log output will additionally be captured in the provided file. |
 | &#x2011;&#x2011;minimized                | Minimize to tray after startup (Windows only)                               |
 | &#x2011;&#x2011;list-devices             | List device information of devices connected to a sink if available         |
+| &#x2011;&#x2011;enable-autostart         | Generates an autostart entry (as of now Linux only)                         |
 
 ## Autostart
 ### Windows
@@ -257,7 +260,19 @@ Move the shortcut to `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup`
 Make also sure that your OpenRGB server is run on startup as described in the [OpenRGB Section](#openrgb)
 
 ### Linux
-The following instructions work for Raspbian or any other distribution that uses systemd. 
+
+#### Automated setup
+I can generate a service definition and enable startup on boot (in distributions using systemd). Simply call me with elevated privileges using the `--enable-autostart` flag. I assume that a config file named `allmylightsrc.json` resides in the same folder as my executable. This can be customized using the `--config` parameter. Also the log level can be changed. Before executing the following lines, please make sure that the environment variable DOTNET_ROOT is set (f.i. in `/etc/environment`)
+
+```bash
+sudo su
+./AllMyLights --enable-autostart --log-level debug
+
+# double check that I am up and running
+service allmylights status
+```
+#### Manual Instructions
+> The following instructions work for Raspbian or any other distribution that uses systemd. 
 
 Copy the binary for your platform and the `allmylightsrc.json` to a target directory (f.i. `$HOME/allmylights`) on your machine. Create a service definition using `sudo vi /etc/systemd/system/allmylights.service` and copy the following configuration:
 

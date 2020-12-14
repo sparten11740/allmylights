@@ -57,5 +57,6 @@
       <Folder Include="Platforms\Windows\" />
       <Folder Include="Transformations\" />
       <Folder Include="Models\Transformations\" />
+      <Folder Include="Platforms\Linux\" />
     </ItemGroup>
 </Project>
