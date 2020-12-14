@@ -40,7 +40,7 @@ namespace AllMyLights
         static void Main(
             FileInfo config,
             FileInfo exportConfigSchemaTo = null,
-            string logLevel = "warn",
+            string logLevel = "info",
             string logFile = null,
             bool minimized = false,
             bool listDevices = false,

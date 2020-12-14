@@ -22,9 +22,11 @@
   - [Command Line Arguments](#command-line-arguments)
 - [Autostart](#autostart)
   - [Windows](#windows-1)
+    - [CLI](#cli)
+    - [Manually](#manually)
   - [Linux](#linux-1)
-    - [Automated setup](#automated-setup)
-    - [Manual Instructions](#manual-instructions)
+    - [CLI](#cli-1)
+    - [Manually](#manually-1)
 - [Attribution](#attribution)
 
 ## What am I?
@@ -198,10 +200,6 @@ The `From` property of a mapping expects a regular expression. Please make sure 
       {
         "From": "#?FFFFFF.+",
         "To": "#ff0000"
-      },
-      {
-        "From": "Bruce",
-        "To": "Wayne"
       }
     ]
   }
@@ -217,7 +215,7 @@ You can run me as simple as follows, only the path to a valid config file is req
 .\AllMyLights.exe --config allmylightsrc.json
 ```
 
-You can also change the log level to one of the following: `info`, `debug`, `warn` (default), `error`, `off`.
+You can also change the log level to one of the following: `info`, `debug`, `warn`, `error`, `off`.
 
 ```powershell
 .\AllMyLights.exe --config allmylightsrc.json --log-level debug
@@ -241,17 +239,23 @@ You can run me as simple as follows, only the path to a valid config file is req
 | **&#x2011;&#x2011;config**               | Path to the config file that contains the sink & source settings            |
 | &#x2011;&#x2011;fail-on-unknown-property | Fails if an unknown property is encountered in the provided config file     |
 | &#x2011;&#x2011;export-config-schema-to  | Writes the configuration schema (Open API v3) to the provided filepath.     |
-| &#x2011;&#x2011;log-level                | Change the log level to either debug, info, warn, error, or off.            |
+| &#x2011;&#x2011;log-level                | Change the log level to either debug, info (default), warn, error, or off.  |
 | &#x2011;&#x2011;log-file                 | If provided, log output will additionally be captured in the provided file. |
 | &#x2011;&#x2011;minimized                | Minimize to tray after startup (Windows only)                               |
 | &#x2011;&#x2011;list-devices             | List device information of devices connected to a sink if available         |
-| &#x2011;&#x2011;enable-autostart         | Generates an autostart entry (as of now Linux only)                         |
+| &#x2011;&#x2011;enable-autostart         | Generates an autostart entry                                                |
 
 ## Autostart
 ### Windows
+#### CLI
+I can generate a shortcut in the user startup folder automatically. Simply run the following (the config file `allmylightsrc.json` is expected to reside in the same folder as my executable, but can be customized by providing the `--config` parameter)
+```ps
+.\AllMyLights.exe --enable-autostart
+```
+#### Manually
 Create a shortcut to your `AllMyLights.exe`, open its properties and change the target to something along the lines:
 
-```
+```ps
 "D:\Program Files\AllMyLights\AllMyLights.exe" --config allmylightsrc.json --minimized true
 ```
 
@@ -261,7 +265,7 @@ Make also sure that your OpenRGB server is run on startup as described in the [O
 
 ### Linux
 
-#### Automated setup
+#### CLI
 I can generate a service definition and enable startup on boot (in distributions using systemd). Simply call me with elevated privileges using the `--enable-autostart` flag. I assume that a config file named `allmylightsrc.json` resides in the same folder as my executable. This can be customized using the `--config` parameter. Also the log level can be changed. Before executing the following lines, please make sure that the environment variable DOTNET_ROOT is set (f.i. in `/etc/environment`)
 
 ```bash
@@ -271,7 +275,7 @@ sudo su
 # double check that I am up and running
 service allmylights status
 ```
-#### Manual Instructions
+#### Manually
 > The following instructions work for Raspbian or any other distribution that uses systemd. 
 
 Copy the binary for your platform and the `allmylightsrc.json` to a target directory (f.i. `$HOME/allmylights`) on your machine. Create a service definition using `sudo vi /etc/systemd/system/allmylights.service` and copy the following configuration:

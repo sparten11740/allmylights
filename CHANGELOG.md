@@ -2,7 +2,7 @@
 
 ### General
 - Add command-line flag to export a schema representation of the configuration file (OpenAPI 3 format).
-- Add command-line flag to generate a systemd service definition and enable autostart (Linux)
+- Add command-line flag to generate a systemd service definition and enable autostart (Linux) or create a shortcut in the user's startup folder (Windows)
 - Introduce verbose logging for all transformations (log level debug)
 
 ### Transformations
