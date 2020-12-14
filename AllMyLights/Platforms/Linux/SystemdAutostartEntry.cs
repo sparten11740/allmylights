@@ -47,7 +47,7 @@ WantedBy=multi-user.target
 
                 if (string.IsNullOrEmpty(dotnetRoot))
                 {
-                    Logger.Warn("Environment variable DOTNET_ROOT not set. App will pt");
+                    Logger.Warn("Environment variable DOTNET_ROOT not set. You will face problems if you are using framework dependant binaries.");
                 }
 
                 using var currentProcess = Process.GetCurrentProcess(); 
