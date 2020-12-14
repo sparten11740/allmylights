@@ -1,16 +1,18 @@
-﻿using System;
-using System.Linq;
+﻿using AllMyLights.Extensions;
+using NLog;
+using System;
 using System.Drawing;
 using System.Globalization;
-using NLog;
-using AllMyLights.Extensions;
-using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace AllMyLights
 {
     public static class ColorConverter
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        private static Regex Word { get; } = new Regex("^[a-zA-Z]+$");
 
         public static Color Decode(string input, string channelLayout = null)
         {
@@ -21,7 +23,13 @@ namespace AllMyLights
             }
             catch (ArgumentException)
             {
-                Logger.Debug($"{input} is no valid hex-code. Attempting to derive color by name.");
+                Logger.Info($"{input} is no valid hex-code.");
+
+                if (!Word.Match(input).Success)
+                {
+                    throw new ArgumentException($"{input} cannot be a valid color name");
+                }
+
                 return Color.FromName(input);
             }
         }

@@ -49,6 +49,20 @@ namespace AllMyLights.Test
         }
 
         [Test]
+        public void Should_not_decode_as_color_name_on_invalid_hex_for_given_channel_layout()
+        {
+            try
+            {
+                var color = ColorConverter.Decode("#ff0000", "_RGB");
+                Assert.Fail("Should throw on neither valid hex nor valid color name");
+            }
+            catch (ArgumentException)
+            {
+                Assert.Pass();
+            }
+        }
+
+        [Test]
         public void Should_decode_from_hex_code_with_layout_XRGB()
         {
             var color = ColorConverter.Decode("#FF226688", "_RGB");
