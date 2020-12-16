@@ -71,10 +71,17 @@ namespace AllMyLights.Test
             ReactiveAssert.AreElementsEqual(expected, actual.Messages);
         }
 
-        [Test]
-        public void Should_throw_argument_exception_for_invalid_input()
+        [TestCase("wrong type")]
+        [TestCase("exception on decode")]
+        public void Should_not_break_for_invalid_input(string testCase)
         {
-            var source = Observable.Return(new object());
+            var input = testCase switch
+            {
+                "wrong type" => new object(),
+                "exception on decode" => "#kennadecode"
+            };
+
+            var source = Observable.Return(input);
 
             var transformation = new ColorTransformation(new ColorTransformationOptions());
 
@@ -84,14 +91,16 @@ namespace AllMyLights.Test
             var actual = scheduler.Start(
               () => transformation.GetOperator()(source),
               created: 0,
-              subscribed: 10,
+              subscribed: 0,
               disposed: 100
             );
 
 
-            Recorded<Notification<Ref<Color>>> first = actual.Messages.First();
-            Equals(NotificationKind.OnError, first.Value.Kind);
-            Equals(typeof(ArgumentException), first.Value.Exception.GetType());
+            var expected = new Recorded<Notification<Ref<Color>>>[] {
+                OnCompleted<Ref<Color>>(1)
+            };
+
+            ReactiveAssert.AreElementsEqual(expected, actual.Messages);
         }
     }
 }

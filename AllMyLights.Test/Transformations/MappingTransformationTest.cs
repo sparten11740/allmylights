@@ -43,13 +43,13 @@ namespace AllMyLights.Test
         }
 
         [Test]
-        public void Should_fail_on_miss_if_configured_to()
+        public void Should_retrn_nothing_on_miss_if_configured_to()
         {
             new Validator()
                 .AddMapping("bruce-wayne", "blue")
                 .StartWith("red")
                 .FailOnMiss()
-                .ExpectFailure()
+                .ExpectEmpty()
                 .Verify();
         }
 
@@ -62,7 +62,7 @@ namespace AllMyLights.Test
 
             private string Input { get; set; }
             private string Output { get; set; }
-            private bool ShouldFail { get; set; } = false;
+            private bool ShouldReturnEmpty { get; set; } = false;
 
             public Validator StartWith(string input)
             {
@@ -72,9 +72,10 @@ namespace AllMyLights.Test
 
             public Validator AddMapping(string match, string substitute)
             {
-                Options.Mappings.Add(new MappingTransformationOptions.Mapping() {
-                        From = match,
-                        To = substitute
+                Options.Mappings.Add(new MappingTransformationOptions.Mapping()
+                {
+                    From = match,
+                    To = substitute
                 });
                 return this;
             }
@@ -91,9 +92,9 @@ namespace AllMyLights.Test
                 return this;
             }
 
-            public Validator ExpectFailure()
+            public Validator ExpectEmpty()
             {
-                ShouldFail = true;
+                ShouldReturnEmpty = true;
                 return this;
             }
 
@@ -104,28 +105,28 @@ namespace AllMyLights.Test
                 var scheduler = new TestScheduler();
                 var transformation = new MappingTransformation(Options);
 
-
-                if (ShouldFail)
-                {
-                    ReactiveAssert.Throws<Exception>(() => {
-                        transformation.GetOperator()(source).Subscribe();
-                    });
-                }
-                else
-                {
-
-                    var actual = scheduler.Start(
+                var actual = scheduler.Start(
                       () => transformation.GetOperator()(source),
                       created: 0,
                       subscribed: 10,
                       disposed: 100
                     );
+
+                if (ShouldReturnEmpty)
+                {
+
                     var expected = new Recorded<Notification<string>>[] {
-                    OnNext(10, Output),
-                    OnCompleted<string>(10)
+                        OnCompleted<string>(10)
                     };
                     ReactiveAssert.AreElementsEqual(expected, actual.Messages);
-
+                }
+                else
+                {
+                    var expected = new Recorded<Notification<string>>[] {
+                        OnNext(10, Output),
+                        OnCompleted<string>(10)
+                    };
+                    ReactiveAssert.AreElementsEqual(expected, actual.Messages);
                 }
 
             }

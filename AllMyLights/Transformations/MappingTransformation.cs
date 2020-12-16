@@ -8,7 +8,7 @@ using NLog;
 
 namespace AllMyLights.Transformations
 {
-    public class MappingTransformation: ITransformation<string>
+    public class MappingTransformation : ITransformation<string>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -25,26 +25,32 @@ namespace AllMyLights.Transformations
 
         public Func<IObservable<object>, IObservable<string>> GetOperator()
         {
-            return (source) => source.Select(input => {
-                    var inputString = input as string;
+            return (source) => source.Select(input =>
+            {
+                var inputString = input as string;
                 Match match = null;
 
                 Logger.Debug($"See if any mappings apply for {inputString}");
 
-                    var mapping = Mappings.FirstOrDefault(m => {
-                        match = m.Item1.Match(inputString);
-                        return match.Success;
-                    });
+                var mapping = Mappings.FirstOrDefault(m =>
+                {
+                    match = m.Item1.Match(inputString);
+                    return match.Success;
+                });
 
                 Logger.Debug(() => $"{(match.Success ? $"{inputString} matched by {mapping.Item1}. Substituting {mapping.Item2}..." : "No applicable mapping found.")}");
 
-                string output = match.Success ?
-                    match.Result(mapping.Item2) :
-                    (FailOnMiss ? throw new KeyNotFoundException() : inputString);
+                IObservable<string> output = match.Success ?
+                    Observable.Return(match.Result(mapping.Item2)) :
+                    (FailOnMiss ? Observable.Empty<string>() : Observable.Return(inputString));
 
-                Logger.Debug($"Mapping returns substituted value {output}");
 
                 return output;
+            })
+            .Switch()
+            .Do((output) =>
+            {
+                Logger.Debug($"Mapping returns substituted value {output}");
             });
         }
     }

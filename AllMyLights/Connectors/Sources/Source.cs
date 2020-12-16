@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using AllMyLights.Extensions;
 using AllMyLights.Models;
 using AllMyLights.Transformations;
-using AllMyLights.Extensions;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace AllMyLights.Connectors.Sources
 {

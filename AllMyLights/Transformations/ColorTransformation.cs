@@ -7,7 +7,7 @@ using NLog;
 
 namespace AllMyLights.Transformations
 {
-    public class ColorTransformation: ITransformation<Ref<Color>>
+    public class ColorTransformation : ITransformation<Ref<Color>>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -26,16 +26,27 @@ namespace AllMyLights.Transformations
             {
                 return source.Select((input) =>
                 {
-                    if (!(input is string)) {
-                        throw new ArgumentException($"{nameof(ColorTransformation)} requires input to be of type string");
+                    if (!(input is string))
+                    {
+                        Logger.Error($"{nameof(ColorTransformation)} requires input to be of type string");
+                        return Observable.Empty<Ref<Color>>();
                     }
 
                     Logger.Debug($"Decoding color from {input}");
-                    Ref<Color> colorRef = new Ref<Color>(ColorConverter.Decode(input as string, ChannelLayout));
-                    Logger.Debug($"Decoded {colorRef.Value}");
 
-                    return colorRef;
-                });
+                    try
+                    {
+                        Ref<Color> colorRef = new Ref<Color>(ColorConverter.Decode(input as string, ChannelLayout));
+                        Logger.Debug($"Decoded {colorRef.Value}");
+                        return Observable.Return(colorRef);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e.Message);
+                        return Observable.Empty<Ref<Color>>();
+                    }
+
+                }).Switch();
             };
         }
     }

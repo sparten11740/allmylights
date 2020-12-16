@@ -1,15 +1,17 @@
 ﻿using AllMyLights.Connectors.Sinks;
 using AllMyLights.Connectors.Sources;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive;
 
 namespace AllMyLights
 {
     public class Broker
     {
-
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private List<ISink> Sinks { get; } = new List<ISink>();
         private List<ISource> Sources { get; } = new List<ISource>();
 
@@ -25,13 +27,21 @@ namespace AllMyLights
             return this;
         }
 
+
+        public IObservable<TReturn> HandleError<TException, TReturn>(TException e) where TException: Exception
+        {
+            return Observable.Empty<TReturn>();
+        }
+
         public void Listen()
         {
+
             Observable
                 .Merge(Sources.Select((it) => it.Get()))
-                .Subscribe((color) =>
+                .Catch(Observable.Empty<object>())
+                .Subscribe((value) =>
             {
-                Sinks.ForEach((sink) => sink.Consume(color));
+                Sinks.ForEach((sink) => sink.Consume(value));
             });
 
         }

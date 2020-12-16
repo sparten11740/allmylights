@@ -26,18 +26,33 @@ namespace AllMyLights.Transformations
                 return source.Select((input) =>
                 {
                     if (!(input is string)) {
-                        throw new ArgumentException($"{nameof(JsonPathTransformation<T>)} requires input to be of type string");
+                        Logger.Error($"{nameof(JsonPathTransformation<T>)} requires input to be of type string");
+                        return Observable.Empty<T>();
                     }
 
                     Logger.Debug($"Applying JsonPath expression {Path} to {input}");
 
-                    JObject o = JObject.Parse(input as string);
-                    var value = o.SelectToken(Path);
+                    try
+                    {
+                        JObject o = JObject.Parse(input as string);
+                        var value = o.SelectToken(Path);
 
-                    Logger.Debug($"Expression returned value {value}");
+                        if (value == null)
+                        {
+                            Logger.Warn($"{Path} yielded no result on the given input");
+                            return Observable.Empty<T>();
+                        }
 
-                    return value.ToObject<T>();
-                });
+                        Logger.Debug($"Expression returned value {value}");
+
+                        return Observable.Return(value.ToObject<T>());
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e.Message);
+                        return Observable.Empty<T>();
+                    }
+                }).Switch();
             };
         }
     }

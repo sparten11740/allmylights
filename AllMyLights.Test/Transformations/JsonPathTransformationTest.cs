@@ -39,10 +39,18 @@ namespace AllMyLights.Test
             ReactiveAssert.AreElementsEqual(expected, actual.Messages);
         }
 
-        [Test]
-        public void Should_throw_argument_exception_for_invalid_input()
+        [TestCase("wrong type")]
+        [TestCase("malformed json")]
+        [TestCase("no match")]
+        public void Should_not_break_for_invalid_input(string testCase)
         {
-            var source = Observable.Return(new object());
+            var input = testCase switch {
+                "no match" => "{\"POWER\": \"OFF\"}",
+                "malformed json" => "{\"POWER\":",
+                "wrong type" => new object(),
+            };
+
+            var source = Observable.Return(input);
 
             var options = new JsonPathTransformationOptions() { Expression = "$.data.livingRoom.color" };
             var transformation = new JsonPathTransformation<string>(options);
@@ -58,10 +66,11 @@ namespace AllMyLights.Test
             );
 
 
+            var expected = new Recorded<Notification<string>>[] {
+                OnCompleted<string>(1)
+            };
 
-            Recorded<Notification<string>> first = actual.Messages.First();
-            Equals(NotificationKind.OnError, first.Value.Kind);
-            Equals(typeof(ArgumentException), first.Value.Exception.GetType());
+            ReactiveAssert.AreElementsEqual(expected, actual.Messages);
         }
     }
 }
