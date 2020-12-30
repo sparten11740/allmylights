@@ -57,17 +57,43 @@ namespace AllMyLights.Connectors.Sinks
                 Device device = devices[id];
                 var config = Options.Overrides?.GetValueOrDefault(device.Name);
                 var ignore = config?.Ignore;
-                if (ignore == true) break;
+                if (ignore == true)
+                {
+                    Logger.Debug($"Ignoring device {device.Name} as per configuration.");
+                    continue;
+                }
+
+                if(config != null)
+                {
+                    Logger.Debug($"Override for device {device.Name} will be applied. ({config.ChannelLayout ?? "no device level channel layout"})");
+                }
+                else
+                {
+                    Logger.Debug($"No override for device {device.Name} found");
+                }
+
 
                 var layout = config?.ChannelLayout;
                 var deviceColor = (layout != null ? color.Rearrange(layout) : color).ToOpenRGBColor();
 
                 if (config?.Zones != null)
                 {
+                    Logger.Debug($"Zone level overrides for {device.Name} found.");
                     for (int zoneId = 0; zoneId < device.Zones.Length; zoneId++)
                     {
                         var zone = device.Zones[zoneId];
                         var zoneConfig = config.Zones.GetValueOrDefault(zone.Name);
+
+                        if(zoneConfig != null)
+                        {
+                            Logger.Debug($"Override for zone {zone.Name} with Ignore={zoneConfig.Ignore} and ChannelLayout={zoneConfig.ChannelLayout} will be applied.");
+                        } else
+                        {
+                            Logger.Debug($"No override for zone {zone.Name} found");
+                        }
+
+                        if (zoneConfig?.Ignore == true) continue;
+
                         var zoneLayout = zoneConfig?.ChannelLayout;
                         var zoneColor = (zoneLayout != null ? color.Rearrange(zoneLayout).ToOpenRGBColor() : deviceColor);
 
