@@ -1,4 +1,4 @@
-## [0.4.0] - TBD
+## [0.4.0] - 01/05/2020
 
 ### General
 - Add command-line flag to export a schema representation of the configuration file (OpenAPI 3 format).
