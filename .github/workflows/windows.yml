@@ -34,13 +34,10 @@ jobs:
       shell: bash
       run: |
         cp AllMyLights/allmylightsrc.json ./AllMyLights/bin/Release/netcoreapp3.1/win-x64/publish/allmylightsrc.json
-
-        VERSION=$(dotnet minver -t v -v e)
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-        7z a -tzip "win-x64-$VERSION.zip" "./AllMyLights/bin/Release/netcoreapp3.1/win-x64/publish/*"
+        
+        7z a -tzip "win-x64.zip" "./AllMyLights/bin/Release/netcoreapp3.1/win-x64/publish/*"
     - name: Upload artifact
       uses: actions/upload-artifact@v2.2.1
       with:
-        name: win-x64-${{ env.VERSION }}
-        path: win-x64-${{ env.VERSION }}.zip
+        name: win-x64
+        path: win-x64.zip
