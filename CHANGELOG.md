@@ -1,4 +1,4 @@
-## [0.4.0] - 01/05/2020
+## [v4] - 01/05/2020
 
 ### General
 - Add command-line flag to export a schema representation of the configuration file (OpenAPI 3 format).
@@ -8,14 +8,14 @@
 ### Transformations
 - Add `Mapping` transformation to map matching input strings to output value. Supports regular expressions.
 
-## [0.3.0] - 12/12/2020
+## [v3] - 12/12/2020
 ### General
 - In preparation for future changes, this release aims to achieve a clear separation between transport and transformation logic
 - Introduce pluggable transformations to make logic such as extracting values via JsonPath or color conversions reusable across different source and sink types
 ## MqttSource
 - Remove transformation logic from MqttSource
 
-## [0.2.0] - 12/06/2020
+## [v2] - 12/06/2020
 ### General
 - Introduce the concept of sources where multiple sources can be used as a color signal
 - Introduce the concept of sinks where all configured sinks will consume a color signal
@@ -25,6 +25,6 @@
 - Add option to override the channel layout of a device
 - Add option to override the channel layout of a zone
 
-[0.4.0]: https://github.com/sparten11740/allmylights/compare/v0.3.0...v0.4.0
-[0.3.0]: https://github.com/sparten11740/allmylights/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/sparten11740/allmylights/compare/v0.1.0...v0.2.0
+[v4]: https://github.com/sparten11740/allmylights/compare/v3...v4
+[v3]: https://github.com/sparten11740/allmylights/compare/v2...v3
+[v2]: https://github.com/sparten11740/allmylights/compare/v1...v2
