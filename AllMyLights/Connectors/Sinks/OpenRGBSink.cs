@@ -12,6 +12,8 @@ using OpenRGB.NET.Models;
 
 namespace AllMyLights.Connectors.Sinks
 {
+    
+
     public class OpenRGBSink: Sink
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -24,23 +26,58 @@ namespace AllMyLights.Connectors.Sinks
         {
             Client = client;
             Options = options;
-            Next.Subscribe((color) =>
+            Next.Subscribe((value) =>
             {
-                switch (color)
+                switch (value)
                 {
                     case Ref<System.Drawing.Color> it:
                         UpdateAll(it);
                         break;
+                    case string it:
+                        if (it.EndsWith(".orp"))
+                        {
+                            LoadProfile(it);
+                            break;
+                        }
+                        goto default;
                     default:
-                        Logger.Error($"Sink {nameof(OpenRGBSink)} received type {color.GetType()} it cannot handle. Please provide a {typeof(System.Drawing.Color)}");
+                        Logger.Error($"Sink {nameof(OpenRGBSink)} received type {value.GetType()} it cannot handle. Please provide a {typeof(System.Drawing.Color)} or a string containing a profile name.");
                         break;
                 }
 
             });
         }
 
-        public override IEnumerable<object> GetConsumers() => RequestCatching(() => {
-            return Client.GetAllControllerData();
+        private struct Info
+        {
+            public Info(IEnumerable<Device> devices, IEnumerable<string> profiles)
+            {
+                Devices = devices;
+                Profiles = profiles;
+            }
+
+            public IEnumerable<Device> Devices { get; }
+            public IEnumerable<string> Profiles { get; }
+        }
+
+        public override object GetInfo() => RequestCatching(() => {
+            return new Info(Client.GetAllControllerData(), Client.GetProfiles());
+        });
+
+        private Unit LoadProfile(string profile) => RequestCatching(() =>
+        {
+            var profiles = Client.GetProfiles();
+
+            if (!profiles.Contains(profile))
+            {
+                Logger.Error($"Profile {profile} does not exist on the server.");
+                return Unit.Default;
+            }
+
+            Client.LoadProfile(profile);
+
+
+            return Unit.Default;
         });
 
         private Unit UpdateAll(Ref<System.Drawing.Color> colorRef) => RequestCatching(() =>

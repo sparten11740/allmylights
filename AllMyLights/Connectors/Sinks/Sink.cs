@@ -27,6 +27,6 @@ namespace AllMyLights.Connectors.Sinks
             Subject.OnNext(value);
         }
 
-        public virtual IEnumerable<object> GetConsumers() => new List<object>();
+        public virtual object GetInfo() => null;
     }
 }

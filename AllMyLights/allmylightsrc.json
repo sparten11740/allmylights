@@ -2,7 +2,7 @@
   "Sinks": [
     {
       "Type": "OpenRGB",
-      "Server": "192.168.178.120",
+      "Server": "127.0.0.1",
       "Port": 6742,
       "Overrides": {
         "MSI Mystic Light MS_7C84": {
@@ -16,6 +16,9 @@
     }
   ],
   "Sources": [
+    {
+      "Type": "Chroma"
+    },
     {
       "Type": "Mqtt",
       "Server": "192.168.178.20",
@@ -31,7 +34,7 @@
         },
         {
           "Type": "Mapping",
-          "FailOnMiss":  false,
+          "FailOnMiss": false,
           "Mappings": [
             {
               "From": "#?FFFFFF.+",

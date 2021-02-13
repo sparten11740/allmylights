@@ -1,3 +1,14 @@
+## [v5] - 01/05/2020
+
+
+### General
+- Renamed cli argument `--list-devices` to `--info` as it evolved into a more generic way of showing dynamic information on configured sinks (such as available profiles in case of OpenRGB)
+
+### OpenRGBSink
+- The OpenRGBSink now supports loading of profiles. Any string ending in `.orp` consumed by the sink will be sent as a load profile request to your OpenRGB instance.
+
+
+
 ## [v4] - 01/05/2020
 
 ### General
@@ -25,6 +36,7 @@
 - Add option to override the channel layout of a device
 - Add option to override the channel layout of a zone
 
+[v5]: https://github.com/sparten11740/allmylights/compare/v4...v5
 [v4]: https://github.com/sparten11740/allmylights/compare/v3...v4
 [v3]: https://github.com/sparten11740/allmylights/compare/v2...v3
 [v2]: https://github.com/sparten11740/allmylights/compare/v1...v2

@@ -28,7 +28,7 @@ namespace AllMyLights.Connectors.Sources
         public ISource[] GetSources()
         {
             Logger.Info($"Configuring {Configuration.Sources.Count()} sources");
-            return Configuration.Sources.Select(sourceOptions => sourceOptions switch
+            return Configuration.Sources.Select<SourceOptions, ISource>(sourceOptions => sourceOptions switch
             {
                 MqttSourceOptions options => new MqttSource(options, new MqttFactory().CreateMqttClient()),
                 _ => throw new NotImplementedException($"Source for type {sourceOptions.Type} not implemented")

@@ -34,7 +34,7 @@ namespace AllMyLights
         /// <param name="logLevel">Change the log level to either debug, info, warn, error, or off.</param>
         /// <param name="logFile">If provided, log output will additionally be captured in the provided file.</param>
         /// <param name="minimized">Minimize to tray after startup</param>
-        /// <param name="listDevices">List device information of devices connected to a sink if available</param>
+        /// <param name="info">List dynamic information of your sinks such as available options</param>
         /// <param name="failOnUnknownProperty">Fails if an unknown property is encountered in the provided config file. Can be disabled.</param>
         /// <param name="enableAutostart">Setup autostart for logged in user with current folder as working directory</param>
         static void Main(
@@ -43,7 +43,7 @@ namespace AllMyLights
             string logLevel = "info",
             string logFile = null,
             bool minimized = false,
-            bool listDevices = false,
+            bool info = false,
             bool failOnUnknownProperty = true,
             bool enableAutostart = false
         )
@@ -91,9 +91,9 @@ namespace AllMyLights
             var sources = factory.GetSources();
             var sinks = factory.GetSinks();
 
-            if (listDevices)
+            if (info)
             {
-                ListDevices(sinks);
+                ShowInfo(sinks);
                 Environment.Exit(0);
             }
 
@@ -131,19 +131,19 @@ namespace AllMyLights
             );
         }
 
-        private static void ListDevices(ISink[] sinks)
+        private static void ShowInfo(ISink[] sinks)
         {
             foreach (ISink sink in sinks)
             {
-                var devices = sink.GetConsumers();
-                if (devices.Count() > 0)
+                var info = sink.GetInfo();
+                if (info != null)
                 {
                     Console.WriteLine(sink);
-                    Console.WriteLine(JsonConvert.SerializeObject(devices, Formatting.Indented));
+                    Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
                 }
                 else
                 {
-                    Console.WriteLine($"{sink} does not expose any device information.");
+                    Console.WriteLine($"{sink} does not expose any configuration information.");
                 }
             }
         }

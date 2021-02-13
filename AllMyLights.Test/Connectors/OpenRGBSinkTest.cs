@@ -54,12 +54,42 @@ namespace AllMyLights.Test
                 )).Verifiable();
 
 
-            var client = new OpenRGBSink(Options, openRGBClientMock.Object);
-            client.Consume(new Ref<System.Drawing.Color>(targetColor));
+            var sink = new OpenRGBSink(Options, openRGBClientMock.Object);
+            sink.Consume(new Ref<System.Drawing.Color>(targetColor));
 
             openRGBClientMock.Verify();
         }
 
+        [Test]
+        public void Should_load_a_profile()
+        {
+
+            var openRGBClientMock = new Mock<IOpenRGBClient>();
+            openRGBClientMock.Setup(it => it.Connected).Returns(true).Verifiable();
+
+            openRGBClientMock.Setup(it => it.GetProfiles()).Returns(new string[] { "Blue.orp" }).Verifiable();
+            openRGBClientMock.Setup(it => it.LoadProfile("Blue.orp")).Verifiable();
+
+            var sink = new OpenRGBSink(Options, openRGBClientMock.Object);
+            sink.Consume("Blue.orp");
+
+            openRGBClientMock.Verify();
+        }
+
+        [Test]
+        public void Should_not_try_to_load_a_non_existing_profile()
+        {
+
+            var openRGBClientMock = new Mock<IOpenRGBClient>();
+            openRGBClientMock.Setup(it => it.Connected).Returns(true).Verifiable();
+
+            openRGBClientMock.Setup(it => it.GetProfiles()).Returns(new string[] { "Blue.orp" }).Verifiable();
+
+            var sink = new OpenRGBSink(Options, openRGBClientMock.Object);
+            sink.Consume("Pink.orp");
+
+            openRGBClientMock.Verify();
+        }
 
         [Test]
         public void Should_update_devices_with_channel_layout_defined_in_override()

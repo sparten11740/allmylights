@@ -242,7 +242,7 @@ You can run me as simple as follows, only the path to a valid config file is req
 | &#x2011;&#x2011;log-level                | Change the log level to either debug, info (default), warn, error, or off.  |
 | &#x2011;&#x2011;log-file                 | If provided, log output will additionally be captured in the provided file. |
 | &#x2011;&#x2011;minimized                | Minimize to tray after startup (Windows only)                               |
-| &#x2011;&#x2011;list-devices             | List device information of devices connected to a sink if available         |
+| &#x2011;&#x2011;info                     | List dynamic information of your sinks such as available options            |
 | &#x2011;&#x2011;enable-autostart         | Generates an autostart entry                                                |
 
 ## Autostart
