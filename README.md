@@ -36,9 +36,9 @@
 - [Attribution](#attribution)
 
 ## What am I?
-I am a little command-line utility that is meant to synchronize your lighting across a home automation bus (HAB) and proprietary RGB peripherals of a computer. I serve as a broker that consumes input values via MQTT. I then transform those if necessary, and load a profile or apply a color in OpenRGB. I can also change your Desktop background.
+I am a little command line utility that is meant to synchronize your lighting across a home automation bus (HAB) and proprietary RGB peripherals of a computer. I serve as a broker that consumes input values via MQTT and applies those to a number of available sinks: For now, those include your OpenRGB instance or your Desktop wallpaper.
 
-In other words, I let your Razer devices, Gigabyte graphics card, MSI MysticLight powered mainboard, Corsair Hydro liquid cooler, or whatever other device is supported by OpenRGB, shine in the same bright light as the ambient lighting in your appartment.
+In other words, I let your Razer devices, Gigabyte graphics card, MSI MysticLight powered mainboard, Corsair Hydro liquid cooler, or Desktop background shine in the same bright light as the ambient lighting in your appartment.
 
 [View demo on YouTube](https://www.youtube.com/watch?v=1Y9CBZFACro&ab_channel=JanWendland)
 
@@ -55,14 +55,14 @@ Follow [these instructions](https://gitlab.com/CalcProgrammer1/OpenRGB/-/wikis/F
 For questions around the detection of your devices, please refer to the OpenRGB community. 
 
 ### MQTT Server
-As of now I can only consume color updates via [MQTT](https://mqtt.org/). 
+I receive my input values such as profile names, or color strings through subscription of an [MQTT](https://mqtt.org/) topic. 
 
 > MQTT is an OASIS standard messaging protocol for the Internet of Things (IoT). It is designed as an extremely lightweight publish/subscribe messaging transport that is ideal for connecting remote devices with a small code footprint and minimal network bandwidth
 
 Given that you are looking at this page, you probably have a smart home framework in place already and want to integrate with it. Chances are that you are using MQTT as part of that setup. In that case you can go ahead and skip the rest of this section. If you're using a smart home framework without MQTT, please refer to the following resources for getting your MQTT server started and integrated.
 
 #### OpenHAB Integration
-> An OpenRGB Binding for OpenHAB does not exist. However, it is something that would be easy to implement and would make myself as a companion obsolete.
+> An OpenRGB Binding for OpenHAB does not exist. However, it is something that would be easy to implement.
 
 OpenHAB has a binding that connects with an MQTT broker. Install the broker [Mosquitto](https://mosquitto.org/) on your device running OpenHAB and afterwards proceed installing the [MQTT Binding](https://www.openhab.org/addons/bindings/mqtt/).
 
@@ -197,7 +197,8 @@ that you have an up-to-date version on your machine.
 
 #### Wallpaper
 The Wallpaper sink currently only works on Windows machines and only if you run allmylights on the host machine itself.
-It can receive values of type `string`, which have to be valid file paths.
+It can receive values of type `string`, which have to be valid file paths. If `RelativeTo` is specified, the command line flag `--info`
+can be used to print available files under that directory.
 
 ```json5
 {
