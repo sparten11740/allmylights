@@ -11,6 +11,7 @@ namespace AllMyLights.Transformations
             {
                 ColorTransformationOptions colorOptions => new ColorTransformation(colorOptions),
                 MappingTransformationOptions mappingOptions => new MappingTransformation(mappingOptions),
+                ExpressionTransformationOptions expressionOptions => new ExpressionTransformation<object>(expressionOptions),
                 JsonPathTransformationOptions jpathOptions => new JsonPathTransformation<string>(jpathOptions),
                 _ => throw new NotImplementedException($"Transformation for type {options.Type} not registered")
             };

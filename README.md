@@ -16,6 +16,7 @@
     - [JsonPath](#jsonpath)
     - [Color](#color)
     - [Mapping](#mapping)
+    - [Expression](#expression)
 - [Run me](#run-me)
   - [Windows](#windows)
   - [Linux](#linux)
@@ -36,7 +37,7 @@ In other words, I let your Razer devices, Gigabyte graphics card, MSI MysticLigh
 
 [View demo on YouTube](https://www.youtube.com/watch?v=1Y9CBZFACro&ab_channel=JanWendland)
 
-## Prerequisites
+## Dependencies
 ### OpenRGB
 On the system that has the RGB peripherals you want to synchronize with your HAB, you have to setup OpenRGB.
 
@@ -159,11 +160,11 @@ I read the required server ip addresses, ports, topics etc. from a configuration
 ```
 Available source, sink, and transformations types as of this version are:
 
-| Type           | Options                        |
-| ---------------| ------------------------------ |
-| Source         | `Mqtt`                         |
-| Sink           | `OpenRGB`                      | 
-| Transformation | `JsonPath`, `Color`, `Mapping` |
+| Type           | Options                                      |
+| ---------------| ---------------------------------------------|
+| Source         | `Mqtt`                                       |
+| Sink           | `OpenRGB`                                    | 
+| Transformation | `JsonPath`, `Color`, `Mapping`, `Expression` |
 
 ### Transformations
 #### JsonPath
@@ -202,6 +203,23 @@ The `From` property of a mapping expects a regular expression. Please make sure 
         "To": "#ff0000"
       }
     ]
+  }
+```
+
+#### Expression
+This transformation is used to transform a value by applying advanced
+logic. Any expression covered in the [simple expression section](https://github.com/codingseb/ExpressionEvaluator/wiki/Getting-Started#simple-expressions) of the ExpressionEvaluator repo 
+can be evaluated by this transformation. The input value provided to this transformation 
+is made available to the context of the expression as `value`.
+
+Non primitive types are also supported. For instance by prepending a color transformation,
+any method or property defined in the `System.Drawing.Color` ([documentation](https://docs.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-5.0)) becomes available in the expression context on value.
+
+
+```json
+  {
+    "Type": "Expression",
+    "Expression":  "value.B > value.R && value.B > value.G ? \"Blueish\" : \"Some other color\""
   }
 ```
 

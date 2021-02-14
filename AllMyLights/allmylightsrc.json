@@ -17,9 +17,6 @@
   ],
   "Sources": [
     {
-      "Type": "Chroma"
-    },
-    {
       "Type": "Mqtt",
       "Server": "192.168.178.20",
       "Port": 1883,
@@ -33,17 +30,11 @@
           "Expression": "$.Color"
         },
         {
-          "Type": "Mapping",
-          "FailOnMiss": false,
-          "Mappings": [
-            {
-              "From": "#?FFFFFF.+",
-              "To": "#ff0000"
-            }
-          ]
+          "Type": "Color"
         },
         {
-          "Type": "Color"
+          "Type": "Expression",
+          "Expression": "value.B == value.R && value.R == value.G ? \"White.orp\" : (value.B > value.R && value.B > value.G ? \"Purple.orp\" : (value.G > value.B && value.G > value.R ? \"Green.orp\" : \"Red.orp\"))"
         }
       ]
     }

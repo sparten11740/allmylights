@@ -7,7 +7,8 @@
 ### OpenRGBSink
 - The OpenRGBSink now supports loading of profiles. Any string ending in `.orp` consumed by the sink will be sent as a load profile request to your OpenRGB instance.
 
-
+### Transformations
+- Add `Expression` transformation to support use cases that require advanced logic
 
 ## [v4] - 01/05/2020
 

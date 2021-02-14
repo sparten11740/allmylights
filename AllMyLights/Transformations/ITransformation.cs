@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 namespace AllMyLights.Transformations
 {
     public interface ITransformation<out TReturn>

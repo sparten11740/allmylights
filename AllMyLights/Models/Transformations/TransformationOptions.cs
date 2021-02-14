@@ -10,7 +10,8 @@ namespace AllMyLights.Models.Transformations
     [
         KnownType(typeof(ColorTransformationOptions)),
         KnownType(typeof(JsonPathTransformationOptions)),
-        KnownType(typeof(MappingTransformationOptions))
+        KnownType(typeof(MappingTransformationOptions)),
+        KnownType(typeof(ExpressionTransformationOptions)),
     ]
     public class TransformationOptions
     {

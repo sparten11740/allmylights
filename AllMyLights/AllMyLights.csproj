@@ -33,6 +33,7 @@
         <PackageReference Include="NLog" Version="4.7.6" />
         <PackageReference Include="NLog.Extensions.Logging" Version="1.6.5" />
         <FrameworkReference Condition="'$(IsWindows)'=='true'" Include="Microsoft.WindowsDesktop.App " />
+        <PackageReference Include="CodingSeb.ExpressionEvaluator" Version="1.4.19" />
     </ItemGroup>
     <ItemGroup>
         <None Remove="allmylightsrc.json" />
