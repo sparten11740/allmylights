@@ -114,7 +114,7 @@ namespace AllMyLights.Json
                 {
                     SignalError(new SchemaValidationError(
                          path: $"{Path}[{i}].{Dicriminator}",
-                         message: $"Property {Dicriminator} can only be one of the following {string.Join(", ", Schemas.Keys)}"
+                         message: $"Property {Dicriminator} can only be one of the following: {string.Join(", ", Schemas.Keys)}. (found {discriminatorValue})"
 
                     ));
                     continue;
