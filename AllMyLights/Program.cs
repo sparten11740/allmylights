@@ -56,27 +56,29 @@ namespace AllMyLights
                 Environment.Exit(0);
             }
 
+            var configFullName = config?.FullName ?? Path.Combine(Directory.GetCurrentDirectory(), "allmylightsrc.json");
             if (enableAutostart)
             {
                 AutostartEntry
                     .GetPlatformInstance()
-                    .Create(config?.FullName, logLevel);
+                    .Create(configFullName, logLevel);
                 Environment.Exit(0);
             }
 
-            if (config == null)
+            
+            if (!File.Exists(configFullName))
             {
-                Logger.Error($"Required parameter --{nameof(config)} not provided");
+                if(config == null)
+                {
+                    Logger.Error($"Parameter --{nameof(config)} not provided and default config {configFullName} does not exist.");
+                } else
+                {
+                    Logger.Error($"File {configFullName} does not exist.");
+                }
                 Environment.Exit((int)ExitCode.MissingArgument);
             }
 
-            if (!File.Exists(config.FullName))
-            {
-                Logger.Error($"File {config.FullName} does not exist.");
-                Environment.Exit((int)ExitCode.InvalidArgument);
-            }
-
-            using StreamReader file = File.OpenText(config.FullName);
+            using StreamReader file = File.OpenText(configFullName);
             var content = file.ReadToEnd();
 
             new ConfigurationValidator(new JsonSchemaGeneratorSettings
@@ -138,6 +140,7 @@ namespace AllMyLights
                 var info = sink.GetInfo();
                 if (info != null)
                 {
+                    Console.WriteLine();
                     Console.WriteLine($"{sink}:");
                     Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
                 }

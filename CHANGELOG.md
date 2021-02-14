@@ -1,7 +1,8 @@
 ## [v5] - 01/05/2020
 
 ### General
-- Renamed cli argument `--list-devices` to `--info` as it evolved into a more generic way of showing dynamic information on configured sinks (such as available profiles in case of OpenRGB or file names in the `RelativeTo` directory of the Wallpaper sink)
+- Rename cli argument `--list-devices` to `--info` as it evolved into a more generic way of showing dynamic information on configured sinks (such as available profiles in case of OpenRGB or file names in the `RelativeTo` directory of the Wallpaper sink)
+- Parameter `--config` is no longer required. If not provided, the default config file `allmylightsrc.json` will be assumed in the same directory where the executable resides.
 
 ### OpenRGBSink
 - The OpenRGBSink now supports loading of profiles. Any string ending in `.orp` consumed by the sink will be sent as a load profile request to your OpenRGB instance.
