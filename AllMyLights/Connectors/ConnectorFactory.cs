@@ -4,6 +4,7 @@ using AllMyLights.Connectors.Sinks;
 using AllMyLights.Models;
 using AllMyLights.Models.Mqtt;
 using AllMyLights.Models.OpenRGB;
+using AllMyLights.Platforms;
 using MQTTnet;
 using NLog;
 
@@ -38,9 +39,10 @@ namespace AllMyLights.Connectors.Sources
         public ISink[] GetSinks()
         {
             Logger.Info($"Configuring {Configuration.Sinks.Count()} sinks");
-            return Configuration.Sinks.Select(sinkOptions => sinkOptions switch
+            return Configuration.Sinks.Select<SinkOptions, ISink>(sinkOptions => sinkOptions switch
             {
                 OpenRGBSinkOptions options => GetOpenRGBSinkInstance(options),
+                WallpaperSinkOptions options => new WallpaperSink(options, Desktop.GetPlatformInstance()),
                 _ => throw new NotImplementedException($"Sinks for type {sinkOptions.Type} not implemented")
             }).ToArray();
         }

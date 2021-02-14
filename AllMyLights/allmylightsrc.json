@@ -1,24 +1,8 @@
 ﻿{
-  "Sinks": [
-    {
-      "Type": "OpenRGB",
-      "Server": "127.0.0.1",
-      "Port": 6742,
-      "Overrides": {
-        "MSI Mystic Light MS_7C84": {
-          "Zones": {
-            "JRGB2": {
-              "ChannelLayout": "GRB"
-            }
-          }
-        }
-      }
-    }
-  ],
   "Sources": [
     {
       "Type": "Mqtt",
-      "Server": "192.168.178.20",
+      "Server": "192.168.1.20",
       "Port": 1883,
       "Topics": {
         "Command": "cmnd/sonoff-1144-dimmer-5/color",
@@ -37,6 +21,22 @@
           "Expression": "value.B == value.R && value.R == value.G ? \"White.orp\" : (value.B > value.R && value.B > value.G ? \"Purple.orp\" : (value.G > value.B && value.G > value.R ? \"Green.orp\" : \"Red.orp\"))"
         }
       ]
+    }
+  ],
+  "Sinks": [
+    {
+      "Type": "OpenRGB",
+      "Server": "127.0.0.1",
+      "Port": 6742,
+      "Overrides": {
+        "MSI Mystic Light MS_7C84": {
+          "Zones": {
+            "JRGB2": {
+              "ChannelLayout": "GRB"
+            }
+          }
+        }
+      }
     }
   ]
 }

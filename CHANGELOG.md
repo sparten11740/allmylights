@@ -1,12 +1,13 @@
 ## [v5] - 01/05/2020
 
-
 ### General
-- Renamed cli argument `--list-devices` to `--info` as it evolved into a more generic way of showing dynamic information on configured sinks (such as available profiles in case of OpenRGB)
+- Renamed cli argument `--list-devices` to `--info` as it evolved into a more generic way of showing dynamic information on configured sinks (such as available profiles in case of OpenRGB or file names in the `RelativeTo` directory of the Wallpaper sink)
 
 ### OpenRGBSink
 - The OpenRGBSink now supports loading of profiles. Any string ending in `.orp` consumed by the sink will be sent as a load profile request to your OpenRGB instance.
 
+### Sinks
+- Add `Wallpaper` sink that applies a desktop background based on the input value received (file path)
 ### Transformations
 - Add `Expression` transformation to support use cases that require advanced logic
 

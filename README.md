@@ -4,7 +4,7 @@
 ![test](https://github.com/sparten11740/allmylights/workflows/test/badge.svg) ![build | windows](https://github.com/sparten11740/allmylights/workflows/build%20%7C%20windows/badge.svg) ![build | unix](https://github.com/sparten11740/allmylights/workflows/build%20%7C%20unix/badge.svg)
 
 - [What am I?](#what-am-i)
-- [Prerequisites](#prerequisites)
+- [Dependencies](#dependencies)
   - [OpenRGB](#openrgb)
   - [MQTT Server](#mqtt-server)
     - [OpenHAB Integration](#openhab-integration)
@@ -12,6 +12,11 @@
   - [Using the binaries](#using-the-binaries)
   - [Building the project yourself](#building-the-project-yourself)
 - [Configuration](#configuration)
+  - [Sources](#sources)
+    - [MQTT](#mqtt)
+  - [Sinks](#sinks)
+    - [OpenRGB](#openrgb-1)
+    - [Wallpaper](#wallpaper)
   - [Transformations](#transformations)
     - [JsonPath](#jsonpath)
     - [Color](#color)
@@ -31,7 +36,7 @@
 - [Attribution](#attribution)
 
 ## What am I?
-I am a little command-line utility that is meant to synchronize your lighting across a home automation bus (HAB) and proprietary RGB peripherals of a computer. I serve as a broker that consumes colors via MQTT and passes them on to an OpenRGB instance on your target machine. 
+I am a little command-line utility that is meant to synchronize your lighting across a home automation bus (HAB) and proprietary RGB peripherals of a computer. I serve as a broker that consumes input values via MQTT. I then transform those if necessary, and load a profile or apply a color in OpenRGB. I can also change your Desktop background.
 
 In other words, I let your Razer devices, Gigabyte graphics card, MSI MysticLight powered mainboard, Corsair Hydro liquid cooler, or whatever other device is supported by OpenRGB, shine in the same bright light as the ambient lighting in your appartment.
 
@@ -101,13 +106,36 @@ dotnet publish --runtime win-x64 --configuration Release -p:PublishSingleFile=tr
 ```
 
 ## Configuration
-I read the required server ip addresses, ports, topics etc. from a configuration file. This repository and the release section contains a sample configuration called `allmylightsrc.json`. Hereinafter, I will adivse on what this file should look like to satisfy your needs.
+I read the required server ip addresses, ports, topics etc. from a configuration file. This repository and the release section contains a sample configuration called `allmylightsrc.json`. Hereinafter, I will adivse on what this file should look like to satisfy your needs. A number of usage examples can also be found in [the wiki](https://github.com/sparten11740/allmylights/wiki).
 
 ```json5
 // allmylightsrc.json
 
 {
-  "Sources":  [{
+  "Sources":  [
+    // ... see available options below
+  ],
+  "Sinks": [
+    // ... see available options below
+  ]
+}
+```
+Available source, sink, and transformations types as of this version are:
+
+| Type           | Options                                      |
+| ---------------| ---------------------------------------------|
+| Source         | `Mqtt`                                       |
+| Sink           | `OpenRGB`, `Wallpaper`                       | 
+| Transformation | `JsonPath`, `Color`, `Mapping`, `Expression` |
+
+
+### Sources
+Sources produce values that can be transformed and eventually consumed by one or more sinks.
+#### MQTT
+The MQTT source subscribes to a topic and emits all values that are published to that topic.
+
+```json5
+{
     "Type" : "Mqtt",
     "Server": "192.168.1.20",
     "Port": 1883,
@@ -118,53 +146,69 @@ I read the required server ip addresses, ports, topics etc. from a configuration
     },
     // transformations are applied in order on any received message 
     "Transformations": [
-      // JsonPath expression transformation to extract the value that holds the color 
-      {
-        "Type": "JsonPath",
-        "Expression": "$.Color"
-      },
-      // decodes Color from string value (required type f.i. for the OpenRGB sink)
-      { "Type": "Color" }
+      // ... see section transformations for options
     ]
-  }],
-  
-  // ip address & port of machine that runs openrgb
-  "Sinks": [{
-    // configure one or more target OpenRGB instances
-    "Type": "OpenRGB",
-    "Server": "127.0.0.1", 
-    "Port": 6742,
-    // if you want to override certain OpenRGB controlled devices you can do so here
-    "Overrides": {
-      // ignore an entire device
-      "Razer Copperhead": {
-        "Ignore": true,
-      },
-      "MSI Mystic Light MS_7C84": {
-        "Zones": {
-          // configure what color is passed to what channel of a zone
-          "JRGB2": {
-            "ChannelLayout": "GRB"
-          },
-          // ignore a single zone of a device
-          "JRAINBOW1": {
-            "Ignore": true
-          }
+  }
+```
+
+### Sinks
+Sinks conclude the transformation process and consume values. A sink can define transformations which are applied
+on the value **before** it is consumed by the sink.
+
+#### OpenRGB
+The OpenRGB sink can receive values of type `System.Drawing.Color` or `string`.
+
+Colors are applied to all devices connected to your OpenRGB instance unless specified otherwise in the sink's `Overrides` property. 
+A color type can be converted from a string (such as `#FF0022` or `Red`) by adding a `Color` transformation to the sink.
+
+String values received by the sink have to be valid OpenRGB profile names such as `MyProfile.orp`. They end in `.orp` and have to exist
+on your OpenRGB host. Note that a working version of the profile management API was only added in commit `f63aec11` to OpenRGB. Please make sure
+that you have an up-to-date version on your machine.
+
+```json5
+{
+  // configure one or more target OpenRGB instances
+  "Type": "OpenRGB",
+  "Server": "127.0.0.1", 
+  "Port": 6742,
+  // if you want to override certain OpenRGB controlled devices you can do so here
+  "Overrides": {
+    // ignore an entire device
+    "Razer Copperhead": {
+      "Ignore": true,
+    },
+    "MSI Mystic Light MS_7C84": {
+      "Zones": {
+        // configure what color is passed to what channel of a zone
+        "JRGB2": {
+          "ChannelLayout": "GRB"
+        },
+        // ignore a single zone of a device
+        "JRAINBOW1": {
+          "Ignore": true
         }
       }
-    },
-    // transformations can also be applied before a sink consumes a value
-    "Transformations" : []
-  }]
+    }
+  },
+  // transformations can also be applied before a sink consumes a value
+  "Transformations" : []
 }
 ```
-Available source, sink, and transformations types as of this version are:
 
-| Type           | Options                                      |
-| ---------------| ---------------------------------------------|
-| Source         | `Mqtt`                                       |
-| Sink           | `OpenRGB`                                    | 
-| Transformation | `JsonPath`, `Color`, `Mapping`, `Expression` |
+#### Wallpaper
+The Wallpaper sink currently only works on Windows machines and only if you run allmylights on the host machine itself.
+It can receive values of type `string`, which have to be valid file paths.
+
+```json5
+{
+  "Type": "Wallpaper",
+  // if the input value is a relative path or file name and RelativeTo is specified, it will be prepended to the input value
+  "RelativeTo": "C:\\Users\\brucewayne\\Pictures\\Wallpaper",
+  "Transformations": [
+    // one could for example map from a color to a filename here, see transformation options down below
+  ]
+}
+```
 
 ### Transformations
 #### JsonPath

@@ -138,7 +138,7 @@ namespace AllMyLights
                 var info = sink.GetInfo();
                 if (info != null)
                 {
-                    Console.WriteLine(sink);
+                    Console.WriteLine($"{sink}:");
                     Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
                 }
                 else
