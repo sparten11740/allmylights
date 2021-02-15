@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using NJsonSchema.Annotations;
 
-namespace AllMyLights.Models.Mqtt
+namespace AllMyLights.Connectors.Sources.Mqtt
 {
     public class MqttSourceOptions: SourceOptions
     {

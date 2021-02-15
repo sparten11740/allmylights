@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AllMyLights.Models.OpenRGB
+namespace AllMyLights.Connectors.Sinks.OpenRGB
 {
     public class DeviceOverride
     {

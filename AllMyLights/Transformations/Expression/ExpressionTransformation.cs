@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using SystemColor = System.Drawing.Color;
 using System.Reactive.Linq;
 using AllMyLights.Common;
-using AllMyLights.Models.Transformations;
 using CodingSeb.ExpressionEvaluator;
 using NLog;
 
-namespace AllMyLights.Transformations
+namespace AllMyLights.Transformations.Expression
 {
     public class ExpressionTransformation<T>: ITransformation<T>  where T: class
     {
@@ -35,7 +34,7 @@ namespace AllMyLights.Transformations
                 {
                     try
                     {
-                        var value = input is Ref<Color> ? (input as Ref<Color>).Value : input;
+                        var value = input is Ref<SystemColor> ? (input as Ref<SystemColor>).Value : input;
                         Evaluator.Variables["value"] = value;
 
                         Logger.Debug($"Expression received value {value}");

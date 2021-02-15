@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using AllMyLights.Connectors.Sinks;
+using AllMyLights.Connectors.Sources;
+using System.Collections.Generic;
 
-namespace AllMyLights.Models
+namespace AllMyLights
 {
     public class Configuration
     {

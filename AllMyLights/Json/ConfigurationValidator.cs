@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using AllMyLights.Connectors.Sinks;
+using AllMyLights.Connectors.Sources;
 using AllMyLights.Extensions;
-using AllMyLights.Models;
-using AllMyLights.Models.Transformations;
+using AllMyLights.Transformations;
 using Newtonsoft.Json.Linq;
 using NJsonSchema;
 using NJsonSchema.Generation;

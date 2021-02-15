@@ -16,10 +16,11 @@ using System.Linq;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Subscribing;
 using MQTTnet.Client.Disconnecting;
-using AllMyLights.Connectors.Sources;
-using AllMyLights.Models.Mqtt;
-using AllMyLights.Models.Transformations;
 using AllMyLights.Common;
+using AllMyLights.Connectors.Sources.Mqtt;
+using AllMyLights.Transformations;
+using AllMyLights.Transformations.JsonPath;
+using AllMyLights.Transformations.Color;
 
 namespace AllMyLights.Test
 {

@@ -1,4 +1,4 @@
-﻿namespace AllMyLights.Models.Transformations
+﻿namespace AllMyLights.Transformations.Color
 {
     public class ColorTransformationOptions: TransformationOptions
     {

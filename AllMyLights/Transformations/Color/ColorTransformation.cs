@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Drawing;
+using SystemColor = System.Drawing.Color;
 using System.Reactive.Linq;
 using AllMyLights.Common;
-using AllMyLights.Models.Transformations;
 using NLog;
 
-namespace AllMyLights.Transformations
+namespace AllMyLights.Transformations.Color
 {
-    public class ColorTransformation : ITransformation<Ref<Color>>
+    public class ColorTransformation : ITransformation<Ref<SystemColor>>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -20,7 +19,7 @@ namespace AllMyLights.Transformations
             ChannelLayout = options.ChannelLayout;
         }
 
-        public Func<IObservable<object>, IObservable<Ref<Color>>> GetOperator()
+        public Func<IObservable<object>, IObservable<Ref<SystemColor>>> GetOperator()
         {
             return (source) =>
             {
@@ -29,21 +28,21 @@ namespace AllMyLights.Transformations
                     if (!(input is string))
                     {
                         Logger.Error($"{nameof(ColorTransformation)} requires input to be of type string");
-                        return Observable.Empty<Ref<Color>>();
+                        return Observable.Empty<Ref<SystemColor>>();
                     }
 
                     Logger.Debug($"Decoding color from {input}");
 
                     try
                     {
-                        Ref<Color> colorRef = new Ref<Color>(ColorConverter.Decode(input as string, ChannelLayout));
+                        Ref<SystemColor> colorRef = new Ref<SystemColor>(ColorConverter.Decode(input as string, ChannelLayout));
                         Logger.Debug($"Decoded {colorRef.Value}");
                         return Observable.Return(colorRef);
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e.Message);
-                        return Observable.Empty<Ref<Color>>();
+                        return Observable.Empty<Ref<SystemColor>>();
                     }
 
                 }).Switch();

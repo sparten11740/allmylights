@@ -1,9 +1,6 @@
-using System;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using AllMyLights.Models.Transformations;
-using AllMyLights.Transformations;
+using AllMyLights.Transformations.JsonPath;
 using Microsoft.Reactive.Testing;
 using NUnit.Framework;
 

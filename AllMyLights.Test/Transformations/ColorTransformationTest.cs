@@ -4,8 +4,8 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using AllMyLights.Common;
-using AllMyLights.Models.Transformations;
 using AllMyLights.Transformations;
+using AllMyLights.Transformations.Color;
 using Microsoft.Reactive.Testing;
 using NUnit.Framework;
 

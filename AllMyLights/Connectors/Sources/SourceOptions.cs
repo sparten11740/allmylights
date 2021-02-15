@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
+using AllMyLights.Connectors.Sources.Mqtt;
 using AllMyLights.JsonConverters;
-using AllMyLights.Models.Mqtt;
 using Newtonsoft.Json;
 
-namespace AllMyLights.Models
+namespace AllMyLights.Connectors.Sources
 {
     [JsonConverter(typeof(InheritanceConverter), "Type", nameof(SourceOptions))]
     [KnownType(typeof(MqttSourceOptions))]

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using AllMyLights.Models;
-using AllMyLights.Models.Transformations;
+using AllMyLights.Connectors.Sinks;
+using AllMyLights.Connectors.Sources;
+using AllMyLights.Transformations;
 using Namotion.Reflection;
 using NJsonSchema;
 using NJsonSchema.Generation;

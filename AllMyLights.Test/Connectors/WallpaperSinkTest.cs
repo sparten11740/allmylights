@@ -1,4 +1,4 @@
-using AllMyLights.Connectors.Sinks;
+using AllMyLights.Connectors.Sinks.Wallpaper;
 using AllMyLights.Models.OpenRGB;
 using AllMyLights.Platforms;
 using Moq;

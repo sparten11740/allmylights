@@ -2,11 +2,10 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using AllMyLights.Models.Transformations;
 using System.Text.RegularExpressions;
 using NLog;
 
-namespace AllMyLights.Transformations
+namespace AllMyLights.Transformations.Mapping
 {
     public class MappingTransformation : ITransformation<string>
     {

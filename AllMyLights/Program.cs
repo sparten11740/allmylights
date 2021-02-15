@@ -3,9 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using AllMyLights.Connectors.Sinks;
-using AllMyLights.Connectors.Sources;
 using AllMyLights.Json;
-using AllMyLights.Models;
 using Newtonsoft.Json;
 using NJsonSchema;
 using NJsonSchema.Generation;
@@ -13,6 +11,7 @@ using NLog;
 using NLog.Conditions;
 using NLog.Targets;
 using AllMyLights.Platforms;
+using AllMyLights.Connectors;
 
 #if Windows
 using System.Windows.Forms;

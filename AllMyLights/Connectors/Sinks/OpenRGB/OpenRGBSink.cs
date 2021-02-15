@@ -10,7 +10,7 @@ using NLog;
 using OpenRGB.NET;
 using OpenRGB.NET.Models;
 
-namespace AllMyLights.Connectors.Sinks
+namespace AllMyLights.Connectors.Sinks.OpenRGB
 {
     
 

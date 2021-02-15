@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Linq;
 using AllMyLights.Connectors.Sinks;
-using AllMyLights.Models;
-using AllMyLights.Models.Mqtt;
+using AllMyLights.Connectors.Sinks.OpenRGB;
+using AllMyLights.Connectors.Sinks.Wallpaper;
+using AllMyLights.Connectors.Sources;
+using AllMyLights.Connectors.Sources.Mqtt;
 using AllMyLights.Models.OpenRGB;
 using AllMyLights.Platforms;
 using MQTTnet;
 using NLog;
 
-namespace AllMyLights.Connectors.Sources
+namespace AllMyLights.Connectors
 {
     public class ConnectorFactory
     {

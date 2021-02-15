@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AllMyLights.Models.Mqtt
+namespace AllMyLights.Connectors.Sources.Mqtt
 {
     public class Topics
     {

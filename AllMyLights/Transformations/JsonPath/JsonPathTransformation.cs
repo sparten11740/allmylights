@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Reactive.Linq;
-using AllMyLights.Models.Transformations;
 using Newtonsoft.Json.Linq;
 using NLog;
 
-namespace AllMyLights.Transformations
+namespace AllMyLights.Transformations.JsonPath
 {
     public class JsonPathTransformation<T>: ITransformation<T> 
     {

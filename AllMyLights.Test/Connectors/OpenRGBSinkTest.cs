@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using AllMyLights.Common;
-using AllMyLights.Connectors.Sinks;
-using AllMyLights.Models.OpenRGB;
+using AllMyLights.Connectors.Sinks.OpenRGB;
 using Moq;
 using NUnit.Framework;
 using OpenRGB.NET;

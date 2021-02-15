@@ -1,6 +1,6 @@
-﻿using AllMyLights.Models.Transformations;
+﻿using AllMyLights.Transformations;
 
-namespace AllMyLights.Models
+namespace AllMyLights.Connectors
 {
     public abstract class ConnectorOptions
     {

@@ -1,5 +1,9 @@
 ﻿using System;
-using AllMyLights.Models.Transformations;
+using AllMyLights.Transformations;
+using AllMyLights.Transformations.Color;
+using AllMyLights.Transformations.Expression;
+using AllMyLights.Transformations.JsonPath;
+using AllMyLights.Transformations.Mapping;
 
 namespace AllMyLights.Transformations
 {

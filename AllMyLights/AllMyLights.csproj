@@ -50,8 +50,6 @@
         </None>
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Transformations\" />
-      <Folder Include="Models\Transformations\" />
       <Folder Include="Platforms\Linux\" />
     </ItemGroup>
 </Project>

@@ -4,7 +4,6 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AllMyLights.Models.Mqtt;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
@@ -12,7 +11,7 @@ using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
 using NLog;
 
-namespace AllMyLights.Connectors.Sources
+namespace AllMyLights.Connectors.Sources.Mqtt
 {
     public class MqttSource : Source
     {

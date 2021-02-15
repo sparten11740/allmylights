@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using AllMyLights.Models.Transformations;
 using AllMyLights.Transformations;
+using AllMyLights.Transformations.Mapping;
 using Microsoft.Reactive.Testing;
 using NUnit.Framework;
 

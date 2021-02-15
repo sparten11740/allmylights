@@ -1,4 +1,4 @@
-﻿namespace AllMyLights.Models.OpenRGB
+﻿namespace AllMyLights.Connectors.Sinks.OpenRGB
 {
     public class ZoneOverride
     {

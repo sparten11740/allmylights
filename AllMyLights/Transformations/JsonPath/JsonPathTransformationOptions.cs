@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AllMyLights.Models.Transformations
+namespace AllMyLights.Transformations.JsonPath
 {
     public class JsonPathTransformationOptions: TransformationOptions
     {

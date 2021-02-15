@@ -6,7 +6,7 @@ using AllMyLights.Models.OpenRGB;
 using AllMyLights.Platforms;
 using NLog;
 
-namespace AllMyLights.Connectors.Sinks
+namespace AllMyLights.Connectors.Sinks.Wallpaper
 {
     
 

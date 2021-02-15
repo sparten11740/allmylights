@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using AllMyLights.Connectors.Sinks;
 
 namespace AllMyLights.Models.OpenRGB
 {
