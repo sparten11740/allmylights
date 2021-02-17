@@ -185,7 +185,6 @@ that alter the value emitted by the source to suit your requirements.
 #### MQTT
 The MQTT source subscribes to a topic and emits all values that are published to 
 that topic.
-that topic.
 
 ```json5
 {
@@ -303,7 +302,7 @@ structure. Examples of valid inputs can be found in the
 
 ### Transformations
 #### JsonPath
-This transformation can be used for extracting values from a json string.
+This transformation can be used for extracting values from a JSON input.
 
 ```json
   { "Type": "JsonPath", "Expression": "$.data[0].color" }
