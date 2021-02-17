@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using AllMyLights.Connectors.Sinks.Chroma;
 using AllMyLights.Connectors.Sinks.OpenRGB;
 using AllMyLights.JsonConverters;
 using AllMyLights.Models.OpenRGB;
@@ -10,6 +11,7 @@ namespace AllMyLights.Connectors.Sinks
     [
         KnownType(typeof(OpenRGBSinkOptions)),
         KnownType(typeof(WallpaperSinkOptions)),
+        KnownType(typeof(ChromaSinkOptions)),
     ]
     public abstract class SinkOptions : ConnectorOptions
     {

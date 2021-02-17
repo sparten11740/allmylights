@@ -64,6 +64,11 @@ namespace AllMyLights
             return Color.FromArgb(channels.Count() == 4 ? channels.ElementAt(3) : 255, channels.ElementAtOrDefault(0), channels.ElementAtOrDefault(1), channels.ElementAtOrDefault(2));
         }
 
+        public static int ToBgrDecimal(this Color color)
+        {
+            return 65536 * color.B + 256 * color.G + color.R;
+        }
+
         public static  OpenRGB.NET.Models.Color ToOpenRGBColor(this Color color) => new OpenRGB.NET.Models.Color(color.R, color.G, color.B);
 
 

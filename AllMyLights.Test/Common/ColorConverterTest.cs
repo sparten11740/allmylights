@@ -109,5 +109,16 @@ namespace AllMyLights.Test
             Assert.AreEqual(green, Convert.ToInt32(rearranged.G));
             Assert.AreEqual(blue, Convert.ToInt32(rearranged.B)); ;
         }
+
+
+        [TestCase("FF0000", 255)]
+        [TestCase("00FF00", 65280)]
+        [TestCase("0000FF", 16711680)]
+        public void Should_convert_to_BGR_decimal(string hex, int expectedBgr)
+        {
+            var color = ColorConverter.Decode(hex);
+
+            Assert.AreEqual(expectedBgr, color.ToBgrDecimal());
+        }
     }
 }

@@ -2,7 +2,7 @@
   "Sources": [
     {
       "Type": "Mqtt",
-      "Server": "192.168.1.20",
+      "Server": "192.168.178.20",
       "Port": 1883,
       "Topics": {
         "Command": "cmnd/sonoff-1144-dimmer-5/color",
@@ -14,11 +14,8 @@
           "Expression": "$.Color"
         },
         {
-          "Type": "Color"
-        },
-        {
-          "Type": "Expression",
-          "Expression": "value.B == value.R && value.R == value.G ? \"White.orp\" : (value.B > value.R && value.B > value.G ? \"Purple.orp\" : (value.G > value.B && value.G > value.R ? \"Green.orp\" : \"Red.orp\"))"
+          "Type": "Color",
+          "ChannelLayout": "_RGB"
         }
       ]
     }
@@ -36,7 +33,17 @@
             }
           }
         }
-      }
+      },
+      "Transformations": [
+        {
+          "Type": "Expression",
+          "Expression": "value.B == value.R && value.R == value.G ? \"White.orp\" : (value.B > value.R && value.B > value.G ? \"Purple.orp\" : (value.G > value.B && value.G > value.R ? \"Green.orp\" : \"Red.orp\"))"
+        }
+      ]
+    },
+    {
+      "Type": "Chroma",
+      "SupportedDevices": [ "mouse" ]
     }
   ]
 }
