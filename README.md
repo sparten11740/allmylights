@@ -152,8 +152,7 @@ The configuration distinguishes between
 - transformations, that alter those values
 - sinks, that consume and apply those values
 
-Any value emitted by a source is routed to all sinks. One feature on the roadmap 
-is to allow explicit routing from sources to sinks.
+Any value emitted by a source is routed to all sinks.
 
 The structure of the `allmylightsrc.json` is the following:
 
@@ -179,9 +178,10 @@ Available source, sink, and transformation types are:
 
 
 ### Sources
-Sources produce values that are eventually consumed by sinks.All sources have a 
+Sources produce values that are eventually consumed by sinks. All sources have a 
 `Transformations` property in common. Therein you can define transformations 
 that alter the value emitted by the source to suit your requirements.
+
 #### MQTT
 The MQTT source subscribes to a topic and emits all values that are published to 
 that topic.
