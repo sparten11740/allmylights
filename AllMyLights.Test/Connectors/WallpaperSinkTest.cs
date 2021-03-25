@@ -1,3 +1,4 @@
+using System.IO;
 using AllMyLights.Connectors.Sinks.Wallpaper;
 using AllMyLights.Models.OpenRGB;
 using AllMyLights.Platforms;
@@ -46,13 +47,16 @@ namespace AllMyLights.Test
             var desktopMock = new Mock<IDesktop>();
             desktopMock.Setup(it => it.SetBackground(It.IsAny<string>())).Verifiable();
 
+            var relativeTo = @"D:\wayne\enterprises";
             var sink = new WallpaperSink(new WallpaperSinkOptions() { 
-                RelativeTo = @"D:\wayne\enterprises"
+                RelativeTo = relativeTo
             }, desktopMock.Object);
 
             sink.Consume(filePath);
 
-            desktopMock.Verify(it => it.SetBackground(@"D:\wayne\enterprises\relative\path\batman.jpg"));
+            var expected = Path.Combine(relativeTo, filePath);
+
+            desktopMock.Verify(it => it.SetBackground(expected));
         }
     }
 }
