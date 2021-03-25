@@ -23,7 +23,7 @@ namespace AllMyLights.Connectors
     public class ConnectorFactory
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly HttpClient HttpClient = new();
+        private static readonly HttpClient HttpClient = new HttpClient();
 
         private Configuration Configuration { get; }
         public ConnectorFactory(Configuration configuration)

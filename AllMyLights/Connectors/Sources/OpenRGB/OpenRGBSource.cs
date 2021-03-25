@@ -16,7 +16,7 @@ namespace AllMyLights.Connectors.Sources.OpenRGB
         protected override IObservable<object> Value { get; }
 
         private IOpenRGBClient Client { get; }
-        private readonly ReplaySubject<string> Subject = new(1);
+        private readonly ReplaySubject<string> Subject = new ReplaySubject<string>(1);
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

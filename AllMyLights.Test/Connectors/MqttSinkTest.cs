@@ -17,7 +17,7 @@ namespace AllMyLights.Test
         public IManagedMqttClientOptions MqttClientOptions { get; private set; }
         public MqttClientTcpOptions MqttClientTcpOptions { get; private set; }
 
-        readonly Mock<IManagedMqttClient> MqttClientMock = new();
+        readonly Mock<IManagedMqttClient> MqttClientMock = new Mock<IManagedMqttClient>();
 
         readonly string[] Topics = new string[] { "wayne/forum", "wayne/tower" };
 

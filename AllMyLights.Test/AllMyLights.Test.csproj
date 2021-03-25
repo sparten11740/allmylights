@@ -8,12 +8,12 @@
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <NoWarn>1701;1702;1591,1572,1571,1573,1587,1570</NoWarn>
-    <LangVersion>latestmajor</LangVersion>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType></DebugType>
     <NoWarn>1701;1702;NU5105;1591;1572;1571;1573;1587;1570</NoWarn>
-    <LangVersion>latestmajor</LangVersion>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.13.1" />

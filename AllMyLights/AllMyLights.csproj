@@ -14,12 +14,12 @@
       <OutputPath>bin\Debug\netcoreapp3.1</OutputPath>
       <DocumentationFile></DocumentationFile>
       <NoWarn>1701;1702;NU5105;1591;1572;1571;1573;1587;1570</NoWarn>
-      <LangVersion>latestmajor</LangVersion>
+      <LangVersion>8</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
       <DebugType></DebugType>
       <NoWarn>1701;1702;NU5105;1591;1572;1571;1573;1587;1570</NoWarn>
-      <LangVersion>latestmajor</LangVersion>
+      <LangVersion>8</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="OpenRGB.NET" Version="1.6.0" />
@@ -35,10 +35,13 @@
         <FrameworkReference Condition="'$(IsWindows)'=='true'" Include="Microsoft.WindowsDesktop.App " />
         <PackageReference Include="CodingSeb.ExpressionEvaluator" Version="1.4.25" />
         <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.0.15" />
+        <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+        <PackageReference Include="System.Runtime.Handles" Version="4.3.0" />
+        <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
+        <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
     </ItemGroup>
     <ItemGroup>
         <None Remove="allmylightsrc.json" />
-        <None Remove="allmylightsrc %28copy%29.json" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="allmylightsrc.json">

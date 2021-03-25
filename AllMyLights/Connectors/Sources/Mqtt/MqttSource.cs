@@ -18,7 +18,7 @@ namespace AllMyLights.Connectors.Sources.Mqtt
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly int RECONNECT_DELAY = 10;
 
-        private readonly ReplaySubject<string> Subject = new(1);
+        private readonly ReplaySubject<string> Subject = new ReplaySubject<string>(1);
         private IManagedMqttClient MqttClient { get; }
         
         private MqttSourceOptions Options { get; }
