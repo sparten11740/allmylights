@@ -5,7 +5,7 @@
       "Server": "192.168.178.20",
       "Port": 1883,
       "Topics": {
-        "Result": "stat/sonoff-1144-dimmer-5/RESULT"
+        "Result": "cmnd/sonoff-0925-dimmer-3/color"
       },
       "Transformations": [
         {
@@ -15,20 +15,6 @@
         {
           "Type": "Color",
           "ChannelLayout": "_RGB"
-        }
-      ]
-    },
-    {
-      "Type": "OpenRGB",
-      "Server": "192.168.178.120",
-      "Port": 6742,
-      "Transformations": [
-        {
-          "Type": "JsonPath",
-          "Expression": "$['Corsair H150i PRO RGB'].Colors[0]"
-        },
-        {
-          "Type": "Color"
         }
       ]
     }

@@ -291,6 +291,25 @@ version on your machine.
 }
 ```
 
+#### MQTT
+The MQTT sink publishes any value it consumes to all configured topics.
+
+```json5
+{
+    "Type" : "Mqtt",
+    "Server": "192.168.1.20",
+    "Port": 1883,
+    // Optional username, remove if not required
+    "Username": "",
+    // Optional password, remove if not required
+    "Password": "",
+    "Topics": [ "some/topic", "another/topics" ],
+    "Transformations": [
+      // ... see section transformations for options
+    ]
+  }
+```
+
 #### Wallpaper
 The Wallpaper sink currently only works on Windows machines and only if you 
 run the app on the host machine itself. It can receive values of type `string`, 

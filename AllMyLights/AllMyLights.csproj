@@ -26,14 +26,15 @@
         <PackageReference Include="RzChromaBroadcastAPI.NET" Version="1.1.2" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.20574.7" />
         <PackageReference Include="System.CommandLine.DragonFruit" Version="0.3.0-alpha.20574.7" />
-        <PackageReference Include="NJsonSchema" Version="10.3.1" />
-        <PackageReference Include="MQTTnet" Version="3.0.13" />
-        <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+        <PackageReference Include="NJsonSchema" Version="10.4.0" />
+        <PackageReference Include="MQTTnet" Version="3.0.15" />
+        <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
         <PackageReference Include="System.Reactive" Version="5.0.0" />
-        <PackageReference Include="NLog" Version="4.7.6" />
-        <PackageReference Include="NLog.Extensions.Logging" Version="1.6.5" />
+        <PackageReference Include="NLog" Version="4.7.9" />
+        <PackageReference Include="NLog.Extensions.Logging" Version="1.7.1" />
         <FrameworkReference Condition="'$(IsWindows)'=='true'" Include="Microsoft.WindowsDesktop.App " />
-        <PackageReference Include="CodingSeb.ExpressionEvaluator" Version="1.4.19" />
+        <PackageReference Include="CodingSeb.ExpressionEvaluator" Version="1.4.25" />
+        <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.0.15" />
     </ItemGroup>
     <ItemGroup>
         <None Remove="allmylightsrc.json" />
@@ -52,5 +53,6 @@
     <ItemGroup>
       <Folder Include="Platforms\Linux\" />
       <Folder Include="Connectors\Sources\OpenRGB\" />
+      <Folder Include="Connectors\Sinks\Mqtt\" />
     </ItemGroup>
 </Project>

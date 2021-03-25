@@ -14,6 +14,7 @@ using AllMyLights.Extensions;
 using AllMyLights.Models.OpenRGB;
 using AllMyLights.Platforms;
 using MQTTnet;
+using MQTTnet.Extensions.ManagedClient;
 using NLog;
 using OpenRGB.NET;
 
@@ -22,7 +23,7 @@ namespace AllMyLights.Connectors
     public class ConnectorFactory
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly HttpClient HttpClient = new HttpClient();
+        private static readonly HttpClient HttpClient = new();
 
         private Configuration Configuration { get; }
         public ConnectorFactory(Configuration configuration)
@@ -50,7 +51,7 @@ namespace AllMyLights.Connectors
             Logger.Info($"Configuring {Configuration.Sources.Count()} sources");
             return Configuration.Sources.Select<SourceOptions, ISource>(sourceOptions => sourceOptions switch
             {
-                MqttSourceOptions options => new MqttSource(options, new MqttFactory().CreateMqttClient()),
+                MqttSourceOptions options => new MqttSource(options, new MqttFactory().CreateManagedMqttClient()),
                 OpenRGBSourceOptions options => new OpenRGBSource(
                     options,
                     GetOpenRGBClientInstance(options.Server, options.Port),
@@ -66,6 +67,7 @@ namespace AllMyLights.Connectors
             return Configuration.Sinks.Select<SinkOptions, ISink>(sinkOptions => sinkOptions switch
             {
                 OpenRGBSinkOptions options => new OpenRGBSink(options, GetOpenRGBClientInstance(options.Server, options.Port)),
+                MqttSinkOptions options => new MqttSink(options, new MqttFactory().CreateManagedMqttClient()),
                 WallpaperSinkOptions options => new WallpaperSink(options, Desktop.GetPlatformInstance()),
                 ChromaSinkOptions options => new ChromaSink(options, new ChromaClient(HttpClient), Observable.Interval(TimeSpan.FromSeconds(2))),
                 _ => throw new NotImplementedException($"Sinks for type {sinkOptions.Type} not implemented")

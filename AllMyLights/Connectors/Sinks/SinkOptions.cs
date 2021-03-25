@@ -12,6 +12,7 @@ namespace AllMyLights.Connectors.Sinks
         KnownType(typeof(OpenRGBSinkOptions)),
         KnownType(typeof(WallpaperSinkOptions)),
         KnownType(typeof(ChromaSinkOptions)),
+        KnownType(typeof(MqttSinkOptions)),
     ]
     public abstract class SinkOptions : ConnectorOptions
     {

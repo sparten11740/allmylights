@@ -2,6 +2,9 @@
 
 ### Sources
 - Add `OpenRGB` source to enable use cases in which OpenRGB is the source of truth
+
+### Sinks
+- Add `Mqtt` sink to enable publishing values to Mqtt
 ## [v6]
 
 ### Sinks
