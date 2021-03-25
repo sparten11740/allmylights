@@ -2,13 +2,13 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
+using MQTTnet.Extensions.ManagedClient;
 using NLog;
 
 namespace AllMyLights.Connectors.Sources.Mqtt
@@ -16,51 +16,58 @@ namespace AllMyLights.Connectors.Sources.Mqtt
     public class MqttSource : Source
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly int RECONNECT_DELAY = 10;
 
         private readonly ReplaySubject<string> Subject = new(1);
-        private IMqttClient MqttClient { get; }
-        private IMqttClientOptions MqttClientOptions { get; }
+        private IManagedMqttClient MqttClient { get; }
+        
         private MqttSourceOptions Options { get; }
+        private IManagedMqttClientOptions MqttClientOptions { get; }
 
         protected override IObservable<object> Value { get; }
 
 
-        public MqttSource(MqttSourceOptions options, IMqttClient mqttClient): base(options)
+        public MqttSource(MqttSourceOptions options, IManagedMqttClient mqttClient): base(options)
         {
             Value = Subject.AsObservable();
 
             Options = options;
             MqttClient = mqttClient;
+
             var builder = new MqttClientOptionsBuilder()
                 .WithTcpServer(options.Server, options.Port);
-
 
             if (options.Password != null && options.Username != null)
             {
                 builder = builder.WithCredentials(options.Username, options.Password);
             }
 
-            MqttClientOptions = builder.Build();
+            var clientOptions = builder.Build();
+            MqttClientOptions = new ManagedMqttClientOptionsBuilder()
+                .WithPendingMessagesOverflowStrategy(MQTTnet.Server.MqttPendingMessagesOverflowStrategy.DropOldestQueuedMessage)
+                .WithClientOptions(clientOptions)
+                .WithMaxPendingMessages(1).WithAutoReconnectDelay(TimeSpan.FromSeconds(RECONNECT_DELAY)).Build();
 
 
-            Initialize();
+
+            Initialize().Wait();
         }
 
-        private async void Initialize()
+        private async Task Initialize()
         {
             MqttClient.UseDisconnectedHandler(HandleDisconnected);
             MqttClient.UseConnectedHandler(HandleConnected);
             MqttClient.UseApplicationMessageReceivedHandler(HandleMessage);
 
-            await MqttClient.ConnectAsync(MqttClientOptions, CancellationToken.None);
+            await MqttClient.StartAsync(MqttClientOptions);
 
 
-            if(Options.Topics.Command != null)
+            if (Options.Topics.Command != null)
             {
-                await MqttClient.PublishAsync(new MqttApplicationMessage
+                await MqttClient.PublishAsync(new ManagedMqttApplicationMessage
                 {
-                    Topic = Options.Topics.Command
-                }, CancellationToken.None);
+                    ApplicationMessage = new MqttApplicationMessageBuilder().WithTopic(Options.Topics.Command).Build()
+                });
             }
         }
 
@@ -74,7 +81,7 @@ namespace AllMyLights.Connectors.Sources.Mqtt
 
         private async Task HandleConnected(MqttClientConnectedEventArgs e)
         {
-            Logger.Info($"Connection to mqtt server {Options.Server} established");
+            Logger.Info($"Connection to MQTT server (source) {Options.Server} established");
             Logger.Info($"Attempting to subscribe to {Options.Topics.Result}");
 
             MqttTopicFilter topicFilter = new MqttTopicFilterBuilder().WithTopic(Options.Topics.Result).Build();
@@ -83,20 +90,9 @@ namespace AllMyLights.Connectors.Sources.Mqtt
             Logger.Info($"Succesfully subscribed to {Options.Topics.Result}");
         }
 
-        private async Task HandleDisconnected(MqttClientDisconnectedEventArgs args)
+        private void HandleDisconnected(MqttClientDisconnectedEventArgs args)
         {
-            Logger.Info("Connection to mqtt server was lost. Reconnecting in 5s ...");
-            await Task.Delay(TimeSpan.FromSeconds(5));
-            Logger.Info($"Attemtping to reonnect to {Options.Server}");
-
-            try
-            {
-                await MqttClient.ConnectAsync(MqttClientOptions, CancellationToken.None);
-            }
-            catch (Exception e)
-            {
-                Logger.Error($"Reconnecting failed. Connection couldn't be established: {e.Message}");
-            }
+            Logger.Info($"Connection to mqtt server was lost. Reconnecting in {RECONNECT_DELAY}s ...");
         }
 
         public override string ToString() => $"{nameof(MqttSource)}({Options.Server}:{Options.Port})";

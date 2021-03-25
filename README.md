@@ -303,7 +303,7 @@ The MQTT sink publishes any value it consumes to all configured topics.
     "Username": "",
     // Optional password, remove if not required
     "Password": "",
-    "Topics": [ "some/topic", "another/topics" ],
+    "Topics": [ "some/topic", "another/topic" ],
     "Transformations": [
       // ... see section transformations for options
     ]

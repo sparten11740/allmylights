@@ -1,26 +1,24 @@
 using System;
-using System.Text;
-using System.Threading;
-using Moq;
-using MQTTnet;
-using MQTTnet.Client;
-using MQTTnet.Client.Options;
-using NUnit.Framework;
-using Microsoft.Reactive.Testing;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Concurrency;
-using System.Drawing;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using MQTTnet.Client.Connecting;
-using MQTTnet.Client.Subscribing;
-using MQTTnet.Client.Disconnecting;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Text;
 using AllMyLights.Common;
 using AllMyLights.Connectors.Sources.Mqtt;
 using AllMyLights.Transformations;
-using AllMyLights.Transformations.JsonPath;
 using AllMyLights.Transformations.Color;
+using AllMyLights.Transformations.JsonPath;
+using Microsoft.Reactive.Testing;
+using Moq;
+using MQTTnet;
+using MQTTnet.Client;
+using MQTTnet.Client.Connecting;
+using MQTTnet.Client.Options;
+using MQTTnet.Extensions.ManagedClient;
+using NUnit.Framework;
 
 namespace AllMyLights.Test
 {
@@ -28,10 +26,10 @@ namespace AllMyLights.Test
     {
         MqttSourceOptions Options;
 
-        public IMqttClientOptions MqttClientOptions { get; private set; }
+        public IManagedMqttClientOptions MqttClientOptions { get; private set; }
         public MqttClientTcpOptions MqttClientTcpOptions { get; private set; }
 
-        readonly Mock<IMqttClient> MqttClientMock = new Mock<IMqttClient>();
+        readonly Mock<IManagedMqttClient> MqttClientMock = new Mock<IManagedMqttClient>();
 
         [SetUp]
         public void Setup()
@@ -49,28 +47,32 @@ namespace AllMyLights.Test
                 }
             };
 
-            MqttClientOptions = new MqttClientOptionsBuilder()
+
+            var clientOptions = new MqttClientOptionsBuilder()
                 .WithTcpServer(Options.Server, Options.Port)
-                .WithCredentials(Options.Username, Options.Password)
+                .WithCredentials(Options.Username, Options.Password).Build();
+            
+            MqttClientOptions = new ManagedMqttClientOptionsBuilder()
+                .WithClientOptions(clientOptions)
                 .Build();
 
-            MqttClientTcpOptions = MqttClientOptions.ChannelOptions as MqttClientTcpOptions;
+            MqttClientTcpOptions = clientOptions.ChannelOptions as MqttClientTcpOptions;
         }
 
         [Test]
         public void Should_initialize_MQTTClient()
         {
-            var args = new List<MqttClientOptions>();
-            MqttClientMock.Setup(m => m.ConnectAsync(Capture.In(args), CancellationToken.None));
+            var args = new List<IManagedMqttClientOptions>();
+            MqttClientMock.Setup(m => m.StartAsync(Capture.In(args)));
 
             var subject = new MqttSource(Options, MqttClientMock.Object);
             var actualOptions = args.First();
-            MqttClientTcpOptions actualChannelOptions = actualOptions.ChannelOptions as MqttClientTcpOptions;
+            MqttClientTcpOptions actualChannelOptions = actualOptions.ClientOptions.ChannelOptions as MqttClientTcpOptions;
 
-            MqttClientMock.Verify(it => it.ConnectAsync(It.IsAny<MqttClientOptions>(), CancellationToken.None));
+            MqttClientMock.Verify(it => it.StartAsync(It.IsAny<IManagedMqttClientOptions>()));
 
-            Assert.AreEqual(actualOptions.Credentials.Username, MqttClientOptions.Credentials.Username);
-            Assert.AreEqual(actualOptions.Credentials.Password, MqttClientOptions.Credentials.Password);
+            Assert.AreEqual(actualOptions.ClientOptions.Credentials.Username, MqttClientOptions.ClientOptions.Credentials.Username);
+            Assert.AreEqual(actualOptions.ClientOptions.Credentials.Password, MqttClientOptions.ClientOptions.Credentials.Password);
             Assert.AreEqual(actualChannelOptions.Server, MqttClientTcpOptions.Server);
             Assert.AreEqual(actualChannelOptions.Port, MqttClientTcpOptions.Port);
         }
@@ -78,13 +80,13 @@ namespace AllMyLights.Test
         [Test]
         public void Should_request_value_via_command_topic()
         {
-            var args = new List<MqttApplicationMessage>();
-            MqttClientMock.Setup(it => it.PublishAsync(Capture.In(args), CancellationToken.None));
+            var args = new List<ManagedMqttApplicationMessage>();
+            MqttClientMock.Setup(it => it.PublishAsync(Capture.In(args)));
 
             var subject = new MqttSource(Options, MqttClientMock.Object);
 
-            MqttClientMock.Verify(it => it.PublishAsync(It.IsAny<MqttApplicationMessage>(), CancellationToken.None));
-            Assert.AreEqual(Options.Topics.Command, args.First().Topic);
+            MqttClientMock.Verify(it => it.PublishAsync(It.IsAny<ManagedMqttApplicationMessage>()));
+            Assert.AreEqual(Options.Topics.Command, args.First().ApplicationMessage.Topic);
         }
 
         [Test]
@@ -93,42 +95,11 @@ namespace AllMyLights.Test
             MqttClientMock.SetupAllProperties();
             var subject = new MqttSource(Options, MqttClientMock.Object);
 
-            var args = new List<MqttClientSubscribeOptions>();
-            MqttClientMock.Setup(it => it.SubscribeAsync(Capture.In(args), CancellationToken.None));
             MqttClientMock.Object.ConnectedHandler.HandleConnectedAsync(new MqttClientConnectedEventArgs(new Mock<MqttClientAuthenticateResult>().Object));
-            var filter = args.First().TopicFilters.First();
 
-            MqttClientMock.Verify(it => it.SubscribeAsync(It.IsAny<MqttClientSubscribeOptions>(), CancellationToken.None));
-            Assert.AreEqual(Options.Topics.Result, filter.Topic);
+            MqttClientMock.Verify(it => it.SubscribeAsync(It.Is<IEnumerable<MqttTopicFilter>>((topics) => Options.Topics.Result == topics.First().Topic)));
         }
 
-        [Test]
-        public void Should_reconnect_after_disconnecting()
-        {
-            MqttClientMock.SetupAllProperties();
-
-            var args = new List<MqttClientOptions>();
-            MqttClientMock.Setup(it => it.ConnectAsync(Capture.In(args), CancellationToken.None));
-
-            var subject = new MqttSource(Options, MqttClientMock.Object);
-            MqttClientMock.Object.DisconnectedHandler.HandleDisconnectedAsync(new MqttClientDisconnectedEventArgs(
-                true,
-                new Exception("Networ error"),
-                new Mock<MqttClientAuthenticateResult>().Object,
-                MqttClientDisconnectReason.DisconnectWithWillMessage
-            ));
-
-            var actualOptions = args.First();
-            MqttClientTcpOptions actualChannelOptions = actualOptions.ChannelOptions as MqttClientTcpOptions;
-
-
-            MqttClientMock.Verify(it => it.ConnectAsync(It.IsAny<MqttClientOptions>(), CancellationToken.None));
-
-            Assert.AreEqual(actualOptions.Credentials.Username, MqttClientOptions.Credentials.Username);
-            Assert.AreEqual(actualOptions.Credentials.Password, MqttClientOptions.Credentials.Password);
-            Assert.AreEqual(actualChannelOptions.Server, MqttClientTcpOptions.Server);
-            Assert.AreEqual(actualChannelOptions.Port, MqttClientTcpOptions.Port);
-        }
 
         [Test]
         public void Should_consume_message_and_emit_payload()
