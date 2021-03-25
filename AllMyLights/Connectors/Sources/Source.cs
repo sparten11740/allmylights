@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AllMyLights.Extensions;
-using AllMyLights.Models;
 using AllMyLights.Transformations;
 
 namespace AllMyLights.Connectors.Sources

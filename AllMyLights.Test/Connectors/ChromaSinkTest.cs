@@ -1,15 +1,13 @@
-using System;
-using Moq;
-using NUnit.Framework;
-using Microsoft.Reactive.Testing;
-using Microsoft.Reactive.Testing;
+using System.Drawing;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using AllMyLights.Connectors.Sinks.Chroma;
-using System.Drawing;
 using AllMyLights.Common;
-using System.Linq;
+using AllMyLights.Connectors.Sinks.Chroma;
+using Microsoft.Reactive.Testing;
+using Moq;
 using Newtonsoft.Json;
+using NUnit.Framework;
 
 namespace AllMyLights.Test
 {

@@ -172,7 +172,7 @@ Available source, sink, and transformation types are:
 
 | Type           | Options                                      |
 | ---------------| ---------------------------------------------|
-| Source         | `Mqtt`                                       |
+| Source         | `Mqtt`, `OpenRGB`                            |
 | Sink           | `OpenRGB`, `Wallpaper`, `Chroma`             | 
 | Transformation | `JsonPath`, `Color`, `Mapping`, `Expression` |
 
@@ -203,10 +203,49 @@ that topic.
   }
 ```
 
+
+#### OpenRGB
+The OpenRGB source continueously polls your configured OpenRGB server and emits 
+a json that contains the colors per device if any device state changed.
+
+```json5
+{
+    "Type" : "OpenRGB",
+    "Server": "127.0.0.1",
+    "Port": 6742,
+    // controls how often OpenRGB is asked for changes, default is 1000ms
+    "PollingInterval": 1000,
+    // transformations are applied in order on any received message 
+    "Transformations": [
+      // ... see section transformations for options
+    ]
+  }
+```
+
+The returned json looks as follows, where for each LED on your device 
+one color is returned:
+
+```json5
+{
+  "Corsair H150": {
+    "Colors": [ "#FF0000", "#00FF00" ]
+  }
+}
+```
+
+To extract a single color value from that payload, you could use a 
+[`JsonPath`](#jsonpath) transformation such as 
+
+```json5
+{
+  "Type": "JsonPath",
+  "Expression": "$['Corsair H150i PRO RGB'].Colors[0]"
+}
+```
+
 ### Sinks
 Sinks conclude the transformation process and consume values. A sink can define 
-transformations which are applied on the value **before** it is consumed by the 
-sink.
+transformations which are applied on the value **before** it is consumed by the sink.
 
 #### OpenRGB
 The OpenRGB sink can receive values of type `System.Drawing.Color` or `string`.

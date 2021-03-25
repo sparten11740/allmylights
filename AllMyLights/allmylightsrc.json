@@ -5,7 +5,6 @@
       "Server": "192.168.178.20",
       "Port": 1883,
       "Topics": {
-        "Command": "cmnd/sonoff-1144-dimmer-5/color",
         "Result": "stat/sonoff-1144-dimmer-5/RESULT"
       },
       "Transformations": [
@@ -18,12 +17,26 @@
           "ChannelLayout": "_RGB"
         }
       ]
+    },
+    {
+      "Type": "OpenRGB",
+      "Server": "192.168.178.120",
+      "Port": 6742,
+      "Transformations": [
+        {
+          "Type": "JsonPath",
+          "Expression": "$['Corsair H150i PRO RGB'].Colors[0]"
+        },
+        {
+          "Type": "Color"
+        }
+      ]
     }
   ],
   "Sinks": [
     {
       "Type": "OpenRGB",
-      "Server": "127.0.0.1",
+      "Server": "192.168.178.120",
       "Port": 6742,
       "Overrides": {
         "MSI Mystic Light MS_7C84": {
@@ -40,10 +53,6 @@
           "Expression": "value.B == value.R && value.R == value.G ? \"White.orp\" : (value.B > value.R && value.B > value.G ? \"Purple.orp\" : (value.G > value.B && value.G > value.R ? \"Green.orp\" : \"Red.orp\"))"
         }
       ]
-    },
-    {
-      "Type": "Chroma",
-      "SupportedDevices": [ "mouse" ]
     }
   ]
 }

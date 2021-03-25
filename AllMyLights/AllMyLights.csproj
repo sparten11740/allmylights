@@ -51,5 +51,6 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Platforms\Linux\" />
+      <Folder Include="Connectors\Sources\OpenRGB\" />
     </ItemGroup>
 </Project>

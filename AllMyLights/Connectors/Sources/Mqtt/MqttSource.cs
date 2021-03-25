@@ -17,7 +17,7 @@ namespace AllMyLights.Connectors.Sources.Mqtt
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly ReplaySubject<string> Subject = new ReplaySubject<string>(1);
+        private readonly ReplaySubject<string> Subject = new(1);
         private IMqttClient MqttClient { get; }
         private IMqttClientOptions MqttClientOptions { get; }
         private MqttSourceOptions Options { get; }

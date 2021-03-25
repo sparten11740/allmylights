@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.Reactive;
-using System.Reflection;
 using AllMyLights.Common;
-using AllMyLights.Models.OpenRGB;
+using AllMyLights.Extensions;
 using NLog;
 using OpenRGB.NET;
 using OpenRGB.NET.Models;
 
 namespace AllMyLights.Connectors.Sinks.OpenRGB
 {
-    
-
     public class OpenRGBSink: Sink
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -60,11 +56,11 @@ namespace AllMyLights.Connectors.Sinks.OpenRGB
             public IEnumerable<string> Profiles { get; }
         }
 
-        public override object GetInfo() => RequestCatching(() => {
+        public override object GetInfo() => Client.RequestCatching(() => {
             return new Info(Client.GetAllControllerData(), Client.GetProfiles());
         });
 
-        private Unit LoadProfile(string profile) => RequestCatching(() =>
+        private Unit LoadProfile(string profile) => Client.RequestCatching(() =>
         {
             var profiles = Client.GetProfiles();
 
@@ -80,7 +76,7 @@ namespace AllMyLights.Connectors.Sinks.OpenRGB
             return Unit.Default;
         });
 
-        private Unit UpdateAll(Ref<System.Drawing.Color> colorRef) => RequestCatching(() =>
+        private Unit UpdateAll(Ref<System.Drawing.Color> colorRef) => Client.RequestCatching(() =>
         {
             var color = colorRef.Value;
             Logger.Info($"Changing color to {color}");
@@ -147,44 +143,6 @@ namespace AllMyLights.Connectors.Sinks.OpenRGB
             }
             return Unit.Default;
         });
-
-        private T RequestCatching<T>(Func<T> request)
-        {
-            try
-            {
-                if (!Client.Connected)
-                {
-                    Client.Connect();
-                }
-
-                return request();
-            }
-            catch (Exception e)
-            {
-                Logger.Error($"Disconnected from OpenRGB ({e.Message})");
-                return Reconnect(() => RequestCatching(request));
-            }
-        }
-
-        private T Reconnect<T>(Func<T> onSuccess)
-        {
-            // we have to be a little nasty here, since the client library does not expose any means of reconnecting
-            var clientType = typeof(OpenRGBClient);
-            var socketField = clientType.GetField("_socket", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            try
-            {
-                socketField.SetValue(Client, new Socket(SocketType.Stream, ProtocolType.Tcp));
-                Client.Connect();
-                return onSuccess();
-            }
-            catch (Exception e)
-            {
-                Logger.Error($"Connection to OpenRGB failed: {e.Message}");
-            }
-
-            return default;
-        }
 
         public override string ToString() =>$"OpenRGBSink({Options.Server}:{Options.Port})";
     }
