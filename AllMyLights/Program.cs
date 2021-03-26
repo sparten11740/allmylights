@@ -94,6 +94,7 @@ namespace AllMyLights
 
             if (info)
             {
+                ShowInfo(sources);
                 ShowInfo(sinks);
                 Environment.Exit(0);
             }
@@ -132,20 +133,20 @@ namespace AllMyLights
             );
         }
 
-        private static void ShowInfo(ISink[] sinks)
+        private static void ShowInfo(IConnector[] connectors)
         {
-            foreach (ISink sink in sinks)
+            foreach (IConnector connector in connectors)
             {
-                var info = sink.GetInfo();
+                var info = connector.GetInfo();
                 if (info != null)
                 {
                     Console.WriteLine();
-                    Console.WriteLine($"{sink}:");
+                    Console.WriteLine($"{connector}:");
                     Console.WriteLine(JsonConvert.SerializeObject(info, Formatting.Indented));
                 }
                 else
                 {
-                    Console.WriteLine($"{sink} does not expose any configuration information.");
+                    Console.WriteLine($"{connector} does not expose any configuration information.");
                 }
             }
         }

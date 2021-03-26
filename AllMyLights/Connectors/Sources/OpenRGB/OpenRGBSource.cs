@@ -8,6 +8,7 @@ using OpenRGB.NET;
 using OpenRGB.NET.Models;
 using AllMyLights.Extensions;
 using NLog;
+using AllMyLights.Connectors.Sinks.OpenRGB;
 
 namespace AllMyLights.Connectors.Sources.OpenRGB
 {
@@ -22,16 +23,17 @@ namespace AllMyLights.Connectors.Sources.OpenRGB
 
         private Device[] LastDevices { get; set; }
 
+        private OpenRGBSourceOptions Options { get; }
+
         public OpenRGBSource(
             OpenRGBSourceOptions options,
             IOpenRGBClient client,
             IObservable<long> pollingInterval
         ) : base(options)
         {
+            Options = options;
             Value = Subject.AsObservable();
             Client = client;
-
-
 
             pollingInterval.Subscribe((_) =>
             {
@@ -59,5 +61,11 @@ namespace AllMyLights.Connectors.Sources.OpenRGB
                 Subject.OnNext(deviceStates);
             });
         }
+
+        public override object GetInfo() => Client.RequestCatching(() => {
+            return new OpenRGBInfo(Client.GetAllControllerData(), Client.GetProfiles());
+        });
+
+        public override string ToString() => $"OpenRGBSource({Options.Server}:{Options.Port})";
     }
 }

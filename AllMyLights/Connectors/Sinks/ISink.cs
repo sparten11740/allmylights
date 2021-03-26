@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace AllMyLights.Connectors.Sinks
+﻿namespace AllMyLights.Connectors.Sinks
 {
-    public interface ISink
+    public interface ISink: IConnector
     {
         void Consume(object value);
-        object GetInfo() => null;
     }
 }

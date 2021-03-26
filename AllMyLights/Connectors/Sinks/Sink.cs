@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using AllMyLights.Extensions;
-using AllMyLights.Models;
 using AllMyLights.Transformations;
 
 namespace AllMyLights.Connectors.Sinks
@@ -13,7 +12,7 @@ namespace AllMyLights.Connectors.Sinks
     {
         public IEnumerable<ITransformation<object>> Transformations { get;  }
 
-        private Subject<object> Subject = new Subject<object>();
+        private readonly Subject<object> Subject = new Subject<object>();
 
         protected IObservable<object> Next { get; }
 

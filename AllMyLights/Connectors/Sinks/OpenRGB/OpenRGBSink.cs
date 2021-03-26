@@ -44,20 +44,8 @@ namespace AllMyLights.Connectors.Sinks.OpenRGB
             });
         }
 
-        private struct Info
-        {
-            public Info(IEnumerable<Device> devices, IEnumerable<string> profiles)
-            {
-                Devices = devices;
-                Profiles = profiles;
-            }
-
-            public IEnumerable<Device> Devices { get; }
-            public IEnumerable<string> Profiles { get; }
-        }
-
         public override object GetInfo() => Client.RequestCatching(() => {
-            return new Info(Client.GetAllControllerData(), Client.GetProfiles());
+            return new OpenRGBInfo(Client.GetAllControllerData(), Client.GetProfiles());
         });
 
         private Unit LoadProfile(string profile) => Client.RequestCatching(() =>

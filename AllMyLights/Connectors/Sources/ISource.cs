@@ -2,7 +2,7 @@
 
 namespace AllMyLights.Connectors.Sources
 {
-    public interface ISource
+    public interface ISource: IConnector
     {
         IObservable<object> Get();
     }

@@ -17,5 +17,7 @@ namespace AllMyLights.Connectors.Sources
         }
 
         public IObservable<object> Get() => Value.Pipe(Transformations.Select(it => it.GetOperator()).ToArray());
+
+        public virtual object GetInfo() => null;
     }
 }
