@@ -175,7 +175,7 @@ Available source, sink, and transformation types are:
 | Type           | Options                                      |
 | ---------------| ---------------------------------------------|
 | Source         | `Mqtt`, `OpenRGB`                            |
-| Sink           | `OpenRGB`, `Wallpaper`, `Chroma`             | 
+| Sink           | `OpenRGB`, `Wallpaper`, `Chroma`, `Mqtt`     | 
 | Transformation | `JsonPath`, `Color`, `Mapping`, `Expression` |
 
 
