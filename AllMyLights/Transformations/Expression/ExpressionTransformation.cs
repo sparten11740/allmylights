@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using SystemColor = System.Drawing.Color;
+using System.Linq;
 using System.Reactive.Linq;
 using AllMyLights.Common;
 using CodingSeb.ExpressionEvaluator;
 using NLog;
+using SystemColor = System.Drawing.Color;
 
 namespace AllMyLights.Transformations.Expression
 {
@@ -24,6 +25,8 @@ namespace AllMyLights.Transformations.Expression
         public ExpressionTransformation(ExpressionTransformationOptions options)
         {
             Expression = options.Expression;
+            Evaluator.StaticTypesForExtensionsMethods.Add(typeof(ColorConverter));
+            Evaluator.StaticTypesForExtensionsMethods.Add(typeof(Enumerable));
         }
 
         public Func<IObservable<object>, IObservable<T>> GetOperator()
@@ -34,7 +37,12 @@ namespace AllMyLights.Transformations.Expression
                 {
                     try
                     {
-                        var value = input is Ref<SystemColor> ? (input as Ref<SystemColor>).Value : input;
+                        var value = input switch
+                        {
+                            Ref<SystemColor> r => r.Value,
+                            _ => input
+                        };
+
                         Evaluator.Variables["value"] = value;
 
                         Logger.Debug($"Expression received value {value}");

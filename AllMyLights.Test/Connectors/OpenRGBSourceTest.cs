@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using AllMyLights.Connectors.Sources.OpenRGB;
 using Microsoft.Reactive.Testing;
@@ -43,7 +46,7 @@ namespace AllMyLights.Test
             var corsairH150i = new Device();
             corsairH150i.SetColors(red, green);
             corsairH150i.SetName("Corsair H150");
-            
+
             var devices = new Device[] {
                 corsairH150i
             };
@@ -79,20 +82,21 @@ namespace AllMyLights.Test
             );
 
             var actual = scheduler.Start(
-             () => subject.Get(),
+             () => subject.Get() as IObservable<Dictionary<string, DeviceState>>,
              created: 0,
              subscribed: 0,
              disposed: 100
            );
 
 
-            string payload = $"{{\"Corsair H150\":{{\"Colors\":[\"#FF0000\",\"#00FF00\"]}}}}";
-            string payloadUpdated = $"{{\"Corsair H150\":{{\"Colors\":[\"#00FF00\",\"#0000FF\"]}}}}";
-
-            var expected = new Recorded<Notification<object>>[] {
-                OnNext(10, (object)payload),
-                OnNext(30, (object)payloadUpdated)
+            var deviceState = new DeviceState(new List<System.Drawing.Color> { red.ToSystemColor(), green.ToSystemColor() });
+            var deviceStateUpdated = new DeviceState(new List<System.Drawing.Color> { green.ToSystemColor(), blue.ToSystemColor() });
+            
+            var expected = new Recorded<Notification<Dictionary<string, DeviceState>>>[] {
+                OnNext(10, (Dictionary<string, DeviceState> actual) => actual["Corsair H150"].Colors.SequenceEqual(deviceState.Colors) ),
+                OnNext(30, (Dictionary<string, DeviceState> actual) => actual["Corsair H150"].Colors.SequenceEqual(deviceStateUpdated.Colors) ),
             };
+
 
             ReactiveAssert.AreElementsEqual(expected, actual.Messages);
         }

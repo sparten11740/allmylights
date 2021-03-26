@@ -16,7 +16,7 @@ namespace AllMyLights.Connectors.Sources.OpenRGB
         protected override IObservable<object> Value { get; }
 
         private IOpenRGBClient Client { get; }
-        private readonly ReplaySubject<string> Subject = new ReplaySubject<string>(1);
+        private readonly ReplaySubject<Dictionary<string, DeviceState>> Subject = new ReplaySubject<Dictionary<string, DeviceState>>(1);
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -52,11 +52,11 @@ namespace AllMyLights.Connectors.Sources.OpenRGB
                 {
                     deviceStates.Add(it.Name, new DeviceState()
                     {
-                        Colors = it.Colors.Select(color => color.ToHexString())
+                        Colors = it.Colors.Select(color => color.ToSystemColor())
                     });
                 });
 
-                Subject.OnNext(JsonConvert.SerializeObject(deviceStates));
+                Subject.OnNext(deviceStates);
             });
         }
     }

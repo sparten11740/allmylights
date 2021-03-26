@@ -120,5 +120,15 @@ namespace AllMyLights.Test
 
             Assert.AreEqual(expectedBgr, color.ToBgrDecimal());
         }
+
+
+        [Test]
+        public void Should_convert_to_comma_separated_rgb_string()
+        {
+            var color = Color.FromArgb(10, 20, 30);
+            var actual = color.ToCommaSeparatedRgbString();
+
+            Assert.AreEqual("10,20,30", actual);
+        }
     }
 }

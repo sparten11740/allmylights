@@ -17,6 +17,17 @@
           "ChannelLayout": "_RGB"
         }
       ]
+    },
+    {
+      "Type": "OpenRGB",
+      "Server": "192.168.178.120",
+      "Port": 6742,
+      "Transformations": [
+        {
+          "Type": "Expression",
+          "Expression": "value[\"Corsair H150i PRO RGB\"].Colors.Cast().First().ToCommaSeparatedRgbString()"
+        }
+      ]
     }
   ],
   "Sinks": [

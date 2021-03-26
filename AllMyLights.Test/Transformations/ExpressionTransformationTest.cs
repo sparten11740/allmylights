@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Drawing;
 using System.Reactive;
 using System.Reactive.Linq;
 using AllMyLights.Common;
+using AllMyLights.Connectors.Sources.OpenRGB;
 using AllMyLights.Transformations;
 using AllMyLights.Transformations.Expression;
 using Microsoft.Reactive.Testing;
@@ -117,6 +119,40 @@ namespace AllMyLights.Test
             );
 
             var expected = new Recorded<Notification<string>>[] {
+                OnCompleted<string>(10)
+            };
+
+            ReactiveAssert.AreElementsEqual(expected, actual.Messages);
+        }
+
+        [Test]
+        public void Should_allow_usage_of_color_related_extensions_methods()
+        {
+            var input = new Dictionary<string, DeviceState>() {
+                { "Copperhead", new DeviceState(new Color[]{ Color.Red }) }
+            };
+            var source = Observable.Return(input);
+            var expressionExpectingColor = "value[\"Copperhead\"].Colors.Cast().First().ToCommaSeparatedRgbString()";
+            var expectation = "255,0,0";
+
+            var options = new ExpressionTransformationOptions()
+            {
+                Expression = expressionExpectingColor
+            };
+
+            var transformation = new ExpressionTransformation<string>(options);
+
+            var scheduler = new TestScheduler();
+
+            var actual = scheduler.Start(
+              () => transformation.GetOperator()(source),
+              created: 0,
+              subscribed: 10,
+              disposed: 100
+            );
+
+            var expected = new Recorded<Notification<string>>[] {
+                OnNext(10, expectation),
                 OnCompleted<string>(10)
             };
 

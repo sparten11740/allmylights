@@ -70,8 +70,11 @@ namespace AllMyLights
         }
 
         public static  OpenRGB.NET.Models.Color ToOpenRGBColor(this Color color) => new OpenRGB.NET.Models.Color(color.R, color.G, color.B);
+        public static  Color ToSystemColor(this OpenRGB.NET.Models.Color color) => Color.FromArgb(color.R, color.G, color.B);
 
         public static string ToHexString(this Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
+
+        public static string ToCommaSeparatedRgbString(this Color c) => $"{c.R},{c.G},{c.B}";
 
         public static string ToHexString(this OpenRGB.NET.Models.Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
 
