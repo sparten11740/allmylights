@@ -85,6 +85,11 @@ namespace AllMyLights.Platforms.Windows
         {
             NotifyIcon.Visible = show;
         }
+
+        public object GetInfo()
+        {
+            return null;
+        }
     }
 }
 #endif
