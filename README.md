@@ -208,7 +208,7 @@ that topic.
 
 #### OpenRGB
 The OpenRGB source continueously polls your configured OpenRGB server and emits 
-a json that contains the colors per device if any device state changed.
+an object that contains the colors per device whenever a device state changes.
 
 ```json5
 {
@@ -224,7 +224,7 @@ a json that contains the colors per device if any device state changed.
 }
 ```
 
-The produced value is of type `Dictionary<string, DeviceState>()` where the
+The produced value is of type `Dictionary<string, DeviceState>` where the
 key is the name of your OpenRGB device and `DeviceState` is a struct that
 has the following properties:
 
