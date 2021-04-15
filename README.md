@@ -25,6 +25,7 @@
     - [Color](#color)
     - [Mapping](#mapping)
     - [Expression](#expression)
+  - [Routes](#routes)
 - [Run me](#run-me)
   - [Windows](#windows)
   - [Linux](#linux)
@@ -153,8 +154,9 @@ The configuration distinguishes between
 - sources, that provide values to the app
 - transformations, that alter those values
 - sinks, that consume and apply those values
+- (optional routes that define from which sources to what sinks those values travel)
 
-Any value emitted by a source is routed to all sinks.
+Any value emitted by a source is routed to all sinks unless routes are specified.
 
 The structure of the `allmylightsrc.json` is the following:
 
@@ -167,6 +169,9 @@ The structure of the `allmylightsrc.json` is the following:
   ],
   "Sinks": [
     // ... see available options below
+  ],
+  "Routes": [
+    // ... see route section
   ]
 }
 ```
@@ -190,6 +195,8 @@ that topic.
 
 ```json5
 {
+  // optional id that can be used to define routes
+  "Id": "my-mqtt-source",
   "Type" : "Mqtt",
   "Server": "192.168.1.20",
   "Port": 1883,
@@ -212,6 +219,8 @@ an object that contains the colors per device whenever a device state changes.
 
 ```json5
 {
+  // optional id that can be used to define routes
+  "Id": "my-openrgb-source",
   "Type" : "OpenRGB",
   "Server": "127.0.0.1",
   "Port": 6742,
@@ -264,7 +273,8 @@ version on your machine.
 
 ```json5
 {
-  // configure one or more target OpenRGB instances
+  // optional id that can be used to define routes
+  "Id": "my-openrgb-sink",
   "Type": "OpenRGB",
   "Server": "127.0.0.1", 
   "Port": 6742,
@@ -297,18 +307,20 @@ The MQTT sink publishes any value it consumes to all configured topics.
 
 ```json5
 {
-    "Type" : "Mqtt",
-    "Server": "192.168.1.20",
-    "Port": 1883,
-    // Optional username, remove if not required
-    "Username": "",
-    // Optional password, remove if not required
-    "Password": "",
-    "Topics": [ "some/topic", "another/topic" ],
-    "Transformations": [
-      // ... see section transformations for options
-    ]
-  }
+  // optional id that can be used to define routes
+  "Id": "my-mqtt-sink",
+  "Type" : "Mqtt",
+  "Server": "192.168.1.20",
+  "Port": 1883,
+  // Optional username, remove if not required
+  "Username": "",
+  // Optional password, remove if not required
+  "Password": "",
+  "Topics": [ "some/topic", "another/topic" ],
+  "Transformations": [
+    // ... see section transformations for options
+  ]
+}
 ```
 
 #### Wallpaper
@@ -319,6 +331,8 @@ line flag `--info` can be used to print available files under that directory.
 
 ```json5
 {
+  // optional id that can be used to define routes
+  "Id": "my-wallpaper-sink",
   "Type": "Wallpaper",
   // if the input value is a relative path or file name and RelativeTo is specified, it will be prepended to the input value
   "RelativeTo": "C:\\Users\\brucewayne\\Pictures\\Wallpaper",
@@ -346,6 +360,8 @@ structure. Examples of valid inputs can be found in the
 
 ```json5
 {
+  // optional id that can be used to define routes
+  "Id": "my-chroma-sink",
   "Type": "Chroma",
   "SupportedDevices": [
     // can be any combination of the following
@@ -434,6 +450,32 @@ becomes available in the expression context on value.
     "Expression":  "value.B > value.R && value.B > value.G ? \"Blueish\" : \"Some other color\""
   }
 ```
+
+### Routes
+A route connects a source to one or more sinks. If any route is defined in
+your `allmylightsrc.json`, the default behaviour of values being emitted
+to all sinks is no longer applied. Each sink has to be connected to at least
+one source explicitly to receive values.
+
+As a prerequisite to using routes, you need to specify IDs on your sinks and
+sources. A route has the following structure:
+
+
+```json5
+  // allmylightsrc.json
+  //...
+  "Routes": [
+    {
+      // valid ID of a source defined in your config
+      "From": "my-mqtt-source",
+      // valid IDs of sinks defined in your config
+      "To": [ "my-openrgb-sink", "my-chroma-sink"]
+    }
+  ]
+```
+
+Initial validation will make you aware of any unconnected sinks or sources on 
+startup (warning). Referencing a non-existing ID will prevent startup.
 
 ## Run me
 ### Windows

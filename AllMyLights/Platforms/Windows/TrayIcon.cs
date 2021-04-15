@@ -17,6 +17,8 @@ namespace AllMyLights.Platforms.Windows
 
         private bool Minimized { get; }
 
+        public string Id { get; } = "my-lovely-windows-trayicon";
+
         private TrayIcon(bool minimized)
         {
             Minimized = minimized;

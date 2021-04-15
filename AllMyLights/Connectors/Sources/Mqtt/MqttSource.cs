@@ -95,6 +95,6 @@ namespace AllMyLights.Connectors.Sources.Mqtt
             Logger.Info($"Connection to mqtt server was lost. Reconnecting in {RECONNECT_DELAY}s ...");
         }
 
-        public override string ToString() => $"{nameof(MqttSource)}({Options.Server}:{Options.Port})";
+        public override string ToString() => $"{nameof(MqttSource)}({(Id != null ? $"#{Id} " : "")}{Options.Server}:{Options.Port})";
     }
 }

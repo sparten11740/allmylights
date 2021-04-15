@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
-using AllMyLights.Connectors.Sinks;
 using AllMyLights.Json;
 using Newtonsoft.Json;
 using NJsonSchema;
@@ -84,7 +83,7 @@ namespace AllMyLights
             {
                 AllowReferencesWithProperties = true,
                 FlattenInheritanceHierarchy = true,
-                AlwaysAllowAdditionalObjectProperties = !failOnUnknownProperty
+                AlwaysAllowAdditionalObjectProperties = !failOnUnknownProperty,
             }).Validate(content);
 
             var configuration = JsonConvert.DeserializeObject<Configuration>(content);
@@ -99,7 +98,10 @@ namespace AllMyLights
                 Environment.Exit(0);
             }
 
-            var broker = new Broker().RegisterSources(sources).RegisterSinks(sinks);
+            var broker = new Broker()
+                .RegisterSources(sources)
+                .RegisterSinks(sinks)
+                .UseRoutes(configuration.Routes.ToArray());
 
 #if Windows
             var trayIcon = TrayIcon.GetInstance(minimized);

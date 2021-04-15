@@ -1,3 +1,11 @@
+## [v8]
+
+### Routes
+- Introduce the concept of routes to allow for defining explicit data flows 
+  (relevant for more complex scenarios where some sinks are meant to receive 
+  values from certain sources but not from others)
+  
+
 ## [v7]
 
 ### Sources
@@ -64,6 +72,7 @@ via JsonPath or color conversions reusable across different source and sink type
 - Add option to override the channel layout of a device
 - Add option to override the channel layout of a zone
 
+[v8]: https://github.com/sparten11740/allmylights/compare/v7...v8
 [v7]: https://github.com/sparten11740/allmylights/compare/v6...v7
 [v6]: https://github.com/sparten11740/allmylights/compare/v5...v6
 [v5]: https://github.com/sparten11740/allmylights/compare/v4...v5

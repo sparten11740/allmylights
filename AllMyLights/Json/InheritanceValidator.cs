@@ -44,14 +44,14 @@ namespace AllMyLights.Json
 
 
                 return new InheritanceValidator<TProp>(children as JArray, Settings)
-                    .WithPath($"{Path}[{index}].{property}")
-                    .OnError(SignalError)
+                    .At($"{Path}[{index}].{property}")
+                    .OnError(RaiseError)
                     .Validate();
             });
             return this;
         }
 
-        public InheritanceValidator<T> WithPath(string path)
+        public InheritanceValidator<T> At(string path)
         {
             Path = path;
             return this;
@@ -63,16 +63,16 @@ namespace AllMyLights.Json
             return this;
         }
 
-        private void SignalError(SchemaValidationError error)
+        private void RaiseError(SchemaValidationError error)
         {
             ErrorHandler.Invoke(error);
         }
 
-        private void SignalErrors(ICollection<ValidationError> errors, string path)
+        private void RaiseErrors(ICollection<ValidationError> errors, string path)
         {
             foreach (ValidationError error in errors)
             {
-                SignalError(new SchemaValidationError(path ?? error.Path, error.Message()));
+                RaiseError(new SchemaValidationError(path ?? error.Path, error.Message()));
             }
         }
 
@@ -95,7 +95,7 @@ namespace AllMyLights.Json
 
                 if (discriminatorValue == null)
                 {
-                    SignalError(new SchemaValidationError(
+                    RaiseError(new SchemaValidationError(
                          path: $"{Path}[{i}]",
                          message: $"Required property {Dicriminator} is missing."
                     ));
@@ -108,11 +108,11 @@ namespace AllMyLights.Json
                     var errors = schema.Validate(obj);
                     isValid = isValid && errors.Count() == 0;
 
-                    SignalErrors(errors, $"{Path}[{i}]");
+                    RaiseErrors(errors, $"{Path}[{i}]");
                 }
                 catch (KeyNotFoundException)
                 {
-                    SignalError(new SchemaValidationError(
+                    RaiseError(new SchemaValidationError(
                          path: $"{Path}[{i}].{Dicriminator}",
                          message: $"Property {Dicriminator} can only be one of the following: {string.Join(", ", Schemas.Keys)}. (found {discriminatorValue})"
 

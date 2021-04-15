@@ -64,5 +64,7 @@ namespace AllMyLights.Connectors.Sinks.Chroma
             Logger.Debug(() => $"{nameof(ChromaSink)} received {color}. Applying to {string.Join(", ", SupportedDevices)}");
             await Task.WhenAll(SupportedDevices.Select((device) => Client.ApplyStaticEffectAsync(device, color)));
         }
+
+        public override string ToString() => $"{nameof(ChromaSink)}{(Id != null ? $"(#{Id})" : "")}";
     }
 }

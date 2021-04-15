@@ -8,6 +8,8 @@ namespace AllMyLights
     {
         public IEnumerable<SourceOptions> Sources { get; set; }
         public IEnumerable<SinkOptions> Sinks { get; set; }
+
+        public IEnumerable<RouteOptions> Routes { get; set; } = new List<RouteOptions>();
     }
 }
 

@@ -132,6 +132,6 @@ namespace AllMyLights.Connectors.Sinks.OpenRGB
             return Unit.Default;
         });
 
-        public override string ToString() =>$"OpenRGBSink({Options.Server}:{Options.Port})";
+        public override string ToString() =>$"{nameof(OpenRGBSink)}({(Id != null ? $"#{Id} " : "")}{Options.Server}:{Options.Port})";
     }
 }

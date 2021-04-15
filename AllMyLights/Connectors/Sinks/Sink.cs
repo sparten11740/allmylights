@@ -16,7 +16,10 @@ namespace AllMyLights.Connectors.Sinks
 
         protected IObservable<object> Next { get; }
 
+        public string Id { get; }
+
         public Sink(SinkOptions options) {
+            Id = options.Id;
             Transformations = options.Transformations?.Select((it) => TransformationFactory.GetInstance(it)) ?? new List<ITransformation<object>>();
             Next = Subject.AsObservable().Pipe(Transformations.Select(it => it.GetOperator()).ToArray());
         }

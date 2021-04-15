@@ -66,6 +66,6 @@ namespace AllMyLights.Connectors.Sources.OpenRGB
             return new OpenRGBInfo(Client.GetAllControllerData(), Client.GetProfiles());
         });
 
-        public override string ToString() => $"OpenRGBSource({Options.Server}:{Options.Port})";
+        public override string ToString() => $"{nameof(OpenRGBSource)}({(Id != null ? $"#{Id} " : "")}{Options.Server}:{Options.Port})";
     }
 }

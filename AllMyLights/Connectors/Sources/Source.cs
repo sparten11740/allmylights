@@ -11,8 +11,10 @@ namespace AllMyLights.Connectors.Sources
         public IEnumerable<ITransformation<object>> Transformations { get; }
 
         protected virtual IObservable<object> Value { get; }
+        public string Id { get; }
 
         public Source(SourceOptions options) {
+            Id = options.Id;
             Transformations = options.Transformations?.Select((it) => TransformationFactory.GetInstance(it)) ?? new List<ITransformation<object>>();
         }
 

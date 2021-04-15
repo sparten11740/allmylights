@@ -55,8 +55,9 @@ namespace AllMyLights.Connectors.Sinks.Wallpaper
         {
             if (Path.IsPathRooted(path)) return path;
 
-            var preprended = Path.Join(RelativeTo, path);
             return Path.Join(RelativeTo, path);
         }
+
+        public override string ToString() => $"{nameof(WallpaperSink)}({(Id != null ? $"#{Id} " : "")})";
     }
 }

@@ -81,6 +81,6 @@ namespace AllMyLights.Connectors.Sinks.Chroma
             Logger.Info($"Connection to mqtt server was lost. Reconnecting in {RECONNECT_DELAY}s ...");
         }
 
-        public override string ToString() => $"{nameof(MqttSink)}({Options.Server}:{Options.Port})";
+        public override string ToString() => $"{nameof(MqttSink)}({(Id != null ? $"#{Id} " : "")}{Options.Server}:{Options.Port})";
     }
 }

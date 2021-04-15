@@ -38,20 +38,40 @@ namespace AllMyLights.Json
 
             JArray sources = o.SelectToken($"$.{nameof(Configuration.Sources)}") as JArray;
             JArray sinks = o.SelectToken($"$.{nameof(Configuration.Sinks)}") as JArray;
+            JArray routes = o.SelectToken($"$.{nameof(Configuration.Routes)}") as JArray;
+
+            var sourceIds = sources.SelectTokens("[*].Id").Values().Select(a => a.ToString()).ToList();
+            var sinkIds = sinks.SelectTokens("[*].Id").Values().Select(a => a.ToString()).ToList();
 
             o.Remove("Sources");
             o.Remove("Sinks");
 
             var errors = rootSchema.Validate(o).Select(it => new SchemaValidationError(it.Path, it.Message())).ToList();
 
+            new ReferenceValidator(routes)
+                .At($"/{nameof(Configuration.Routes)}")
+                .ForProperty(nameof(RouteOptions.From))
+                .EntityName("source")
+                .Known(sourceIds)
+                .OnError(errors.Add)
+                .Validate();
+
+            new ReferenceValidator(routes)
+                .At($"/{nameof(Configuration.Routes)}")
+                .ForProperty(nameof(RouteOptions.To))
+                .EntityName("sink")
+                .Known(sinkIds)
+                .OnError(errors.Add)
+                .Validate();
+
             new InheritanceValidator<SourceOptions>(sources, Settings)
-                .WithPath($"/{nameof(Configuration.Sources)}")
+                .At($"/{nameof(Configuration.Sources)}")
                 .OnError(errors.Add)
                 .ValidateIsolated<TransformationOptions>(nameof(SourceOptions.Transformations))
                 .Validate();
 
             new InheritanceValidator<SinkOptions>(sinks, Settings)
-                .WithPath($"/{nameof(Configuration.Sinks)}")
+                .At($"/{nameof(Configuration.Sinks)}")
                 .OnError(errors.Add)
                 .ValidateIsolated<TransformationOptions>(nameof(SinkOptions.Transformations))
                 .Validate();
