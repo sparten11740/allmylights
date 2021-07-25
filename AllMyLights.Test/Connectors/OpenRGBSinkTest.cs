@@ -66,8 +66,8 @@ namespace AllMyLights.Test
             var openRGBClientMock = new Mock<IOpenRGBClient>();
             openRGBClientMock.Setup(it => it.Connected).Returns(true).Verifiable();
 
-            openRGBClientMock.Setup(it => it.GetProfiles()).Returns(new string[] { "Blue.orp" }).Verifiable();
-            openRGBClientMock.Setup(it => it.LoadProfile("Blue.orp")).Verifiable();
+            openRGBClientMock.Setup(it => it.GetProfiles()).Returns(new string[] { "Blue" }).Verifiable();
+            openRGBClientMock.Setup(it => it.LoadProfile("Blue")).Verifiable();
 
             var sink = new OpenRGBSink(Options, openRGBClientMock.Object);
             sink.Consume("Blue.orp");
@@ -82,7 +82,7 @@ namespace AllMyLights.Test
             var openRGBClientMock = new Mock<IOpenRGBClient>();
             openRGBClientMock.Setup(it => it.Connected).Returns(true).Verifiable();
 
-            openRGBClientMock.Setup(it => it.GetProfiles()).Returns(new string[] { "Blue.orp" }).Verifiable();
+            openRGBClientMock.Setup(it => it.GetProfiles()).Returns(new string[] { "Blue" }).Verifiable();
 
             var sink = new OpenRGBSink(Options, openRGBClientMock.Object);
             sink.Consume("Pink.orp");

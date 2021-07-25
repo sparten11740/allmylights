@@ -22,7 +22,7 @@
       <LangVersion>8</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="OpenRGB.NET" Version="1.6.0" />
+        <PackageReference Include="OpenRGB.NET" Version="1.7.0" />
         <PackageReference Include="RzChromaBroadcastAPI.NET" Version="1.1.2" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.20574.7" />
         <PackageReference Include="System.CommandLine.DragonFruit" Version="0.3.0-alpha.20574.7" />
