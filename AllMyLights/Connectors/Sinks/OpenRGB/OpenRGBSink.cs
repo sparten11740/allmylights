@@ -50,15 +50,16 @@ namespace AllMyLights.Connectors.Sinks.OpenRGB
 
         private Unit LoadProfile(string profile) => Client.RequestCatching(() =>
         {
+            var profileName = profile[0..^4];
             var profiles = Client.GetProfiles();
 
-            if (!profiles.Contains(profile))
+            if (!profiles.Contains(profileName))
             {
-                Logger.Error($"Profile {profile} does not exist on the server.");
+                Logger.Error($"Profile {profileName} does not exist on the server.");
                 return Unit.Default;
             }
 
-            Client.LoadProfile(profile);
+            Client.LoadProfile(profileName);
 
 
             return Unit.Default;

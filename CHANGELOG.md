@@ -1,3 +1,8 @@
+## [v9]
+
+### Sinks
+- Fix profile loading for later OpenRGB versions
+
 ## [v8]
 
 ### Routes
@@ -72,7 +77,7 @@ via JsonPath or color conversions reusable across different source and sink type
 - Add option to override the channel layout of a device
 - Add option to override the channel layout of a zone
 
-[v8]: https://github.com/sparten11740/allmylights/compare/v7...v8
+[v9]: https://github.com/sparten11740/allmylights/compare/v7...v9
 [v7]: https://github.com/sparten11740/allmylights/compare/v6...v7
 [v6]: https://github.com/sparten11740/allmylights/compare/v5...v6
 [v5]: https://github.com/sparten11740/allmylights/compare/v4...v5
