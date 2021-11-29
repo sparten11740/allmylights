@@ -1,8 +1,8 @@
 ﻿using System.Runtime.Serialization;
 using AllMyLights.Connectors.Sinks.Chroma;
 using AllMyLights.Connectors.Sinks.OpenRGB;
+using AllMyLights.Connectors.Sinks.Wallpaper;
 using AllMyLights.JsonConverters;
-using AllMyLights.Models.OpenRGB;
 using Newtonsoft.Json;
 
 namespace AllMyLights.Connectors.Sinks

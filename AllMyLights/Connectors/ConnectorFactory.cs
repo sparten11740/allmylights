@@ -11,7 +11,6 @@ using AllMyLights.Connectors.Sources;
 using AllMyLights.Connectors.Sources.Mqtt;
 using AllMyLights.Connectors.Sources.OpenRGB;
 using AllMyLights.Extensions;
-using AllMyLights.Models.OpenRGB;
 using AllMyLights.Platforms;
 using MQTTnet;
 using MQTTnet.Extensions.ManagedClient;

@@ -325,9 +325,13 @@ The MQTT sink publishes any value it consumes to all configured topics.
 
 #### Wallpaper
 The Wallpaper sink currently only works on Windows machines and only if you 
-run the app on the host machine itself. It can receive values of type `string`, 
-which have to be valid file paths. If `RelativeTo` is specified, the command 
-line flag `--info` can be used to print available files under that directory.
+run the app on the host machine itself. It can receive values of type `string`
+which have to be valid file paths to apply the same wallpaper to all screens 
+or multiple file paths keyed by screen index to apply different wallpapers 
+individually (see [this wiki example](https://github.com/sparten11740/allmylights/wiki/Loading-a-profile-&-setting-invidual-backgrounds-per-monitor) for the latter). The command line flag 
+`--info` can be used to print available 
+screen indexes. If `RelativeTo` is specified, the command also prints available 
+files under that directory.
 
 ```json5
 {

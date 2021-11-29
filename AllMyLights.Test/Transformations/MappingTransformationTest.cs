@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using AllMyLights.Transformations;
 using AllMyLights.Transformations.Mapping;
 using Microsoft.Reactive.Testing;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace AllMyLights.Test
@@ -19,6 +20,18 @@ namespace AllMyLights.Test
                 .AddMapping("red", "blue")
                 .StartWith("red")
                 .ExpectOutput("blue")
+                .Verify();
+        }
+
+        [Test]
+        public void Should_match_simple_string_and_return_object()
+        {
+            var to = new JObject();
+
+            new Validator()
+                .AddMapping("red", to)
+                .StartWith("red")
+                .ExpectOutput(to)
                 .Verify();
         }
 
@@ -61,7 +74,7 @@ namespace AllMyLights.Test
             };
 
             private string Input { get; set; }
-            private string Output { get; set; }
+            private object Output { get; set; }
             private bool ShouldReturnEmpty { get; set; } = false;
 
             public Validator StartWith(string input)
@@ -70,12 +83,12 @@ namespace AllMyLights.Test
                 return this;
             }
 
-            public Validator AddMapping(string match, string substitute)
+            public Validator AddMapping(string match, object to)
             {
                 Options.Mappings.Add(new MappingTransformationOptions.Mapping()
                 {
                     From = match,
-                    To = substitute
+                    To = to
                 });
                 return this;
             }
@@ -86,7 +99,7 @@ namespace AllMyLights.Test
                 return this;
             }
 
-            public Validator ExpectOutput(string output)
+            public Validator ExpectOutput(object output)
             {
                 Output = output;
                 return this;
@@ -115,16 +128,16 @@ namespace AllMyLights.Test
                 if (ShouldReturnEmpty)
                 {
 
-                    var expected = new Recorded<Notification<string>>[] {
-                        OnCompleted<string>(10)
+                    var expected = new Recorded<Notification<object>>[] {
+                        OnCompleted<object>(10)
                     };
                     ReactiveAssert.AreElementsEqual(expected, actual.Messages);
                 }
                 else
                 {
-                    var expected = new Recorded<Notification<string>>[] {
+                    var expected = new Recorded<Notification<object>>[] {
                         OnNext(10, Output),
-                        OnCompleted<string>(10)
+                        OnCompleted<object>(10)
                     };
                     ReactiveAssert.AreElementsEqual(expected, actual.Messages);
                 }

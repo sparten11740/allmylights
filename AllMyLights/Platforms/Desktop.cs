@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using AllMyLights.Platforms.Windows;
 using NLog;
@@ -19,6 +20,9 @@ namespace AllMyLights.Platforms
             return null;
         }
 
+        public abstract IEnumerable<int> GetScreens();
+
         public abstract void SetBackground(string filePath);
+        public abstract void SetBackgrounds(Dictionary<int, string> filePathByScreen);
     }
 }

@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using AllMyLights.Models.OpenRGB;
+using AllMyLights.Extensions;
 using AllMyLights.Platforms;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NLog;
 
 namespace AllMyLights.Connectors.Sinks.Wallpaper
@@ -22,27 +25,52 @@ namespace AllMyLights.Connectors.Sinks.Wallpaper
         {
             Desktop = desktop;
             RelativeTo = options.RelativeTo;
-            Next.DistinctUntilChanged().Subscribe((value) =>
+            Next.DistinctUntilChanged().Subscribe((raw) =>
             {
-                if(value is string)
+                Logger.Debug(@$"{ToString()} received value {raw})");
+
+                if (raw is string value)
                 {
-                    Logger.Debug(@$"{nameof(WallpaperSink)} received value {value}. Applying background. {(!string.IsNullOrEmpty(RelativeTo) ? $"Relative to: {RelativeTo}" : "")}");
-                    Desktop.SetBackground(PrependRelativeTo(value as string));
-                } else
-                {
-                    Logger.Error($"Received value {value} cannot be consumed by {nameof(WallpaperSink)}");
+                    Logger.Debug($"Applying background. {RelativeTo?.Let((it) => $"Relative to: {it}") ?? ""}");
+                    Desktop.SetBackground(PrependRelativeTo(value));
+                    return;
                 }
+
+                
+                if (raw is JObject mapping)
+                {
+                    try
+                    {
+                        Logger.Debug("Assuming that received value is mapping of file path to display name.");
+                        var filePathByScreen = mapping.ToObject<Dictionary<int, string>>()
+                            .ToDictionary(pair => pair.Key, pair => PrependRelativeTo(pair.Value));
+
+                        Logger.Debug(() => $"Activating the following wallpapers: {JsonConvert.SerializeObject(filePathByScreen)}");
+                        Desktop.SetBackgrounds(filePathByScreen);
+                    }
+                    catch(JsonReaderException e)
+                    {
+                        Logger.Error($"The provided mapping is invalid: {e.Message}");
+                    }
+                    catch(Exception e)
+                    {
+                        Logger.Error(e.Message);
+                    }
+                    return;
+                }
+
+           
+
+                Logger.Error($"Received value {raw} cannot be consumed by {nameof(WallpaperSink)}");
             });
         }
 
         public override object GetInfo()
         {
-            if (string.IsNullOrEmpty(RelativeTo)) return null;
-
             try
             {
-                string[] files = Directory.GetFiles(RelativeTo);
-                return $"Available file names under specified directory {RelativeTo}: {string.Join(", ", files.Select((it) => Path.GetFileName(it)))}";
+                string[] files = !string.IsNullOrEmpty(RelativeTo) ? Directory.GetFiles(RelativeTo) : null;
+                return new WallpaperSinkInfo(RelativeTo, files, Desktop.GetScreens());
             }
             catch(Exception e)
             {

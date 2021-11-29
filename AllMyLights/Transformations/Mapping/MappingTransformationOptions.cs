@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace AllMyLights.Transformations.Mapping
@@ -14,7 +15,7 @@ namespace AllMyLights.Transformations.Mapping
         public class Mapping
         {
             public string From { get; set; }
-            public string To { get; set; }
+            public object To { get; set; }
         }
     }
 }

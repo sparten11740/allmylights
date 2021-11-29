@@ -1,6 +1,4 @@
-﻿using AllMyLights.Connectors.Sinks;
-
-namespace AllMyLights.Models.OpenRGB
+﻿namespace AllMyLights.Connectors.Sinks.Wallpaper
 {
     public class WallpaperSinkOptions: SinkOptions
     {

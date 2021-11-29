@@ -1,3 +1,13 @@
+## [v10]
+
+### Sinks
+- Enable `Wallpaper` sink to receive objects, where file paths are keyed by 
+  screen index, to set individual wallpapers for different screens (supported 
+  from Windows 8 upwards)
+### Transformations
+- Enable `Mapping` transformation to return objects (which are provided as 
+  `JObject` to succeeding transformations)
+
 ## [v9]
 
 ### Sinks
@@ -77,6 +87,7 @@ via JsonPath or color conversions reusable across different source and sink type
 - Add option to override the channel layout of a device
 - Add option to override the channel layout of a zone
 
+[v10]: https://github.com/sparten11740/allmylights/compare/v9...v10
 [v9]: https://github.com/sparten11740/allmylights/compare/v8...v9
 [v8]: https://github.com/sparten11740/allmylights/compare/v7...v8
 [v7]: https://github.com/sparten11740/allmylights/compare/v6...v7
