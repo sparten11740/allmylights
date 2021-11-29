@@ -1,3 +1,4 @@
+#if Windows
 using System.Collections.Generic;
 using System.IO;
 using AllMyLights.Connectors.Sinks.Wallpaper;
@@ -80,6 +81,7 @@ namespace AllMyLights.Test
             desktopMock.Verify(it => it.SetBackground(expected));
         }
 
+        
         [Test]
         public void Should_prepend_configured_directory_to_relative_paths_for_each_display()
         {
@@ -102,3 +104,4 @@ namespace AllMyLights.Test
         }
     }
 }
+#endif

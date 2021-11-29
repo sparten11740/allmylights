@@ -1,12 +1,7 @@
-﻿using AllMyLights.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 namespace AllMyLights.Platforms.Windows
 {
