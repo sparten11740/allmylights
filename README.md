@@ -40,11 +40,10 @@
 - [Attribution](#attribution)
 
 ## What am I?
-I am a little command line utility that is meant to synchronize your ambient 
-lighting and RGB peripherals. I serve as a broker that consumes input values via 
-MQTT and applies those to a number of configurable sinks: 
-
-Those can be an OpenRGB instance, Chroma enabled devices, or your Desktop 
+I am a command line app that synchronizes your ambient lighting and RGB 
+peripherals. I serve as a broker that consumes input values through MQTT and 
+other sources, and applies those to a number of configurable 
+sinks. Those can be an OpenRGB instance, Chroma enabled devices, or your Desktop 
 wallpaper.
 
 
