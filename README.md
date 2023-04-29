@@ -1,7 +1,6 @@
-﻿#  allmylights 
+﻿[![test](https://github.com/sparten11740/allmylights/actions/workflows/test.yml/badge.svg)](https://github.com/sparten11740/allmylights/actions/workflows/test.yml) [![build](https://github.com/sparten11740/allmylights/actions/workflows/build.yml/badge.svg)](https://github.com/sparten11740/allmylights/actions/workflows/build.yml)
 
-
-![test](https://github.com/sparten11740/allmylights/workflows/test/badge.svg) ![build](https://github.com/sparten11740/allmylights/workflows/build/badge.svg)
+#  allmylights 
 
 - [What am I?](#what-am-i)
 - [Dependencies](#dependencies)
