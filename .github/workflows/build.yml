@@ -50,13 +50,13 @@ jobs:
         shell: bash
         run: |
           archive_name=${{ matrix.runtime }}.zip
-          7z a -tzip "$archive_name" "./AllMyLights/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/*"
+          7z a -tzip "$archive_name" ./AllMyLights/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/*
           echo "ARCHIVE_NAME=$archive_name"  >> $GITHUB_ENV
       - name: Tar
         if: ${{ matrix.tarball }}
         run: |
           archive_name=${{ matrix.runtime }}.tar.gz
-          tar -czf "$archive_name" "./AllMyLights/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/*"
+          tar -czf "$archive_name" ./AllMyLights/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/*
           echo "ARCHIVE_NAME=$archive_name"  >> $GITHUB_ENV
       - name: Upload ${{ matrix.name }} artifact
         if: ${{ github.event_name == 'push' }}
