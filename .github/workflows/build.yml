@@ -1,0 +1,64 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+    - '**.md'
+  pull_request:
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.image }}
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        include:
+          - name: Windows
+            runtime: win-x64
+            image: windows-2019
+          - name: Linux (ARM)
+            runtime: linux-arm
+            image: ubuntu-latest
+            tarball: true
+          - name: Linux
+            runtime: linux-x64
+            image: ubuntu-latest
+            tarball: true
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Clean
+      run: dotnet clean ./AllMyLights.sln --configuration Release && dotnet nuget locals all --clear  
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Restore tools
+      run: dotnet tool restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Publish
+      run: dotnet publish AllMyLights/AllMyLights.csproj --runtime ${{ matrix.runtime }} --configuration Release -p:PublishSingleFile=true -p:UseAppHost=true --self-contained false
+    - name: Copy allmylightsrc.json
+      run: cp AllMyLights/allmylightsrc.json ./AllMyLights/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/allmylightsrc.json
+    - name: Zip
+      if: ${{ !matrix.tarball }}
+      run: |
+        archive_name=${{ matrix.runtime }}.zip
+        7z a -tzip "$archive_name" "./AllMyLights/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/*"
+        echo "ARCHIVE_NAME=$archive_name"  >> $GITHUB_ENV
+    - name: Tar
+      if: ${{ matrix.tarball }}
+      run: |
+        archive_name=${{ matrix.runtime }}.tar.gz
+        tar -czf "$archive_name" "./AllMyLights/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/*"
+        echo "ARCHIVE_NAME=$archive_name"  >> $GITHUB_ENV
+    - name: Upload ${{ matrix.name }} artifact
+      if: ${{ github.event_name == 'push' }}
+      uses: actions/upload-artifact@v2.2.1
+      with:
+        name: ${{ matrix.runtime }}
+        path: ${{ env.ARCHIVE_NAME }}
