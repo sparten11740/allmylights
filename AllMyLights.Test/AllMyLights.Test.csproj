@@ -1,8 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsWindows Condition="$(RuntimeIdentifier.StartsWith('win')) Or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true' And $(RuntimeIdentifier.Length) == '0' )">true</IsWindows>
+  </PropertyGroup>  
+  
+  <PropertyGroup Condition="'$(IsWindows)'=='true'">
+    <TargetFramework>net7.0-windows</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsWindows)'=='false'">
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
