@@ -1,7 +1,7 @@
 ﻿#  allmylights 
 
 
-![test](https://github.com/sparten11740/allmylights/workflows/test/badge.svg) ![build | windows](https://github.com/sparten11740/allmylights/workflows/build%20%7C%20windows/badge.svg) ![build | unix](https://github.com/sparten11740/allmylights/workflows/build%20%7C%20unix/badge.svg)
+![test](https://github.com/sparten11740/allmylights/workflows/test/badge.svg) ![build](https://github.com/sparten11740/allmylights/workflows/build/badge.svg)
 
 - [What am I?](#what-am-i)
 - [Dependencies](#dependencies)
