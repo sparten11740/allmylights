@@ -47,6 +47,7 @@ jobs:
         run: cp AllMyLights/allmylightsrc.json ./AllMyLights/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/allmylightsrc.json
       - name: Zip
         if: ${{ !matrix.tarball }}
+        shell: bash
         run: |
           archive_name=${{ matrix.runtime }}.zip
           7z a -tzip "$archive_name" "./AllMyLights/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/*"
