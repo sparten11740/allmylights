@@ -7,7 +7,7 @@
     <TargetFramework>net7.0-windows</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(IsWindows)'=='false'">
+  <PropertyGroup Condition="'$(IsWindows)' != true">
     <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
