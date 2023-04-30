@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <ApplicationIcon>app.ico</ApplicationIcon>
         <IsWindows Condition="$(RuntimeIdentifier.StartsWith('win')) Or ('$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true' And $(RuntimeIdentifier.Length) == '0' )">true</IsWindows>
     </PropertyGroup>
@@ -10,8 +10,8 @@
         <DefineConstants>Windows</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-      <OutputPath>bin\Debug\netcoreapp3.1</OutputPath>
-      <OutputPath>bin\Debug\netcoreapp3.1</OutputPath>
+      <OutputPath>bin\Debug\net7</OutputPath>
+      <OutputPath>bin\Debug\net7</OutputPath>
       <DocumentationFile></DocumentationFile>
       <NoWarn>1701;1702;NU5105;1591;1572;1571;1573;1587;1570</NoWarn>
       <LangVersion>8</LangVersion>
@@ -24,8 +24,8 @@
     <ItemGroup>
         <PackageReference Include="OpenRGB.NET" Version="1.7.0" />
         <PackageReference Include="RzChromaBroadcastAPI.NET" Version="1.1.2" />
-        <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.20574.7" />
-        <PackageReference Include="System.CommandLine.DragonFruit" Version="0.3.0-alpha.20574.7" />
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+        <PackageReference Include="System.CommandLine.DragonFruit" Version="0.4.0-alpha.22272.1" />
         <PackageReference Include="NJsonSchema" Version="10.4.0" />
         <PackageReference Include="MQTTnet" Version="3.0.15" />
         <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
