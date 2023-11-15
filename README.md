@@ -1,43 +1,6 @@
 ﻿[![test](https://github.com/sparten11740/allmylights/actions/workflows/test.yml/badge.svg)](https://github.com/sparten11740/allmylights/actions/workflows/test.yml) [![build](https://github.com/sparten11740/allmylights/actions/workflows/build.yml/badge.svg)](https://github.com/sparten11740/allmylights/actions/workflows/build.yml)
 
 #  allmylights 
-
-- [What am I?](#what-am-i)
-- [Dependencies](#dependencies)
-  - [OpenRGB](#openrgb)
-  - [MQTT Server](#mqtt-server)
-    - [OpenHAB Integration](#openhab-integration)
-- [Installation](#installation)
-  - [Using the binaries](#using-the-binaries)
-  - [Building the project yourself](#building-the-project-yourself)
-- [Configuration](#configuration)
-  - [Sources](#sources)
-    - [MQTT](#mqtt)
-    - [OpenRGB](#openrgb-1)
-  - [Sinks](#sinks)
-    - [OpenRGB](#openrgb-2)
-    - [MQTT](#mqtt-1)
-    - [Wallpaper](#wallpaper)
-    - [Chroma](#chroma)
-  - [Transformations](#transformations)
-    - [JsonPath](#jsonpath)
-    - [Color](#color)
-    - [Mapping](#mapping)
-    - [Expression](#expression)
-  - [Routes](#routes)
-- [Run me](#run-me)
-  - [Windows](#windows)
-  - [Linux](#linux)
-  - [Command Line Arguments](#command-line-arguments)
-- [Autostart](#autostart)
-  - [Windows](#windows-1)
-    - [CLI](#cli)
-    - [Manually](#manually)
-  - [Linux](#linux-1)
-    - [CLI](#cli-1)
-    - [Manually](#manually-1)
-- [Attribution](#attribution)
-
 ## What am I?
 I am a command line app that synchronizes your ambient lighting and RGB 
 peripherals. I serve as a broker that consumes input values through MQTT and 
